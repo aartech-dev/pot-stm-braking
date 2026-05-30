@@ -1,0 +1,42 @@
+# ============================================================
+#  AART Brake Module — docker-compose (libopencm3)
+#
+#  Usage:
+#    docker compose run --rm brake build        # compile
+#    docker compose run --rm brake build release # optimised
+#    docker compose run --rm brake bash          # interactive shell
+# ============================================================
+
+services:
+
+  brake:
+    build:
+      context: .
+      target: toolchain
+      args:
+        ARM_GCC_VERSION: "13.3.rel1"
+        OPENOCD_VERSION: "0.12.0"
+        LIBOPENCM3_REF: "master"
+    image: aart-brake:toolchain
+    container_name: aart-brake
+    platform: linux/arm64
+    volumes:
+      # Live source — edits on host are reflected instantly
+      - ./firmware:/workspace/firmware
+      # Build output on host
+      - ./build:/workspace/build
+      # Persistent shell history
+      - aart-history:/root
+    working_dir: /workspace/firmware
+    environment:
+      - TERM=xterm-256color
+      - LIBOPENCM3_DIR=/opt/libopencm3
+    stdin_open: true
+    tty: true
+    # Default entrypoint: drop to bash
+    # Override with: docker compose run --rm brake build
+    entrypoint: ["/workspace/scripts/entrypoint.sh"]
+    command: bash
+
+volumes:
+  aart-history:
