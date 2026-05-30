@@ -81,7 +81,7 @@ The `.gitmodules` entry looks like this:
 docker build --target toolchain -t aart-brake:toolchain .
 ```
 
-First build: ~8 minutes (ARM GCC download + OpenOCD build + libopencm3 compile).
+First build: ~5 minutes (ARM GCC download + libopencm3 compile; OpenOCD from apt is fast).
 Subsequent builds: seconds (all layers cached).
 
 ---
@@ -239,6 +239,6 @@ docker run --rm --privileged \
 | Tool | Version |
 |------|---------|
 | arm-none-eabi-gcc | 13.3.rel1 |
-| OpenOCD | 0.12.0 |
+| OpenOCD | 0.12.0 (via apt, Debian Bookworm) |
 | libopencm3 | master (pinned at image build) |
 | Base OS | Debian Bookworm slim |
