@@ -19,7 +19,6 @@
 #include <libopencm3/stm32/timer.h>
 #include <libopencm3/stm32/adc.h>
 #include <libopencm3/stm32/dma.h>
-#include <libopencm3/stm32/dmamux.h>   /* G0 uses DMAMUX — required */
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/systick.h>
 #include <stdint.h>

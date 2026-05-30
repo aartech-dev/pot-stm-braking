@@ -81,7 +81,7 @@ static void clock_setup(void)
         .pllr_div         = RCC_PLLCFGR_PLLR_DIV(2),   /* 128/2 = 64 MHz */
         .hpre             = RCC_CFGR_HPRE_NODIV,
         .ppre             = RCC_CFGR_PPRE_NODIV,
-        .flash_waitstates = FLASH_ACR_LATENCY_2WS,
+        .flash_waitstates = 2,              /* 2 wait states required at 64MHz */
         .ahb_frequency    = 64000000,
         .apb_frequency    = 64000000,
         .voltage_scale    = PWR_SCALE1,
@@ -112,7 +112,7 @@ static void gpio_setup(void)
 static void timer_setup(void)
 {
     rcc_periph_clock_enable(RCC_TIM3);
-    timer_reset(TIM3);
+    rcc_periph_reset_pulse(RST_TIM3);   /* G0: use rcc reset, not timer_reset */
 
     /* Up-counting, no prescaler, period = PWM_ARR → 20 kHz */
     timer_set_mode(TIM3, TIM_CR1_CKD_CK_INT,
@@ -153,9 +153,11 @@ static void dma_setup(void)
 
     dma_channel_reset(DMA1, ADC_DMA_CHANNEL);
 
-    /* DMAMUX: route ADC1 request to DMA1 channel 1
-     * DMAMUX channel index = DMA channel - 1 = 0                */
-    dmamux_set_dma_channel_request(DMAMUX1, 0, ADC_DMAMUX_REQ);
+    /* DMAMUX: route ADC1 (request ID 5) to DMA1 Channel 1.
+     * G0 DMAMUX1 base = 0x40020800. Each channel has a 4-byte CxCR register.
+     * Channel 0 (= DMA1 Ch1) CxCR is at offset 0x00. Bits[6:0] = request ID.
+     * We write directly to avoid pulling in the DMAMUX header.              */
+    MMIO32(0x40020800U) = ADC_DMAMUX_REQ;  /* DMAMUX1_C0CR = ADC1 req (5) */
 
     dma_set_peripheral_address(DMA1, ADC_DMA_CHANNEL,
                                (uint32_t)&ADC_DR(ADC1));
@@ -191,13 +193,14 @@ static void adc_setup(void)
     /* Wait for ADC to be ready */
     while (!adc_is_power_off(ADC1) == false);
 
-    adc_set_resolution(ADC1, ADC_RESOLUTION_12BIT);
+    adc_set_resolution(ADC1, ADC_CFGR1_RES_12_BIT);
     adc_set_single_conversion_mode(ADC1);   /* triggered manually */
-    adc_enable_scan_mode(ADC1);             /* convert CH0 then CH3 */
+    /* G0 ADC: scan is enabled implicitly when sequence length > 1.
+     * No adc_enable_scan_mode() exists for this family.           */
     adc_set_right_aligned(ADC1);
 
     /* Sampling time: 39.5 ADC cycles — adequate for 10k source */
-    adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_39DOT5CYC);
+    adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMPx_039DOT5CYC);
 
     /* Sequence: CH0 (rail), CH3 (pot) — length 2 */
     uint8_t channels[2] = { 0, 3 };
@@ -205,7 +208,7 @@ static void adc_setup(void)
 
     /* DMA: circular, one request per conversion */
     adc_enable_dma(ADC1);
-    adc_set_dma_continue(ADC1);         /* keep requesting after end of seq */
+    adc_enable_dma_circular_mode(ADC1); /* keep requesting after end of sequence */
 }
 
 /* ── SysTick setup ───────────────────────────────────────── */

@@ -43,9 +43,10 @@ INCS = \
 DEFS = -DSTM32G0
 
 # ── Linker script ─────────────────────────────────────────────
-# libopencm3 ships linker scripts for each device.
-# STM32G041J6: 32K flash, 8K RAM
-LDSCRIPT = $(LIBOPENCM3_DIR)/lib/stm32/g0/stm32g041j6.ld
+# libopencm3 dropped per-device .ld files (breaking change, Nov 2020).
+# We provide our own: MEMORY{} block + INCLUDE cortex-m-generic.ld
+# STM32G041J6: 32K flash @ 0x08000000, 8K RAM @ 0x20000000
+LDSCRIPT = stm32g041j6.ld
 
 # ── Compiler flags ───────────────────────────────────────────
 CFLAGS  = $(ARCH_FLAGS) \
@@ -71,6 +72,7 @@ endif
 LDFLAGS = $(ARCH_FLAGS) \
           -T$(LDSCRIPT) \
           -L$(LIBOPENCM3_LIB) \
+          -L$(LIBOPENCM3_DIR)/ld \
           -nostartfiles \
           -Wl,--start-group \
           -lopencm3_stm32g0 \
