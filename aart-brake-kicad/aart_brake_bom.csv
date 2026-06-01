@@ -1,0 +1,37 @@
+Reference,Value,Description,Package,Quantity,Notes
+U1,STM32G041K6U6,ARM Cortex-M0+ MCU 32K flash 8K RAM,QFN-32 5x5mm,1,Main controller
+U2,AMS1117-3.3,LDO regulator 12V to 3.3V 1A,SOT-223,1,
+GD1,UCC27524,Dual 4A gate driver — brake channel,SOT-23-5,1,Both outputs paralleled for Q1
+GD2,UCC27524,Dual 4A gate driver — keep-alive channel,SOT-23-5,1,Both outputs paralleled for Q2
+Q1,IRLB3034,N-ch MOSFET 40V 195A 1.4mohm — brake FET,D2PAK (TO-263),1,Low-side across motor terminals
+Q2,IRF9Z34N,P-ch MOSFET 55V 18A — keep-alive FET,D2PAK (TO-263),1,High-side from 12V rail to track+
+D1,P6KE18CA,TVS diode 18V BIDIRECTIONAL (CA suffix),SMB (DO-214AA),1,Rail transient clamp for 16V rail. CA suffix = bidirectional — essential for inductive switching transients both polarities
+D2,SS310,Schottky 3A 100V — Q1 catch diode,SMB (DO-214AA),1,100V reverse rating required — inductive turn-off spike on 16V rail. SS34 (40V) has insufficient margin
+D3,SS310,Schottky 3A 100V — Q2 catch diode,SMB (DO-214AA),1,Same upgrade as D2
+D4,MBRS360 or SS54,Schottky 3A 60V (MBRS360) or 5A 40V (SS54) — mode C series protection,SMB (DO-214AA),1,ESSENTIAL for mode C. Sees repetitive ~46A pulses at 20kHz during hard braking. SS34 marginal under repetitive stress. MBRS360 same footprint.
+D5,LED Red,Status indicator — flash save confirmation,0805,1,
+F1,Polyfuse 25A,Resettable fuse — rail protection,1812,1,e.g. Bourns MF-R250
+C1,10µF 25V,LDO input bulk decoupling,0805,1,
+C2,100nF 25V,LDO input HF decoupling,0402,1,
+C3,10µF 10V,LDO output bulk decoupling,0805,1,
+C4,100nF 10V,LDO output HF decoupling,0402,1,
+C5,100nF 10V,MCU VDD decoupling,0402,1,Place as close to VDD pin as possible
+C6,100nF 10V,MCU VDDA decoupling,0402,1,Place as close to VDDA pin as possible
+C7,4.7µF 10V,MCU VDDA bulk,0402,1,
+R1,10k,NRST pull-up,0402,1,
+R2,10k,GD1 input pull-up — safe default brake,0402,1,Placed BEFORE GD1 input — not on Q1 gate
+R3,10R,Q1 gate resistor,0402,1,Slows switching to reduce EMI
+R4,10R,Q2 gate resistor,0402,1,
+R5,10k,Pot top-end to 3.3V,0402,1,Sets pot voltage reference
+R6,10k,Capture button pull-up PA5 to 3.3V,0402,1,
+R7,1k,Capture button series to GND,0402,1,With R6 gives 0.3V pressed / 3.3V unpressed
+R8,15k,Rail sense top divider PA0,0402,1,V_PA0 = 12.4 x 4.7/(15+4.7) = 2.96V
+R9,4k7,Rail sense bottom divider PA0,0402,1,
+R10,330R,Status LED current limit,0402,1,(3.3V - 2.0V) / 330 = ~4mA
+J1,2-pin 5mm,Track output +/-,KF2EDGK-5.0 or equiv,1,High-current terminal block
+J2,2-pin 5mm,12.4V rail input (always live),KF2EDGK-5.0 or equiv,1,High-current terminal block
+J3,2-pin 5mm,Hand controller input,KF2EDGK-5.0 or equiv,1,High-current terminal block
+J4,3-pin 2.54mm,Pot connector (3.3V / wiper / GND),Molex KK or equiv,1,Centre-detent 10k pot
+J5,3-pin 2.54mm,Mode toggle (bit0 / bit1 / GND),Molex KK or equiv,1,3-position toggle switch
+J6,2-pin 2.54mm,Capture button,Molex KK or equiv,1,Momentary pushbutton
+J7,2-pin 2.54mm,Wiper strip input,Molex KK or equiv,1,From hand controller wiper contact
