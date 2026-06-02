@@ -5,6 +5,7 @@
  * ============================================================ */
 
 #include "brake_module.h"
+#include "uart_debug.h"
 
 /* ── Private state ───────────────────────────────────────── */
 static BrakeCtx_t        s_ctx;
@@ -275,8 +276,9 @@ static ModeSelect_t read_toggle(void)
 /* ── Brake hysteresis ────────────────────────────────────── */
 static bool update_brake_active(bool cur, uint16_t black_mv)
 {
-    if (black_mv < BRAKE_ENTER_MV) return true;
-    if (black_mv > BRAKE_EXIT_MV)  return false;
+    const DebugParams_t *p = uart_debug_get_params();
+    if (black_mv < p->brake_enter_mv) return true;
+    if (black_mv > p->brake_exit_mv)  return false;
     return cur;
 }
 
@@ -400,7 +402,9 @@ static void tick_mode_a(void)
         /* Reduced braking / dead short region */
         uint16_t target = (pot >= lo)
             ? BRAKE_CCR_HARD
-            : map_u16(pot, 0, lo, BRAKE_CCR_SOFT, BRAKE_CCR_HARD);
+            : map_u16(pot, 0, lo,
+                      uart_debug_get_params()->brake_ccr_soft,
+                      BRAKE_CCR_HARD);
 
         s_ctx.brake_ccr_target = target;
         set_ka_ccr(KA_CCR_OFF);
@@ -437,7 +441,8 @@ static void tick_mode_b(void)
     }
 
     uint16_t target = map_u16(s_ctx.pot_raw, 0, ADC_MAX,
-                              BRAKE_CCR_SOFT, BRAKE_CCR_HARD);
+                              uart_debug_get_params()->brake_ccr_soft,
+                              BRAKE_CCR_HARD);
     s_ctx.brake_ccr_target = target;
     set_ka_ccr(KA_CCR_OFF);
 
@@ -465,7 +470,8 @@ static void tick_mode_c(void)
 
     if (s_ctx.brake_active) {
         uint16_t target = map_u16(s_ctx.pot_raw, 0, ADC_MAX,
-                                  BRAKE_CCR_SOFT, BRAKE_CCR_HARD);
+                                  uart_debug_get_params()->brake_ccr_soft,
+                                  BRAKE_CCR_HARD);
         set_brake_ccr(target);
         s_ctx.state = STATE_BRAKING;
     } else {
@@ -550,6 +556,7 @@ void brake_force_safe(void)
 
 OpState_t    brake_get_state(void)    { return s_ctx.state; }
 ModeSelect_t brake_get_mode_sel(void) { return s_ctx.mode_sel; }
+const BrakeCtx_t *brake_get_ctx(void) { return &s_ctx; }
 
 /* ── ISR: DMA1 CH1 complete ──────────────────────────────── */
 void dma1_channel1_isr(void)

@@ -21,7 +21,12 @@
  *    PA5  ADC_IN5   Capture button      (10k pull-up; button→GND via 1k)
  *    PA6  TIM3_CH1  Brake PWM           → GD1 → Q1 N-ch low-side (INVERTED)
  *    PA7  TIM3_CH2  Keep-alive PWM      → GD2 → Q2 P-ch high-side (normal)
+ *    PA9  USART1_TX AF1  → J11 pin 1 (UART/DBG TX, 115200 8N1)
+ *    PA10 USART1_RX AF1  → J11 pin 2 (UART/DBG RX)
+ *    PA13 SWDIO      AF0  → J10 pin 1 (SWD debug header)
+ *    PA14 SWDCLK     AF0  → J10 pin 2 (SWD debug header)
  *    PB6  GPIO OUT  Status LED          (blinks on flash save)
+ *    PB8  BOOT0          → J12 (BOOT0 button, pulls to 3.3V for ROM bootloader)
  *
  *  Toggle decoding (PA2=bit0, PA4=bit1 — LOW=asserted):
  *    PA2=H PA4=H → MODE_A  Brushed motor, positive anti-brake
@@ -218,11 +223,12 @@ typedef struct {
 } BrakeCtx_t;
 
 /* ── Public API ──────────────────────────────────────────── */
-void         brake_init(void);
-void         brake_tick(void);
-OpState_t    brake_get_state(void);
-ModeSelect_t brake_get_mode_sel(void);
-void         brake_force_safe(void);
-void         brake_systick_isr(void);
+void                brake_init(void);
+void                brake_tick(void);
+OpState_t           brake_get_state(void);
+ModeSelect_t        brake_get_mode_sel(void);
+const BrakeCtx_t   *brake_get_ctx(void);      /* for UART telemetry */
+void                brake_force_safe(void);
+void                brake_systick_isr(void);
 
 #endif /* BRAKE_MODULE_H */

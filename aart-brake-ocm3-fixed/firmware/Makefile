@@ -31,7 +31,8 @@ ARCH_FLAGS = -mcpu=cortex-m0plus -mthumb -mfloat-abi=soft
 # ── Sources ──────────────────────────────────────────────────
 SRCS = \
     $(SRCDIR)/main.c \
-    $(SRCDIR)/brake_module.c
+    $(SRCDIR)/brake_module.c \
+    $(SRCDIR)/uart_debug.c
 
 # ── Includes ─────────────────────────────────────────────────
 INCS = \
