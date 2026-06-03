@@ -2,7 +2,7 @@
 
 **AART — Adrian & Richard's Technologies**
 
-A standalone electronic braking controller for slot car racing, supporting brushed and brushless motors. Connects between the hand controller and the track via standard 4mm banana plugs. Compatible with any conventional resistor or transistor hand controller.
+An [open source](https://creativecommons.org/licenses/by-nc-sa/4.0/) standalone electronic braking controller for slot car racing, supporting brushed and brushless motors. Connects between the hand controller and the track via standard 4mm banana plugs. Compatible with any conventional resistor or transistor hand controller.
 
 > *With thanks to Bob Budge for the original concept.*
 
