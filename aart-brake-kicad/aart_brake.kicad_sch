@@ -1,282 +1,1094 @@
 (kicad_sch
-  (version 20231120)
-  (generator "eeschema")
-  (paper "A2")
-  (title_block
-    (title "AART Slot Car Braking Module")
-    (date "2026-05-31")
-    (rev "1.0")
-    (company "AART - Adrian & Richard's Technologies")
-    (comment 1 "STM32G041K6U6 QFN-32 | libopencm3 | Three-mode braking controller")
-    (comment 2 "Mode A: Brushed+antibrake  Mode B: Brushed brake only  Mode C: Brushless keep-alive")
-  )
-  (lib_symbols)
-  (junction (at 52.07 24.13))
-  (junction (at 68.58 24.13))
-  (junction (at 81.28 24.13))
-  (junction (at 60.96 108.0))
-  (junction (at 132.08 72.39))
-  (junction (at 190.5 67.31))
-  (junction (at 190.5 120.65))
-  (junction (at 143.51 112.27))
-  (junction (at 222.25 93.98))
-  (wire (pts (xy 20.32 24.13) (xy 30.48 24.13)))
-  (wire (pts (xy 40.64 24.13) (xy 52.07 24.13)))
-  (wire (pts (xy 52.07 24.13) (xy 68.58 24.13)))
-  (wire (pts (xy 68.58 24.13) (xy 81.28 24.13)))
-  (wire (pts (xy 81.28 24.13) (xy 93.98 24.13)))
-  (wire (pts (xy 52.07 24.13) (xy 52.07 29.21)))
-  (wire (pts (xy 52.07 35.56) (xy 52.07 40.64)))
-  (wire (pts (xy 68.58 24.13) (xy 68.58 31.75)))
-  (wire (pts (xy 68.58 37.47) (xy 68.58 40.64)))
-  (wire (pts (xy 73.66 31.75) (xy 73.66 40.64)))
-  (wire (pts (xy 81.28 24.13) (xy 81.28 20.32)))
-  (wire (pts (xy 88.9 31.75) (xy 88.9 40.64)))
-  (wire (pts (xy 93.98 31.75) (xy 93.98 40.64)))
-  (wire (pts (xy 72.39 57.15) (xy 72.39 58.42)))
-  (wire (pts (xy 72.39 61.98) (xy 72.39 63.5)))
-  (wire (pts (xy 72.39 67.06) (xy 72.39 68.58)))
-  (wire (pts (xy 72.39 72.14) (xy 72.39 73.66)))
-  (wire (pts (xy 72.39 77.22) (xy 72.39 85.09)))
-  (wire (pts (xy 86.36 91.44) (xy 86.36 85.09)))
-  (wire (pts (xy 86.36 85.09) (xy 72.39 85.09)))
-  (wire (pts (xy 86.36 63.5) (xy 72.39 63.5)))
-  (wire (pts (xy 72.39 63.5) (xy 72.39 57.15)))
-  (wire (pts (xy 86.36 66.04) (xy 72.39 66.04)))
-  (wire (pts (xy 72.39 66.04) (xy 72.39 61.98)))
-  (wire (pts (xy 190.5 60.96) (xy 190.5 63.5)))
-  (wire (pts (xy 190.5 70.1) (xy 190.5 72.39)))
-  (wire (pts (xy 190.5 80.01) (xy 190.5 83.82)))
-  (wire (pts (xy 190.5 83.82) (xy 203.2 83.82)))
-  (wire (pts (xy 203.2 83.82) (xy 203.2 74.93)))
-  (wire (pts (xy 203.2 69.85) (xy 203.2 67.31)))
-  (wire (pts (xy 203.2 67.31) (xy 190.5 67.31)))
-  (wire (pts (xy 190.5 67.31) (xy 190.5 63.5)))
-  (wire (pts (xy 190.5 87.63) (xy 190.5 90.17)))
-  (wire (pts (xy 190.5 100.33) (xy 190.5 102.87)))
-  (wire (pts (xy 190.5 109.22) (xy 190.5 114.3)))
-  (wire (pts (xy 190.5 120.65) (xy 190.5 123.19)))
-  (wire (pts (xy 190.5 123.19) (xy 207.01 123.19)))
-  (wire (pts (xy 207.01 123.19) (xy 207.01 127.0)))
-  (wire (pts (xy 203.2 110.49) (xy 203.2 114.3)))
-  (wire (pts (xy 203.2 114.3) (xy 190.5 114.3)))
-  (wire (pts (xy 203.2 106.93) (xy 203.2 104.14)))
-  (wire (pts (xy 203.2 104.14) (xy 190.5 104.14)))
-  (wire (pts (xy 190.5 104.14) (xy 190.5 102.87)))
-  (wire (pts (xy 212.09 127.0) (xy 222.25 127.0)))
-  (wire (pts (xy 222.25 127.0) (xy 222.25 124.46)))
-  (wire (pts (xy 60.96 102.87) (xy 60.96 108.0)))
-  (wire (pts (xy 60.96 108.0) (xy 86.36 108.0)))
-  (wire (pts (xy 60.96 111.76) (xy 60.96 116.84)))
-  (wire (pts (xy 60.96 116.84) (xy 60.96 120.65)))
-  (wire (pts (xy 113.97 78.74) (xy 118.11 78.74)))
-  (wire (pts (xy 118.11 78.74) (xy 118.11 104.14)))
-  (wire (pts (xy 118.11 104.14) (xy 104.14 104.14)))
-  (wire (pts (xy 107.95 104.14) (xy 114.3 104.14)))
-  (wire (pts (xy 119.38 104.14) (xy 127.0 104.14)))
-  (wire (pts (xy 127.0 104.14) (xy 127.0 120.65)))
-  (wire (pts (xy 132.08 61.6) (xy 132.08 57.15)))
-  (wire (pts (xy 132.08 57.15) (xy 143.51 57.15)))
-  (wire (pts (xy 143.51 57.15) (xy 143.51 72.39)))
-  (wire (pts (xy 132.08 68.58) (xy 132.08 72.39)))
-  (wire (pts (xy 132.08 72.39) (xy 143.51 72.39)))
-  (wire (pts (xy 143.51 112.27) (xy 143.51 107.19)))
-  (wire (pts (xy 143.51 107.19) (xy 143.51 102.87)))
-  (wire (pts (xy 143.51 102.87) (xy 161.04 102.87)))
-  (wire (pts (xy 161.04 112.27) (xy 165.1 112.27)))
-  (wire (pts (xy 180.34 112.27) (xy 185.42 112.27)))
-  (wire (pts (xy 161.04 72.39) (xy 165.1 72.39)))
-  (wire (pts (xy 180.34 72.39) (xy 185.42 72.39)))
-  (wire (pts (xy 161.04 67.31) (xy 162.56 67.31)))
-  (wire (pts (xy 162.56 67.31) (xy 162.56 57.15)))
-  (wire (pts (xy 162.56 57.15) (xy 143.51 57.15)))
-  (wire (pts (xy 152.4 57.15) (xy 152.4 54.61)))
-  (wire (pts (xy 152.4 54.61) (xy 162.56 54.61)))
-  (wire (pts (xy 162.56 54.61) (xy 162.56 57.15)))
-  (wire (pts (xy 161.04 102.87) (xy 161.04 112.27)))
-  (wire (pts (xy 222.25 93.98) (xy 228.6 93.98)))
-  (wire (pts (xy 228.6 96.52) (xy 222.25 96.52)))
-  (wire (pts (xy 222.25 96.52) (xy 222.25 120.65)))
-  (wire (pts (xy 228.6 104.14) (xy 222.25 104.14)))
-  (wire (pts (xy 222.25 104.14) (xy 222.25 93.98)))
-  (wire (pts (xy 228.6 106.68) (xy 222.25 106.68)))
-  (wire (pts (xy 222.25 106.68) (xy 222.25 120.65)))
-  (global_label "WIPER_IN" (shape input) (at 22.86 53.34 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "WIPER_IN" (shape input) (at 86.36 76.2 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "POT_WIPER" (shape input) (at 22.86 64.77 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "POT_WIPER" (shape input) (at 86.36 71.12 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "TOGGLE_0" (shape input) (at 22.86 78.74 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "TOGGLE_0" (shape input) (at 86.36 73.66 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "TOGGLE_1" (shape input) (at 22.86 81.28 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "TOGGLE_1" (shape input) (at 86.36 68.58 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "CAPTURE_BTN" (shape input) (at 22.86 91.44 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "CAPTURE_BTN" (shape input) (at 86.36 66.04 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "RAIL_SENSE" (shape input) (at 60.96 108.0 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "RAIL_SENSE" (shape input) (at 86.36 78.74 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "PA6_BRAKE_PWM" (shape output) (at 113.97 68.58 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "PA6_BRAKE_PWM" (shape output) (at 143.51 72.39 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "PA7_KA_PWM" (shape output) (at 113.97 66.04 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "PA7_KA_PWM" (shape output) (at 143.51 112.27 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "PB6_LED" (shape output) (at 113.97 78.74 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "PB6_LED" (shape output) (at 104.14 104.14 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "BRAKE_GATE" (shape output) (at 161.04 72.39 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "BRAKE_GATE" (shape input) (at 185.42 72.39 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "KA_GATE" (shape output) (at 161.04 112.27 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "KA_GATE" (shape input) (at 185.42 112.27 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "TRACK_POS" (shape bidirectional) (at 212.09 127.0 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "TRACK_POS" (shape bidirectional) (at 222.25 93.98 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "GND_POWER" (shape passive) (at 222.25 96.52 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "GND_POWER" (shape passive) (at 222.25 106.68 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "+12V" (shape passive) (at 52.07 21.59 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "+12V" (shape passive) (at 190.5 60.96 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "+12V" (shape passive) (at 190.5 100.33 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "+3V3" (shape passive) (at 81.28 21.59 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "+3V3" (shape passive) (at 72.39 55.88 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "+3V3" (shape passive) (at 132.08 59.69 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "GND" (shape passive) (at 52.07 40.64 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "GND" (shape passive) (at 68.58 40.64 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "GND" (shape passive) (at 73.66 40.64 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "GND" (shape passive) (at 88.9 40.64 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "GND" (shape passive) (at 93.98 40.64 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "GND" (shape passive) (at 72.39 85.09 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "GND" (shape passive) (at 127.0 120.65 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "GND" (shape passive) (at 190.5 90.17 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "GND" (shape passive) (at 60.96 120.65 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "GND" (shape passive) (at 222.25 120.65 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "SWDIO" (shape input) (at 120.65 55.88 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "SWDCLK" (shape input) (at 120.65 58.42 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "SWDIO" (shape output) (at 86.36 68.58 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "SWDCLK" (shape output) (at 86.36 71.12 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (wire (pts (xy 120.65 55.88) (xy 132.08 55.88)))
-  (wire (pts (xy 120.65 58.42) (xy 132.08 58.42)))
-  (wire (pts (xy 132.08 55.88) (xy 132.08 63.5)))
-  (wire (pts (xy 132.08 58.42) (xy 132.08 63.5)))
-  (wire (pts (xy 132.08 63.5) (xy 139.7 63.5)))
-  (wire (pts (xy 139.7 55.88) (xy 139.7 66.04)))
-  (wire (pts (xy 139.7 66.04) (xy 144.78 66.04)))
-  (global_label "GND" (shape passive) (at 144.78 63.5 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "+3V3" (shape passive) (at 139.7 53.34 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-
-  (global_label "UART_TX" (shape output) (at 113.97 83.82 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "UART_RX" (shape input) (at 113.97 86.36 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (wire (pts (xy 120.65 83.82) (xy 132.08 83.82)))
-  (wire (pts (xy 120.65 86.36) (xy 132.08 86.36)))
-  (wire (pts (xy 132.08 83.82) (xy 132.08 91.44)))
-  (wire (pts (xy 132.08 86.36) (xy 132.08 91.44)))
-  (wire (pts (xy 132.08 91.44) (xy 139.7 91.44)))
-  (global_label "GND" (shape passive) (at 139.7 91.44 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "UART_TX" (shape output) (at 86.36 81.28 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "UART_RX" (shape input) (at 86.36 83.82 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-
-  (global_label "BOOT0" (shape input) (at 50.8 152.4 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (wire (pts (xy 50.8 152.4) (xy 60.96 152.4)))
-  (wire (pts (xy 60.96 152.4) (xy 60.96 157.48)))
-  (global_label "GND" (shape passive) (at 60.96 157.48 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (wire (pts (xy 50.8 152.4) (xy 50.8 144.78)))
-  (global_label "+3V3" (shape passive) (at 50.8 142.24 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-
-  (global_label "NRST_BTN" (shape input) (at 72.39 152.4 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (wire (pts (xy 72.39 152.4) (xy 82.55 152.4)))
-  (wire (pts (xy 82.55 152.4) (xy 82.55 157.48)))
-  (global_label "GND" (shape passive) (at 82.55 157.48 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "NRST_BTN" (shape output) (at 86.36 88.9 180)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (text "=== MCU: STM32G041K6U6 ===" (at 78.74 47.63 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "=== INPUTS ===" (at 10.16 46.99 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "=== BRAKE FET CIRCUIT ===" (at 121.92 46.99 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "=== KEEP-ALIVE FET CIRCUIT ===" (at 121.92 93.98 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "=== TRACK CONNECTORS ===" (at 218.44 84.96 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "=== SWD DEBUG / FLASH HEADER (J10) ===" (at 116.84 48.26 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "Pin 1: SWDIO (PA13)  Pin 2: SWDCLK (PA14)\nPin 3: GND            Pin 4: +3.3V (optional)\n2.54mm 4-pin header. Match your ST-Link V2/V3 pinout." (at 116.84 50.8 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "=== UART DEBUG / BOOTLOADER (J11) ===" (at 116.84 78.74 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "Pin 1: TX PA9  (-> RX of USB-UART adapter)\nPin 2: RX PA10 (-> TX of USB-UART adapter)\nPin 3: GND\n115200 8N1, 3.3V logic. Telemetry CSV at 100ms interval.\nAlso used by ROM bootloader (hold BOOT0 + press NRST)." (at 116.84 81.28 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "=== BOOT0 BUTTON (J12) ===" (at 33.02 138.43 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "J12: momentary button PB8/BOOT0 to 3.3V\nHold J12 + press J13 NRST = ROM bootloader entry\nFlash via J11 UART: stm32flash -w aart_brake.bin /dev/ttyUSB0" (at 33.02 141.0 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "=== NRST BUTTON (J13) ===" (at 66.04 138.43 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "J13: momentary button NRST to GND\nPress while holding J12 BOOT0 to enter bootloader.\nRelease J13 first, then release J12." (at 66.04 141.0 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "SAFE DEFAULT:\nR2 (10k) on GD1 input pulls HIGH when MCU off\n=> Q1 ON => motor dead-shorted = safe" (at 121.92 55.88 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "Q1: N-ch low-side brake FET\nTIM3_CH1 INVERTED polarity\nCCR=0 => FET ON => dead short\nCCR=2720 => ~8ohm\nCCR=3199 => FET OFF" (at 185.42 82.55 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "Q2: P-ch high-side keep-alive FET\nTIM3_CH2 normal polarity\nCCR=0 => FET OFF\nCCR=400 => ~2V injected at 16V rail" (at 185.42 120.65 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "D4: MODE C ESSENTIAL\nBlocks reverse current into Q2\nwhen Q1 hard-brakes the track.\nOmit on mode A/B-only boards." (at 210.82 132.08 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "POT MAPPING (all modes):\nCCW => min brake (~8 ohm)\nCW  => max brake (dead short)\nMode A: centre = dead short\n        CW past centre = positive anti-brake 0-2V" (at 10.16 106.68 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "COMPONENT LIST (Rev 9):\nU1  STM32G041K6U6  QFN-32\nU2  AMS1117-3.3    SOT-223\nGD1 UCC27524       SOT-23-5  (brake gate driver)\nGD2 UCC27524       SOT-23-5  (keep-alive gate driver)\nQ1  IRLB3034       D2PAK     (N-ch brake FET)\nQ2  IRF9Z34N       D2PAK     (P-ch keep-alive FET)\nD1  P6KE18CA       SMB       (TVS BIDIRECTIONAL - CA suffix essential)\nD2  SS310          SMB       (Q1 catch - 100V required)\nD3  SS310          SMB       (Q2 catch - 100V required)\nD4  MBRS360/SS54   SMB       (mode C series - most stressed diode)\nD5  LED Red        0805      (status LED)\nF1  500mA-1A polyfuse  1812  (WHITE rail MCU supply ONLY)\nC1  10uF 0805  C2  100nF 0402  (LDO in)\nC3  10uF 0805  C4  100nF 0402  (LDO out)\nC5-C7  100nF/100nF/4u7 0402  (MCU decouple)\nR1  10k (NRST)  R2  10k (safe default on GD1 INPUT)\nR3  10R (Q1 gate)  R4  10R (Q2 gate)\nR5  10k (pot ref)  R6  10k (btn pullup)  R7  1k (btn series)\nR8  18k  R9  4k7  (WHITE sense)  R10  22k  R11  4k7  (BLACK sense)\nR12 330R (LED)\nJ1-J6   4mm banana sockets (track+ctrl WHITE/BLACK/RED)\nJ7  3-pin 2.54mm (mode toggle)\nJ8  2-pin 2.54mm (capture button)\nJ9  2-pin 4mm (track output)\nJ10 4-pin 2.54mm (SWD: SWDIO/SWDCLK/GND/+3V3)\nJ11 3-pin 2.54mm (UART: TX/RX/GND)\nJ12 2-pin 2.54mm (BOOT0 button)\nJ13 2-pin 2.54mm (NRST button)" (at 10.16 166.0 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "PLACEMENT GUIDE:\nTop-left:    Power (J1 rail, F1, D1, U2, C1-C4)\nTop-centre:  SWD J10 | UART J11\nLeft-mid:    Inputs (pot, toggle, capture btn, dividers)\nBelow-left:  BOOT0 J12 | NRST J13\nCentre:      MCU U1, C5-C7, R1\nRight-upper: Brake FET (GD1, R2, R3, Q1, D2)\nRight-lower: Keep-alive FET (GD2, R4, Q2, D3, D4)\nFar-right:   Track banana J1-J6\nBelow MCU:   Status LED R12 D5\nR2 pull-up: on GD1 INA input - NOT on Q1 gate" (at 10.16 210.0 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "82b35c3e-4d3c-43ba-bb3d-d3653095d007")
+	(paper "A2" portrait)
+	(title_block
+		(title "AART Slot Car Braking Module")
+		(date "2026-06-03")
+		(rev "2.0")
+		(company "AART - Adrian & Richard's Technologies")
+		(comment 1 "TOP LEVEL — double-click a sheet symbol to open it")
+		(comment 2 "STM32G041K6U6 QFN-32 | libopencm3 | Firmware Rev 6")
+	)
+	(lib_symbols)
+	(text "FETs and Diodes\nQ1  IRLB3034  D2PAK  N-ch brake FET (195A 40V)\nQ2  IRF9Z34N  D2PAK  P-ch keep-alive FET (18A 55V)\nD1  P6KE18CA  SMB    TVS bidirectional — CA suffix ESSENTIAL\nD2  SS310     SMB    Q1 catch diode 100V required\nD3  SS310     SMB    Q2 catch diode 100V required\nD4  MBRS360   SMB    Mode C series protection — most stressed\nD5  LED Red   0805   Status LED"
+		(exclude_from_sim no)
+		(at 112.292 166.878 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "2d8d73fd-3ee5-4a39-87b5-6045f6878a08")
+	)
+	(text "Connectors\nJ1-J6  4mm banana  Track WHITE/BLACK/RED (x2 sides)\nJ7     3-pin 2.54mm  Mode toggle A/B/C\nJ8     2-pin 2.54mm  Capture button\nJ9     2-pin 4mm     Track output\nJ10    4-pin 2.54mm  SWD: SWDIO/SWDCLK/GND/+3V3\nJ11    3-pin 2.54mm  UART: TX/RX/GND  115200 8N1\nJ12    2-pin 2.54mm  BOOT0 button (ROM bootloader)\nJ13    2-pin 2.54mm  NRST button"
+		(exclude_from_sim no)
+		(at 36.322 192.278 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "61f299aa-5772-466a-ad4b-d7356d0fee5f")
+	)
+	(text "ICs\nU1  STM32G041K6U6  QFN-32    MCU\nU2  AMS1117-3.3    SOT-223   LDO 12-16V -> 3.3V\nGD1 UCC27524       SOT-23-5  Brake gate driver\nGD2 UCC27524       SOT-23-5  Keep-alive gate driver"
+		(exclude_from_sim no)
+		(at 47.292 166.878 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "89d2da1c-3012-493b-829a-78deaa4dd9b1")
+	)
+	(text "Passives\nF1  500mA-1A polyfuse  1812   WHITE rail MCU supply ONLY\nC1  10uF   0805   LDO input bulk\nC2  100nF  0402   LDO input HF\nC3  10uF   0805   LDO output bulk\nC4  100nF  0402   LDO output HF\nC5  100nF  0402   MCU VDD decouple\nC6  100nF  0402   MCU VDDA decouple\nC7  4u7    0402   MCU VDDA bulk"
+		(exclude_from_sim no)
+		(at 177.292 166.878 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "a0b8b692-d86f-460c-89ac-dc3bc4da35a6")
+	)
+	(text "KEY DESIGN NOTES:"
+		(exclude_from_sim no)
+		(at 41.656 212.154 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "a6acee4a-c6f2-4a83-afd4-2f3cbae912fc")
+	)
+	(text "Resistors\nR1   10k  0402  NRST pull-up\nR2   10k  0402  GD1 safe-default (on INPUT not gate)\nR3   10R  0402  Q1 gate\nR4   10R  0402  Q2 gate\nR5   10k  0402  Pot reference to 3.3V\nR6   10k  0402  Capture btn pull-up\nR7   1k   0402  Capture btn series\nR8   18k  0402  WHITE sense top divider\nR9   4k7  0402  WHITE sense bottom\nR10  22k  0402  BLACK sense top divider\nR11  4k7  0402  BLACK sense bottom\nR12  330R 0402  Status LED"
+		(exclude_from_sim no)
+		(at 227.292 166.878 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "cd61e05c-3325-4d62-aa4a-d520fa9c17e0")
+	)
+	(text "COMPONENT LIST (Rev 9):"
+		(exclude_from_sim no)
+		(at 46.482 158.242 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "f35076fd-bead-4139-bf95-efcba0833ad5")
+	)
+	(text "Q1 TIM3_CH1 INVERTED polarity: CCR=0 = FET ON = dead short\nR2 pull-up on GD1 INPUT (not Q1 gate) = safe default brake at power-off\nD4 ESSENTIAL in mode C: blocks reverse current into Q2 during hard braking\nF1 in WHITE rail ONLY — never in BLACK track path (40A motor startup)\nD1 P6KE18CA — bidirectional variant — clamps both polarity transients\nD2/D3 SS310 100V — inductive turn-off spikes on 16V rail need 100V rating"
+		(exclude_from_sim no)
+		(at 36.322 220.726 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "fb70261d-0119-4526-a446-b7636082ce08")
+	)
+	(junction
+		(at 115.58 55.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "073e141b-ac54-4d3a-9ed7-266a80fed2c0")
+	)
+	(junction
+		(at 120.58 45.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2236c43e-3b3b-4b7a-aac4-64c9a9050920")
+	)
+	(junction
+		(at 195.58 45.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "22a1eed7-f5a6-4e8c-b3a0-85ebce5bb54b")
+	)
+	(junction
+		(at 40.58 121.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2c7c75b4-9836-44f6-afd0-2d29571b6b0b")
+	)
+	(junction
+		(at 210.58 98.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "4e0615fb-ec22-49d8-87e9-d3ecb0d4008a")
+	)
+	(junction
+		(at 120.58 113.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "6a3e0231-f9d7-4fca-89ab-10ba61502775")
+	)
+	(junction
+		(at 210.58 73.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "88bb9ec7-dde4-451e-9e75-7453a5a616af")
+	)
+	(junction
+		(at 40.58 105.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "893a6294-df52-47ba-98da-c54c99025b63")
+	)
+	(junction
+		(at 210.58 45.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "a568aa86-6bcd-4489-ac86-2a69ee0de9fa")
+	)
+	(junction
+		(at 130.58 98.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "aa17a0d1-4bc2-460b-8f36-dae2c317c17c")
+	)
+	(junction
+		(at 115.58 45.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "cccc531b-11ae-4a1a-880d-dcd56459fa19")
+	)
+	(junction
+		(at 210.58 55.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d43d11cc-6eab-41d4-a38d-a8651919b3f6")
+	)
+	(junction
+		(at 210.58 60.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d54ace5e-de07-416c-8f32-029820d235f3")
+	)
+	(junction
+		(at 120.58 35.02)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f903da64-9474-46f4-a8d6-1683ca098566")
+	)
+	(wire
+		(pts
+			(xy 215.58 33.02) (xy 215.58 98.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "06dd6650-54d5-490d-9f15-b94cdde2af5f")
+	)
+	(wire
+		(pts
+			(xy 210.58 45.02) (xy 210.58 55.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "088e2c5e-a1c2-4acb-bb12-4dc44d11ba7c")
+	)
+	(wire
+		(pts
+			(xy 130.58 98.02) (xy 130.58 113.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0e19ceff-a1f9-43f8-9442-5a4cb51e55f3")
+	)
+	(wire
+		(pts
+			(xy 210.58 73.02) (xy 210.58 98.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "166f2a20-1afe-425b-a220-7312c016b794")
+	)
+	(wire
+		(pts
+			(xy 115.58 45.02) (xy 115.58 55.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "16da9d0b-7f51-46a9-91ed-4bf7de9b88d9")
+	)
+	(wire
+		(pts
+			(xy 210.58 39.02) (xy 210.58 45.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "175be5b3-2f6b-496b-a9a6-db8040d203f1")
+	)
+	(wire
+		(pts
+			(xy 120.58 35.02) (xy 130.58 35.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1d2a86d4-05bb-4213-8830-d3d9db5cecb5")
+	)
+	(wire
+		(pts
+			(xy 205.58 64.02) (xy 220.58 60.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1fc41360-1756-4fa7-8a2e-ad5765752f89")
+	)
+	(wire
+		(pts
+			(xy 130.58 98.02) (xy 210.58 98.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "26cad36b-b63a-4ce4-8d4a-1d3c91c6d001")
+	)
+	(wire
+		(pts
+			(xy 210.58 55.02) (xy 220.58 55.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "34489fc3-bf6a-42a2-979b-ba3eedf4007f")
+	)
+	(wire
+		(pts
+			(xy 40.58 105.02) (xy 40.58 121.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "36115016-d899-4f07-8747-42a8f4d8b061")
+	)
+	(wire
+		(pts
+			(xy 115.58 35.02) (xy 115.58 45.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "39486fee-72b1-4673-884d-667a737e95da")
+	)
+	(wire
+		(pts
+			(xy 115.58 45.02) (xy 120.58 45.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4fa01145-3600-4e6c-8ee3-ec0d7b3e4688")
+	)
+	(wire
+		(pts
+			(xy 205.58 59.02) (xy 220.58 55.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "570a6a43-4bdf-489a-b0d6-d3c0a2caadaa")
+	)
+	(wire
+		(pts
+			(xy 40.58 98.02) (xy 130.58 98.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5e502d78-b378-48c0-ab3d-eb2c57c79ed7")
+	)
+	(wire
+		(pts
+			(xy 115.58 113.02) (xy 120.58 113.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "678e5691-8d5b-4218-b95f-dbd4fb14bfce")
+	)
+	(wire
+		(pts
+			(xy 115.58 55.02) (xy 210.58 55.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "681cb715-8ccd-4e08-8fd4-6b56eb8a1880")
+	)
+	(wire
+		(pts
+			(xy 115.58 105.02) (xy 40.58 105.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "78282623-df30-4075-aefa-cc4e28232151")
+	)
+	(wire
+		(pts
+			(xy 210.58 98.02) (xy 215.58 98.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "85dca9a0-f8fe-4359-8e5d-a8055729784e")
+	)
+	(wire
+		(pts
+			(xy 115.58 35.02) (xy 120.58 35.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8b08901e-eea1-4085-b4d1-1b5054e422aa")
+	)
+	(wire
+		(pts
+			(xy 210.58 55.02) (xy 210.58 60.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "97b09c4f-2856-4ac2-abaa-92bd510f405c")
+	)
+	(wire
+		(pts
+			(xy 210.58 60.02) (xy 210.58 73.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9ced94ce-0b7d-40f5-a638-824e50556ee9")
+	)
+	(wire
+		(pts
+			(xy 40.58 121.02) (xy 40.58 131.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a1ea6222-ebf9-4519-b4e4-6ca3e4df5977")
+	)
+	(wire
+		(pts
+			(xy 205.58 113.02) (xy 220.58 123.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ac329d2e-223b-44aa-bc4d-500e37135f98")
+	)
+	(wire
+		(pts
+			(xy 40.58 98.02) (xy 40.58 105.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b7a63d65-75a1-4046-a860-bfa8a27cde4a")
+	)
+	(wire
+		(pts
+			(xy 115.58 55.02) (xy 115.58 105.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c5d8f23a-b7f9-4f29-a150-251731d5fb5d")
+	)
+	(wire
+		(pts
+			(xy 195.58 45.02) (xy 210.58 45.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "da6457cb-7440-4a0b-9c51-469303399b67")
+	)
+	(wire
+		(pts
+			(xy 115.58 113.02) (xy 115.58 121.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e4c8e1d0-7265-42b3-b923-9f11d014c530")
+	)
+	(wire
+		(pts
+			(xy 205.58 39.02) (xy 210.58 39.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ebe731ca-e73a-4a80-820c-904b95545230")
+	)
+	(wire
+		(pts
+			(xy 205.58 69.02) (xy 220.58 65.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "efc5b1af-49de-4f12-b06e-9294cf373c7d")
+	)
+	(wire
+		(pts
+			(xy 205.58 33.02) (xy 215.58 33.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f1a21bdf-efbf-4aac-add2-672273a6bafe")
+	)
+	(wire
+		(pts
+			(xy 120.58 45.02) (xy 195.58 45.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f3dd0b47-5b97-474e-a3e7-8b1db8fcc13a")
+	)
+	(wire
+		(pts
+			(xy 120.58 113.02) (xy 130.58 113.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fb5b15a4-2326-4a08-a18e-2a3a784f47ae")
+	)
+	(wire
+		(pts
+			(xy 115.58 121.02) (xy 40.58 121.02)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fd72b667-171a-4c3d-a33d-d7c6bcb8a65e")
+	)
+	(sheet
+		(at 30.58 23.02)
+		(size 75 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill
+			(color 230 242 255 1)
+		)
+		(uuid "21898740-acf6-4887-9a8d-c6a9d7c4dc8d")
+		(property "Sheetname" "1 Power Supply"
+			(at 40.58 21.52 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.5 1.5)
+					(bold yes)
+				)
+			)
+		)
+		(property "Sheetfile" "power_supply.kicad_sch"
+			(at 40.58 74.02 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(pin "+12V_RAIL" output
+			(at 105.58 35.02 0)
+			(uuid "73db2b58-4594-4e4f-aa73-ebadcb66cc29")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(pin "+3V3" output
+			(at 105.58 45.02 0)
+			(uuid "60e327ae-f5db-4599-afe1-e27ffe770507")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(pin "GND" output
+			(at 105.58 55.02 0)
+			(uuid "7bf2326d-3f4e-4bf6-9d41-6b03933a1ce5")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "aart_brake"
+				(path "/82b35c3e-4d3c-43ba-bb3d-d3653095d007"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 210.58 23.02)
+		(size 75 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill
+			(color 255 245 230 1)
+		)
+		(uuid "423ba1ad-dabb-424c-9ec6-f10958e81970")
+		(property "Sheetname" "3 Debug + Flash Headers"
+			(at 220.58 21.52 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.5 1.5)
+					(bold yes)
+				)
+			)
+		)
+		(property "Sheetfile" "debug_headers.kicad_sch"
+			(at 220.58 74.02 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(pin "+3V3" input
+			(at 210.58 35.02 180)
+			(uuid "3f6e4341-ad9b-43f7-8abb-c2ab70d69534")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "GND" input
+			(at 210.58 45.02 180)
+			(uuid "c3c35ea1-4ae7-4381-9675-b2b57e9256ed")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "SWDIO" bidirectional
+			(at 210.58 55.02 180)
+			(uuid "c812a6bf-5fcd-49d1-92fe-48548b8fe436")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "SWDCLK" bidirectional
+			(at 210.58 60.02 180)
+			(uuid "71741566-fbcb-427b-a4b1-f5071395f2c6")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "UART_TX" input
+			(at 210.58 73.02 180)
+			(uuid "adbaa6d6-7795-46e8-b407-7daf843f7650")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "aart_brake"
+				(path "/82b35c3e-4d3c-43ba-bb3d-d3653095d007"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 120.58 93.02)
+		(size 75 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill
+			(color 255 235 245 1)
+		)
+		(uuid "5faf8d82-d45b-477d-8f06-a30d8aa63f4f")
+		(property "Sheetname" "5 Keep-alive FET Circuit"
+			(at 130.58 91.52 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.5 1.5)
+					(bold yes)
+				)
+			)
+		)
+		(property "Sheetfile" "keepalive_fet.kicad_sch"
+			(at 130.58 144.02 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(pin "+12V_RAIL" input
+			(at 120.58 105.02 180)
+			(uuid "d3e4c7c3-7767-4472-9f45-945a4a6fd03e")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "GND" input
+			(at 120.58 113.02 180)
+			(uuid "108db30f-5a1a-4493-b5a5-2d522b0a89ca")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "PA7_KA_PWM" input
+			(at 120.58 121.02 180)
+			(uuid "a280ce96-afc4-461b-a033-00ebfcad2069")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "TRACK_POS" bidirectional
+			(at 195.58 113.02 0)
+			(uuid "91b1d25a-8897-4762-a6ce-567831569338")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "aart_brake"
+				(path "/82b35c3e-4d3c-43ba-bb3d-d3653095d007"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 120.58 23.02)
+		(size 75 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill
+			(color 238 255 238 1)
+		)
+		(uuid "632e0322-7b0c-42c3-abe1-e2cd9d07aa50")
+		(property "Sheetname" "2 MCU + Inputs"
+			(at 130.58 21.52 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.5 1.5)
+					(bold yes)
+				)
+			)
+		)
+		(property "Sheetfile" "mcu_inputs.kicad_sch"
+			(at 130.58 74.02 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(pin "+3V3" input
+			(at 120.58 35.02 180)
+			(uuid "1ceeb27d-9249-4e6c-897e-ad8678614469")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "GND" input
+			(at 120.58 45.02 180)
+			(uuid "74a6fae8-50af-494d-b2cc-cfe83a262dd7")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "PA6_BRAKE_PWM" output
+			(at 195.58 33.02 0)
+			(uuid "c9387ba3-1c0e-4d25-839f-65bc5209f1de")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(pin "PA7_KA_PWM" output
+			(at 195.58 39.02 0)
+			(uuid "dcb8a1af-0c50-4e49-ac73-830e5e76737a")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(pin "WHITE_SENSE_ADC" input
+			(at 195.58 45.02 0)
+			(uuid "04237fd3-9e7e-449e-8633-a23715e78741")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(pin "BLACK_SENSE_ADC" input
+			(at 195.58 51.02 0)
+			(uuid "95634002-d656-4eb6-b5e3-691b781525d7")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(pin "SWDIO" bidirectional
+			(at 195.58 59.02 0)
+			(uuid "89cea7d0-2b62-4a22-85d7-287967d32280")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(pin "SWDCLK" bidirectional
+			(at 195.58 64.02 0)
+			(uuid "b0f2229b-e11f-4f07-ae81-602f44667a7c")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(pin "UART_TX" output
+			(at 195.58 69.02 0)
+			(uuid "c9a2ac46-bac5-43c1-ad50-2652e6e09f27")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "aart_brake"
+				(path "/82b35c3e-4d3c-43ba-bb3d-d3653095d007"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 30.58 93.02)
+		(size 75 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill
+			(color 255 235 235 1)
+		)
+		(uuid "831415dd-3b2b-4f4b-9e2b-f0de709d1b6d")
+		(property "Sheetname" "4 Brake FET Circuit"
+			(at 40.58 91.52 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.5 1.5)
+					(bold yes)
+				)
+			)
+		)
+		(property "Sheetfile" "brake_fet.kicad_sch"
+			(at 40.58 144.02 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(pin "+3V3" input
+			(at 30.58 105.02 180)
+			(uuid "61b61fa5-6777-4da0-bbd6-a5febb8a9351")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "+12V_RAIL" input
+			(at 30.58 113.02 180)
+			(uuid "fbde4c4e-aa80-42a1-968b-93d4ec57507d")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "GND" input
+			(at 30.58 121.02 180)
+			(uuid "e9b04b1c-ab4e-4319-b9e9-9723cb88f98b")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "PA6_BRAKE_PWM" input
+			(at 30.58 131.02 180)
+			(uuid "8f727702-f1d7-4308-a26a-548493327f45")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "TRACK_POS" bidirectional
+			(at 105.58 113.02 0)
+			(uuid "e41c36f4-47ae-4922-b301-05480d7f0f40")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "aart_brake"
+				(path "/82b35c3e-4d3c-43ba-bb3d-d3653095d007"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 210.58 93.02)
+		(size 75 50)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill
+			(color 235 250 235 1)
+		)
+		(uuid "e25ca6fb-66fa-4675-b9cf-2ad30d836132")
+		(property "Sheetname" "6 Track Connectors"
+			(at 220.58 91.52 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.5 1.5)
+					(bold yes)
+				)
+			)
+		)
+		(property "Sheetfile" "track_connectors.kicad_sch"
+			(at 220.58 144.02 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1 1)
+				)
+				(justify left)
+			)
+		)
+		(pin "+12V_RAIL" input
+			(at 210.58 105.02 180)
+			(uuid "56db13c7-7a6b-4c55-a4c1-23c2be4dd71d")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "GND" input
+			(at 210.58 113.02 180)
+			(uuid "86c9bd5a-e706-4d2b-8c30-d485c9196a78")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(pin "TRACK_POS" bidirectional
+			(at 210.58 123.02 180)
+			(uuid "60c55a29-8f15-4ef5-87e4-860d319938f2")
+			(effects
+				(font
+					(size 1.1 1.1)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "aart_brake"
+				(path "/82b35c3e-4d3c-43ba-bb3d-d3653095d007"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
 )

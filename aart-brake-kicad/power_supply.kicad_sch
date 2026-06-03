@@ -1,0 +1,438 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "95c756a2-274d-41dd-b01d-476923826686")
+	(paper "A4")
+	(title_block
+		(title "AART Brake Module — 1: Power Supply")
+		(date "2026-06-03")
+		(rev "2.0")
+		(company "AART - Adrian & Richard's Technologies")
+		(comment 1 "J2 rail input -> F1 polyfuse -> D1 TVS -> U2 LDO -> +3V3")
+		(comment 2 "F1 in WHITE rail ONLY. Never in BLACK track path.")
+	)
+	(lib_symbols)
+	(text "C1 C2\nLDO in\ndecouple"
+		(exclude_from_sim no)
+		(at 143.93 67.2 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "0fe1b475-d0fd-4578-a423-eba6fe1edac7")
+	)
+	(text "U2\nAMS1117-3.3\nSOT-223"
+		(exclude_from_sim no)
+		(at 156.93 60.2 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "19fcfc9f-2f25-4f18-a29b-b75428ccd20d")
+	)
+	(text "F1\n500mA-1A\npolyfuse"
+		(exclude_from_sim no)
+		(at 107.93 59.2 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "2da8d839-7dd2-4b04-a807-6845db9c1bfa")
+	)
+	(text "J2"
+		(exclude_from_sim no)
+		(at 92.93 62.2 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "6283dc5e-0937-498d-9914-284bb2703a35")
+	)
+	(text "C3 C4\nLDO out\ndecouple"
+		(exclude_from_sim no)
+		(at 165.93 67.2 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "83026bb3-d57b-47e0-a67e-fc8a1b9dbac1")
+	)
+	(text "4mm banana WHITE input\n+12-16V always-live from track PSU (40-90A source)\nModule draws only ~35mA from this rail via F1 and LDO\nTrack power path (BLACK) bypasses this circuit entirely"
+		(exclude_from_sim no)
+		(at 76.454 68.58 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "92787d68-dee8-4fb3-991d-543b206e3722")
+	)
+	(text "TVS selection note:\nP6KE18CA — bidirectional (CA suffix) is ESSENTIAL.\nUnidirectional P6KE18A only clamps one polarity.\nInductive switching on this rail produces transients\nin both directions."
+		(exclude_from_sim no)
+		(at 154.93 107.2 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "982b690c-f8e0-40b6-97a7-d92644041c2f")
+	)
+	(text "LDO power dissipation:\n  12.4V rail: P = (12.4-3.3) x 0.035 = 0.32W, dT = 20C\n  16.0V rail: P = (16.0-3.3) x 0.035 = 0.44W, dT = 27C\nBoth within AMS1117-3.3 125C Tj limit at 25C ambient.\nSolder SOT-223 tab to copper pour for best performance."
+		(exclude_from_sim no)
+		(at 89.93 107.2 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "b447e3b9-1515-410a-bcf3-abdf32e907b1")
+	)
+	(text "D1\nP6KE18CA\nTVS bidirectional"
+		(exclude_from_sim no)
+		(at 127.93 67.2 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "b7a88a35-27f7-40c0-aeaa-87654eed003c")
+	)
+	(junction
+		(at 143.51 62.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "4990d590-64bf-4035-8a0b-daa21a435f8e")
+	)
+	(junction
+		(at 127 62.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "88608135-bcd1-42e1-8445-22e354ec34bf")
+	)
+	(junction
+		(at 156.21 62.2)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "b7baede6-9aa2-4b70-8557-9fb134afa068")
+	)
+	(wire
+		(pts
+			(xy 127 62.2) (xy 127 67.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "22744b9c-b2da-41a9-805d-77fc92bd24ee")
+	)
+	(wire
+		(pts
+			(xy 143.51 76.2) (xy 143.51 82.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "24307d4f-5427-4f37-8314-3b76fb883809")
+	)
+	(wire
+		(pts
+			(xy 127 62.2) (xy 143.51 62.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3afddff2-22fb-4835-8a45-1a9ea2d38593")
+	)
+	(wire
+		(pts
+			(xy 114.93 62.2) (xy 127 62.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4b8bb69d-31bf-4848-9ccc-9098eb06f5b0")
+	)
+	(wire
+		(pts
+			(xy 148.93 70.2) (xy 148.93 82.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "58f980c1-280c-43a8-918a-fb48e44ef83f")
+	)
+	(wire
+		(pts
+			(xy 156.21 62.2) (xy 174.93 62.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "635a7efc-2491-47ee-952c-d9448c1ced49")
+	)
+	(wire
+		(pts
+			(xy 143.51 62.2) (xy 143.51 70.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "748992a2-8669-4d81-996c-8402c638bb51")
+	)
+	(wire
+		(pts
+			(xy 94.93 62.2) (xy 104.93 62.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8865efb1-3852-43bc-8302-1ff0560ca7b4")
+	)
+	(wire
+		(pts
+			(xy 127 74.2) (xy 127 82.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8a45cc6e-a044-48ec-94fb-6edec4d31934")
+	)
+	(wire
+		(pts
+			(xy 156.21 62.2) (xy 156.21 57.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9e10106b-4bec-4deb-93b9-fe4a966a9bfd")
+	)
+	(wire
+		(pts
+			(xy 164.93 70.2) (xy 164.93 82.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "acdbd239-7c41-466f-b1fe-8741f0eee3bc")
+	)
+	(wire
+		(pts
+			(xy 143.51 62.2) (xy 156.21 62.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dc3e888a-eb28-4c72-b6ff-9c22f5fa67e9")
+	)
+	(wire
+		(pts
+			(xy 174.93 70.2) (xy 174.93 82.2)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e0ccf785-9b82-4489-a35a-ec73125fdbce")
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 164.93 82.2 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "08866209-642a-4c68-8c8f-3533c6fbaef6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 164.93 82.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+3V3"
+		(shape output)
+		(at 156.21 55.2 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "0dbc98e6-5a28-4613-8492-1ffad2a160b1")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 156.21 55.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 148.93 82.2 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "64a660ff-e97a-413c-b34d-9ab24883d126")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 148.93 82.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 143.51 82.2 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "7261cc2a-9a16-41ba-87bb-6ec59a96d68d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 143.51 82.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+12V_RAIL"
+		(shape output)
+		(at 127 59.2 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "b343500e-3b59-44ec-8bbf-3ef5169da6fd")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 127 59.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 127 82.2 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "d4934914-116c-4928-826e-1364c796589b")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 127 82.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 174.93 82.2 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "dffd94f7-14ac-45a3-b8b0-1f82d7fb9713")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 174.93 82.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+12V_RAIL"
+		(shape output)
+		(at 94.93 60.2 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "f5711772-fe05-4a54-a88d-7f70aca6488a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 94.93 60.2 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+)

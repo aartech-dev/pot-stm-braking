@@ -1,0 +1,311 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "2be70da1-87c4-47a4-9b9e-3c017e33197b")
+	(paper "A4")
+	(title_block
+		(title "AART Brake Module — 6: Track Connectors")
+		(date "2026-06-03")
+		(rev "2.0")
+		(company "AART - Adrian & Richard's Technologies")
+		(comment 1 "J1-J6 4mm banana sockets: track side + controller side")
+		(comment 2 "WHITE/BLACK/RED x2. Hand controller plugs into J2/J4/J6.")
+	)
+	(lib_symbols)
+	(text "J5\nRED\ntrack"
+		(exclude_from_sim no)
+		(at 112.75 94.12 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "0717615f-2c69-4287-821c-ce8854ed1540")
+	)
+	(text "J4\nBLACK\nctrl"
+		(exclude_from_sim no)
+		(at 199.75 74.12 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "09df3f49-c2a9-4127-ac85-42c89e210ba4")
+	)
+	(text "J3\nBLACK\ntrack"
+		(exclude_from_sim no)
+		(at 112.75 74.12 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "101bc45a-9adf-448c-9411-6946e10b057a")
+	)
+	(text "J1\nWHITE\ntrack"
+		(exclude_from_sim no)
+		(at 112.75 54.12 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "13b62683-d8b1-45f2-978c-7b782a59daff")
+	)
+	(text "BRAKE DETECTION (this module, not hand controller):\nV_BLACK < 500mV  => enter brake state\nV_BLACK > 1500mV => exit brake state\nHysteresis band prevents chatter at low throttle settings."
+		(exclude_from_sim no)
+		(at 45 140 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "42a94a7f-4d17-4483-88d8-18e800733a98")
+	)
+	(text "ALL CONNECTORS: 4mm banana sockets"
+		(exclude_from_sim no)
+		(at 42.926 92.202 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "4308638d-b816-498e-8e57-7de5fb5ee64b")
+	)
+	(text "Track side (J1/J3/J5) connects to the three track banana sockets.\nController side (J2/J4/J6) the hand controller plugs into.\nModule is inserted between track and controller.\nDuring normal running the module is fully transparent.\nBrake detection by voltage sense on BLACK (J3/J4) terminal."
+		(exclude_from_sim no)
+		(at 45 100 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "614dd4dd-dd55-4533-8248-b5953df4a428")
+	)
+	(text "LATVIAN BRAKE (track call / emergency stop):\nMonitors WHITE dV/dt each 1ms tick.\nIf WHITE drops faster than SET LATVIAN_DVDT threshold,\nfires immediate dead short regardless of mode or pot.\nDefault: disabled (SET LATVIAN_DVDT 0).\nRecommended: SET LATVIAN_DVDT 1000 (1V/ms)."
+		(exclude_from_sim no)
+		(at 45 158 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "b22cd38d-6038-48e5-a221-6c3d1bd21a91")
+	)
+	(text "SIGNAL DESCRIPTIONS:\nWHITE (+12-16V):  Always-live rail from track PSU (40-90A capable)\n                  Powers module MCU via LDO on power supply sheet.\nBLACK (track +):  Controlled by hand controller (0 to rail voltage).\n                  Falls to near 0V when controller shorts for braking.\n                  Module monitors dV/dt for Latvian brake feature.\nRED (common -):   Left-hand braid return. Common ground reference."
+		(exclude_from_sim no)
+		(at 45 115 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "c62e5433-2424-4201-b30d-a3b01318f3e9")
+	)
+	(text "J6\nRED\nctrl"
+		(exclude_from_sim no)
+		(at 199.75 94.12 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "d1365d1d-bd62-45de-8add-836478665326")
+	)
+	(text "J2\nWHITE\nctrl"
+		(exclude_from_sim no)
+		(at 199.75 54.12 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "d6b9ab93-b958-4aed-95b6-f0ea1eeb6874")
+	)
+	(junction
+		(at 158.75 56.12)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "5a29e4ce-0e4c-4e6b-b7ff-66f3420e7692")
+	)
+	(junction
+		(at 158.75 76.12)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "614c5206-a8c3-472a-801f-e7b0a7c226cf")
+	)
+	(junction
+		(at 158.75 96.12)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d28695b0-76b1-4e05-a088-ea5492089c2c")
+	)
+	(wire
+		(pts
+			(xy 118.75 56.12) (xy 158.75 56.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0c65851d-cd58-4713-ae25-7545d52c777e")
+	)
+	(wire
+		(pts
+			(xy 118.75 76.12) (xy 158.75 76.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "20a91289-f983-40b5-ae4c-ff705140a459")
+	)
+	(wire
+		(pts
+			(xy 158.75 96.12) (xy 198.75 96.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3d031aa6-808e-452b-adca-5e2e32138fd5")
+	)
+	(wire
+		(pts
+			(xy 118.75 96.12) (xy 158.75 96.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "51f196d5-d059-414c-b852-258475fba547")
+	)
+	(wire
+		(pts
+			(xy 158.75 76.12) (xy 158.75 71.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "63d7e6e0-5462-4fd0-9fd9-4abb110379dd")
+	)
+	(wire
+		(pts
+			(xy 158.75 96.12) (xy 158.75 91.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "79c88268-2941-4915-ab74-8db95a2f8a67")
+	)
+	(wire
+		(pts
+			(xy 158.75 76.12) (xy 198.75 76.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7ab617c2-739a-45a7-98ed-7c9cfe687f96")
+	)
+	(wire
+		(pts
+			(xy 158.75 56.12) (xy 158.75 51.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e4ffe0f6-e964-405f-9620-4e5a346f9ba6")
+	)
+	(wire
+		(pts
+			(xy 158.75 56.12) (xy 198.75 56.12)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f8b17343-abb5-4c47-848d-d6d7cba8e407")
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 158.75 91.12 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "0e0ff166-77f1-4466-9854-db437034b4d8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 158.75 91.12 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "TRACK_POS"
+		(shape bidirectional)
+		(at 158.75 71.12 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "67e2c8c0-2eba-4270-8196-1a018777c712")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 158.75 71.12 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+12V_RAIL"
+		(shape passive)
+		(at 158.75 51.12 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "833d9df5-8870-440b-b43f-609120aab01d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 158.75 51.12 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+)

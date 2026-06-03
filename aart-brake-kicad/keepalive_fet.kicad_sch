@@ -1,0 +1,373 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "b477b631-9902-40f7-8ce2-ad1d742e45ce")
+	(paper "A4")
+	(title_block
+		(title "AART Brake Module — 5: Keep-alive FET Circuit")
+		(date "2026-06-03")
+		(rev "2.0")
+		(company "AART - Adrian & Richard's Technologies")
+		(comment 1 "GD2 UCC27524, R4 gate, Q2 IRF9Z34N P-ch, D3 SS310, D4 MBRS360")
+		(comment 2 "D4 ESSENTIAL in mode C — blocks reverse current into Q2")
+	)
+	(lib_symbols)
+	(text "Q2 P-CHANNEL OPERATION:\nQ2 is a high-side switch: source connects to +12V rail,\ndrain connects to track via D4.\nP-channel: gate LOW (relative to source) = FET ON.\nGate driven by GD2 (UCC27524) from 3.3V rail.\nWhen GD2 output = 0V, Vgs = 0 - 12V = -12V => fully enhanced.\nWhen GD2 output = 3.3V, Vgs = 3.3 - 12V = -8.7V => still enhanced.\nIRF9Z34N Vgs(th) = -2V to -4V, so 3.3V gate drive is sufficient."
+		(exclude_from_sim no)
+		(at 28.956 83.312 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "04421c86-ccfe-46a0-a05a-dab6675a07bf")
+	)
+	(text "TIM3_CH2 NORMAL POLARITY:\nCCR = 0         => output pin LOW  => Vgs negative => Q2 OFF\nCCR = 400(KA_MAX) => PWM 12.5% duty => ~2V effective at 16V rail\nEffective voltage = (CCR / 3200) x V_RAIL\nAdjust KA_MAX via UART: SET KA_MAX <ccr>"
+		(exclude_from_sim no)
+		(at 28.956 106.312 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "1213f5bb-b50b-4504-b906-21897e05e14f")
+	)
+	(text "D4 MBRS360 — MODE C ESSENTIAL:\nIn mode C, Q2 injects keep-alive while Q1 may simultaneously\ndeadshort the track. D4 blocks reverse current back through Q2.\nWithout D4: Q2 body diode conducts ~46A at 20kHz repetitively.\nIRF9Z34N body diode is not rated for this.\nD4 is the most electrically stressed diode in this design.\nSS34 (3A/80A peak) is marginal. MBRS360 (3A/60V) is specified.\nD4 can be omitted on mode A/B-only boards."
+		(exclude_from_sim no)
+		(at 28.956 126.312 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "7158bfdb-2a92-47e3-9460-5afa98f92433")
+	)
+	(text "R4\n10R\ngate"
+		(exclude_from_sim no)
+		(at 158.11 61.74 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "81d24d4b-57d6-47d6-894f-d7dd9b310bc8")
+	)
+	(text "D3 SS310 CATCH DIODE:\nConnected across Q2 drain-source.\nProtects against inductive voltage spikes on Q2 turn-off.\n100V rating required on 16V rail — same reasoning as D2."
+		(exclude_from_sim no)
+		(at 28.956 153.312 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "8a01d346-0874-4705-bd36-49341b87d739")
+	)
+	(text "D4\nMBRS360\nseries\noutput"
+		(exclude_from_sim no)
+		(at 195.11 71.74 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "90ce0602-5341-4cef-a66c-b02f3ac3b3b1")
+	)
+	(text "GD2\nUCC27524\nSOT-23-5"
+		(exclude_from_sim no)
+		(at 134.11 55.74 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "a281972b-67fa-43e1-9eb8-156ebf7097d4")
+	)
+	(text "D3\nSS310\ncatch\n100V"
+		(exclude_from_sim no)
+		(at 195.11 58.74 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "b6d1727f-9bc5-48b5-99cf-3d64be9fa47f")
+	)
+	(text "Q2\nIRF9Z34N\nP-ch D2PAK\n18A 55V"
+		(exclude_from_sim no)
+		(at 182.11 54.74 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "e23e9dd8-2528-401e-b2da-7aca5bf7b0d5")
+	)
+	(wire
+		(pts
+			(xy 171.45 64.01) (xy 176.53 64.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "19a05968-ba08-44bc-b518-2e43dd70432c")
+	)
+	(wire
+		(pts
+			(xy 152.15 64.01) (xy 156.21 64.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2d886297-25fd-479e-9e4a-6b1b0334a676")
+	)
+	(wire
+		(pts
+			(xy 194.31 66.04) (xy 181.61 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3f7a3ca2-81ca-4a7f-b856-f35121114572")
+	)
+	(wire
+		(pts
+			(xy 111.11 64.01) (xy 134.62 64.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "490da0c3-31e7-436b-bf44-54fe20f1924c")
+	)
+	(wire
+		(pts
+			(xy 194.31 62.23) (xy 194.31 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4b109ac7-f95f-4913-b2f2-af7458794e3d")
+	)
+	(wire
+		(pts
+			(xy 194.31 58.67) (xy 194.31 55.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5bf48580-6ac8-4ba2-8c01-61b0089f3236")
+	)
+	(wire
+		(pts
+			(xy 134.62 54.61) (xy 152.15 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "64833db3-cd51-40fc-8a31-b6c9144f3368")
+	)
+	(wire
+		(pts
+			(xy 213.36 78.74) (xy 213.36 81.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "64ed9ca7-ae00-44d6-80e2-869c9588919c")
+	)
+	(wire
+		(pts
+			(xy 181.61 74.93) (xy 198.12 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "705c962c-20a2-4629-8525-ba1a189e02a3")
+	)
+	(wire
+		(pts
+			(xy 134.62 54.61) (xy 134.62 64.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "829c52e2-3e55-40a0-892a-d4adc7b28cc7")
+	)
+	(wire
+		(pts
+			(xy 181.61 52.07) (xy 181.61 55.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "879cd7ba-07a9-405b-b16e-440ed268101e")
+	)
+	(wire
+		(pts
+			(xy 181.61 60.96) (xy 181.61 66.04)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "898c3c84-d6a6-4d94-ac44-1302eb9f7304")
+	)
+	(wire
+		(pts
+			(xy 181.61 72.39) (xy 181.61 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9658958d-b506-4da2-8f56-0033f94d4fc2")
+	)
+	(wire
+		(pts
+			(xy 203.2 78.74) (xy 213.36 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ab8a4ad3-50a6-4739-b7e7-b55e9d0b966f")
+	)
+	(wire
+		(pts
+			(xy 194.31 55.88) (xy 181.61 55.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ccd79b21-916d-422e-a045-9ae0c3f7f309")
+	)
+	(wire
+		(pts
+			(xy 152.15 54.61) (xy 152.15 64.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e359b2d9-bbb8-4c1f-8732-3b6c9ad0e30e")
+	)
+	(wire
+		(pts
+			(xy 198.12 74.93) (xy 198.12 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fe81f3c0-4acc-47dd-b8f2-7344493f6f52")
+	)
+	(global_label "PA7_KA_PWM"
+		(shape input)
+		(at 111.11 64.01 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "044eaf99-3435-4a63-88d3-a3ff4fb0f9d2")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 111.11 64.01 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 213.36 81.74 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "9fa07e89-dab5-4538-b32e-e34e470ba7c0")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 213.36 81.74 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+12V_RAIL"
+		(shape passive)
+		(at 181.61 52.07 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "a233ae15-b906-4432-a442-592041004015")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 181.61 52.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "TRACK_POS"
+		(shape bidirectional)
+		(at 213.36 78.74 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "d715f9fe-add1-4b37-a498-dcbf52b73237")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 213.36 78.74 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+)

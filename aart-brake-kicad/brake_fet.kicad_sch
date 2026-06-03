@@ -1,0 +1,468 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "9a67a069-57d3-41dd-8406-5e297147d629")
+	(paper "A4")
+	(title_block
+		(title "AART Brake Module — 4: Brake FET Circuit")
+		(date "2026-06-03")
+		(rev "2.0")
+		(company "AART - Adrian & Richard's Technologies")
+		(comment 1 "GD1 UCC27524, R2 safe-default, R3 gate, Q1 IRLB3034 N-ch, D2 SS310")
+		(comment 2 "TIM3_CH1 INVERTED polarity: CCR=0 = FET ON = dead short")
+	)
+	(lib_symbols)
+	(text "R2 10k\nsafe-default\npull-up on\nGD1 INPUT"
+		(exclude_from_sim no)
+		(at 106.49 49.92 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "12f2eb70-6d7d-47ee-994d-ed068dc4d6cd")
+	)
+	(text "D2\nSS310\ncatch\n100V"
+		(exclude_from_sim no)
+		(at 187.49 62.92 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "163a913e-c119-4196-88f1-3248e3f8b6cf")
+	)
+	(text "GD1\nUCC27524\nSOT-23-5"
+		(exclude_from_sim no)
+		(at 126.49 57.92 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "31b589e5-62d8-4f66-bb33-c654427f42b2")
+	)
+	(text "Q1\nIRLB3034\nN-ch D2PAK\n195A 40V"
+		(exclude_from_sim no)
+		(at 174.49 59.92 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "709de464-e6b3-4b00-a079-e76cbcc34e78")
+	)
+	(text "SAFE DEFAULT — CRITICAL:\nR2 (10k) is on GD1 input pin, NOT on Q1 gate.\nWhen MCU is unpowered/reset, GD1 input floats HIGH via R2.\nGD1 drives Q1 gate HIGH => Q1 fully on => motor dead-shorted.\nThis is the intended safe failure mode.\nIf R2 were on Q1 gate, the gate driver would fight it."
+		(exclude_from_sim no)
+		(at 72.39 111.318 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "7381090a-3d6c-46ae-afcb-eb67c562a120")
+	)
+	(text "D2 SS310 CATCH DIODE — ESSENTIAL:\nMotor inductance produces a large voltage spike on Q1 turn-off.\nUnclamped: L x dI/dt = 100uH x 20A/1us = 2000V\nQ1 Vds(max) = 40V — would be instantly destroyed.\nD2 clamps the spike at Vf + Vdc ~= 12.5V, absorbing ~20mJ.\nSS310 (100V) chosen over SS34 (40V) for headroom on 16V rail."
+		(exclude_from_sim no)
+		(at 72.898 146.812 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "b936f7af-1ee4-484a-8f70-110f1a97567d")
+	)
+	(text "R3\n10R\ngate"
+		(exclude_from_sim no)
+		(at 150.49 64.92 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "cb3c1b90-9584-4504-83e4-607fd1a226e3")
+	)
+	(text "INVERTED POLARITY — WHY:\nTIM3_CH1 is configured with inverted output polarity.\nCCR = 0         => output pin HIGH => Q1 ON  => dead short\nCCR = 2720      => PWM ~85% HIGH  => ~8ohm effective\nCCR = 3199(ARR) => output pin LOW  => Q1 OFF\nThis is the opposite of the normal PWM convention but\nguarantees the safe state at CCR=0 and at power-off."
+		(exclude_from_sim no)
+		(at 72.39 128.016 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "f5c09707-3f08-4fbf-b1c3-6ac06628280b")
+	)
+	(junction
+		(at 146.05 52.07)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "45e858ca-9c39-42e3-972a-ac5c79b5249f")
+	)
+	(junction
+		(at 127 52.07)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "53ba6973-1ebc-4e8f-8113-503657d12c09")
+	)
+	(junction
+		(at 135.89 52.07)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "c2b358b4-bce1-49c1-9ff9-f677c643322d")
+	)
+	(junction
+		(at 115.57 67.31)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e1e689f1-7f3f-465b-be1e-cba783bdda43")
+	)
+	(wire
+		(pts
+			(xy 144.53 62.23) (xy 146.05 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0a65b601-bd62-4117-813e-e1f40fa1966d")
+	)
+	(wire
+		(pts
+			(xy 127 52.07) (xy 127 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1015923d-51e4-4567-b9fc-a3f35819fe40")
+	)
+	(wire
+		(pts
+			(xy 173.99 55.88) (xy 173.99 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "14d6a1d0-3bdb-4fc4-93e4-b678d96939fd")
+	)
+	(wire
+		(pts
+			(xy 115.57 67.31) (xy 127 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "22a74e3c-5da7-4ae4-9bc1-a0f6a0dfa332")
+	)
+	(wire
+		(pts
+			(xy 135.89 52.07) (xy 127 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3aca41d1-86ab-4251-b961-0ac781d18a7e")
+	)
+	(wire
+		(pts
+			(xy 163.83 67.31) (xy 168.91 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6575b9bc-0840-4622-9149-0dbbe6bb8fbd")
+	)
+	(wire
+		(pts
+			(xy 144.53 67.31) (xy 148.59 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "67a1cad8-5900-49bf-946e-099bd2e39946")
+	)
+	(wire
+		(pts
+			(xy 135.89 52.07) (xy 135.89 49.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "68ec808b-a966-4eba-b47d-fa8185b6ffcf")
+	)
+	(wire
+		(pts
+			(xy 146.05 49.53) (xy 146.05 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "699e701e-a1d0-4483-b8e4-5f93f748c612")
+	)
+	(wire
+		(pts
+			(xy 186.69 62.23) (xy 173.99 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "69f8a5d8-a248-4c6b-a1c0-f9e25b9ebf26")
+	)
+	(wire
+		(pts
+			(xy 103.49 67.31) (xy 115.57 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7ecc8087-211c-49a0-a7bf-e34eb04578ed")
+	)
+	(wire
+		(pts
+			(xy 115.57 56.52) (xy 115.57 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "953e6ee3-38f5-447b-8c6b-8315004eeae3")
+	)
+	(wire
+		(pts
+			(xy 115.57 63.5) (xy 115.57 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9d496519-6159-47bf-bda6-221f8709cbb0")
+	)
+	(wire
+		(pts
+			(xy 186.69 64.77) (xy 186.69 62.23)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9dde2b2d-bc3f-4aca-89e9-efe9b844ad88")
+	)
+	(wire
+		(pts
+			(xy 173.99 65.02) (xy 173.99 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a9ac8da0-04b6-45a0-acff-ea2b90a57e16")
+	)
+	(wire
+		(pts
+			(xy 135.89 49.53) (xy 146.05 49.53)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a9bbcac3-f78a-4243-9c20-20bf7bc7e5a4")
+	)
+	(wire
+		(pts
+			(xy 173.99 74.93) (xy 173.99 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ac7eff08-9ca7-47a8-a619-c98e0f6f7dc1")
+	)
+	(wire
+		(pts
+			(xy 146.05 62.23) (xy 146.05 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bedb2f7d-4526-41b0-916a-f712b9b5a93a")
+	)
+	(wire
+		(pts
+			(xy 186.69 78.74) (xy 186.69 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d9cf7689-1409-45ed-9286-07c62a0674e5")
+	)
+	(wire
+		(pts
+			(xy 115.57 52.07) (xy 127 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "de0e542a-d489-4558-8969-dcb3cebe2a44")
+	)
+	(wire
+		(pts
+			(xy 173.99 82.55) (xy 173.99 87.92)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e3114e27-d50d-4fdd-b37a-3671576a12a5")
+	)
+	(wire
+		(pts
+			(xy 146.05 52.07) (xy 135.89 52.07)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e3ae74b6-5eeb-411c-9c61-86136b9f4145")
+	)
+	(wire
+		(pts
+			(xy 173.99 78.74) (xy 186.69 78.74)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e4bbab10-3bfe-4fce-a1c7-7d98a267a8ea")
+	)
+	(global_label "+3V3"
+		(shape passive)
+		(at 115.57 54.61 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "767e3e5e-7589-4197-9bed-4ce39ca06bc5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 115.57 54.61 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 173.99 87.92 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "773a0033-e7d4-47df-8d19-5dd049f78f55")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 173.99 87.92 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+12V_RAIL"
+		(shape passive)
+		(at 173.99 55.88 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "77f45e95-6149-4f82-8243-53885e6c78d5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 173.99 55.88 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "PA6_BRAKE_PWM"
+		(shape input)
+		(at 103.49 67.31 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "80040175-dd63-4c63-91a4-92383544a5a4")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 103.49 67.31 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "TRACK_POS"
+		(shape bidirectional)
+		(at 186.69 62.23 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "d8648574-89bc-4104-9ecf-4bf8fcc60fa2")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 186.69 62.23 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+)

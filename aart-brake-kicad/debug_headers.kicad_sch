@@ -1,0 +1,605 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "2caf21e3-486a-4d2b-a4c8-227cdcf3ef9a")
+	(paper "A4")
+	(title_block
+		(title "AART Brake Module — 3: Debug + Flash Headers")
+		(date "2026-06-03")
+		(rev "2.0")
+		(company "AART - Adrian & Richard's Technologies")
+		(comment 1 "J10 SWD, J11 UART, J12 BOOT0 button, J13 NRST button")
+	)
+	(lib_symbols)
+	(text "Pin 1: SWDIO (PA13 AF0)\nPin 2: SWDCLK (PA14 AF0)\nPin 3: GND\nPin 4: +3.3V (optional - powers target from programmer)"
+		(exclude_from_sim no)
+		(at 168.91 43.688 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "0e26dcad-24f6-4a59-a5d6-8dcde61119d3")
+	)
+	(text "Connect ST-Link V2/V3. PA13/PA14 default to SWD after reset.\nFull hardware debug: breakpoints, live variable watch.\nUse debug.sh script: starts OpenOCD + GDB at main()."
+		(exclude_from_sim no)
+		(at 168.91 51.688 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "34a2a9ce-ddd5-413a-86e5-466fa111e24d")
+	)
+	(text "J11 — UART DEBUG / BOOTLOADER (3-pin 2.54mm)"
+		(exclude_from_sim no)
+		(at 116.29 74.4 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "34ac97db-f12b-47a5-b5b8-7932d9bedd24")
+	)
+	(text "J12 — BOOT0 BUTTON (2-pin 2.54mm)"
+		(exclude_from_sim no)
+		(at 116.29 104.4 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "7919aee2-b328-436b-954c-4b97d65235c5")
+	)
+	(text "Telemetry: tick,state,mode,white_mv,black_mv,brake_ccr,\n           ka_ccr,pot_raw,ramp_ms,brake_active,latvian_active\nCommands: SET BRAKE_ENTER/EXIT/SOFT, SET KA_MAX,\n          SET LATVIAN_DVDT, SAVE, GET, HELP"
+		(exclude_from_sim no)
+		(at 168.91 86.962 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "89ef7248-7ce3-41e5-98c9-f1ab607dcce3")
+	)
+	(text "Momentary button pulls PB8/BOOT0 to 3.3V via 10k.\nNormally LOW via internal MCU pull-down.\nHold J12 + press J13 = ROM UART bootloader entry on PA9/PA10.\nFlash: stm32flash -w aart_brake.bin /dev/ttyUSB0"
+		(exclude_from_sim no)
+		(at 156.29 106.4 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "9952aed2-ee91-4bf4-91dd-dde19eff47fa")
+	)
+	(text "Pin 1: TX (PA9 USART1 AF1) -> RX of USB-UART adapter\nPin 2: RX (PA10 USART1 AF1) -> TX of USB-UART adapter\nPin 3: GND\n115200 8N1, 3.3V logic level. Do NOT connect 5V directly."
+		(exclude_from_sim no)
+		(at 168.91 76.962 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "c96bde0d-e77f-494b-9863-9a5862e18535")
+	)
+	(text "J13 — NRST BUTTON (2-pin 2.54mm)"
+		(exclude_from_sim no)
+		(at 116.29 126.4 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "cf707019-deb6-403e-8f16-3b98eab9e865")
+	)
+	(text "J10 — SWD DEBUG HEADER (4-pin 2.54mm)"
+		(exclude_from_sim no)
+		(at 116.29 44.4 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "e1024be7-a140-4336-a6f3-fce295ffafe2")
+	)
+	(text "Momentary button pulls NRST to GND.\nPress while holding J12 BOOT0 to enter bootloader.\nRelease J13 first, then release J12."
+		(exclude_from_sim no)
+		(at 156.29 129.4 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "fcbe1556-6f34-4f03-82ef-69d0f291e5f0")
+	)
+	(junction
+		(at 151.29 53.9)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "09774d51-56ae-4451-b14f-3c7500835c21")
+	)
+	(junction
+		(at 146.29 111.4)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "50ce32a1-3537-4045-9bdb-9ea634b9f4ae")
+	)
+	(junction
+		(at 146.29 133.9)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "6bc2b849-93d2-495c-88c2-7eff43dabd2c")
+	)
+	(junction
+		(at 151.29 83.9)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "e41e5370-b50e-4fa9-9947-e6a40c855d53")
+	)
+	(wire
+		(pts
+			(xy 131.29 83.9) (xy 151.29 83.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0f11ac2c-960c-4b7b-b80b-64ecbca9dc6c")
+	)
+	(wire
+		(pts
+			(xy 131.29 81.4) (xy 151.29 81.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "159ea82b-d541-4bfe-b76b-fdaed4d3ea68")
+	)
+	(wire
+		(pts
+			(xy 146.29 133.9) (xy 146.29 126.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1bd73104-aeb8-4cef-bc78-6ba642a6718b")
+	)
+	(wire
+		(pts
+			(xy 146.29 111.4) (xy 146.29 118.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2d58bcd3-3c48-4728-bf3c-39bfca89b12f")
+	)
+	(wire
+		(pts
+			(xy 131.29 133.9) (xy 146.29 133.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "54abcc8c-3380-4a1e-8734-294bc201f4eb")
+	)
+	(wire
+		(pts
+			(xy 146.29 111.4) (xy 146.29 103.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "594f34e3-d266-4cc7-ba19-5c4196b3fbe2")
+	)
+	(wire
+		(pts
+			(xy 151.29 83.9) (xy 151.29 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7d6230c3-94c1-440a-9ced-ecbdb6e99fcf")
+	)
+	(wire
+		(pts
+			(xy 156.29 48.9) (xy 156.29 51.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7e661cc6-5c13-443f-aed5-d70ed434aa6a")
+	)
+	(wire
+		(pts
+			(xy 146.29 133.9) (xy 146.29 141.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "88c749d3-64f2-4c11-9580-615eeccf4dc3")
+	)
+	(wire
+		(pts
+			(xy 151.29 88.9) (xy 161.29 88.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "95ee0f7c-2921-4e88-beba-4f830ad37959")
+	)
+	(wire
+		(pts
+			(xy 131.29 53.9) (xy 151.29 53.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a45ffd3f-36df-40a3-b5e6-84af1c6e87ae")
+	)
+	(wire
+		(pts
+			(xy 151.29 51.4) (xy 151.29 53.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b6b24845-7da7-4caf-85bc-5bc6429bc473")
+	)
+	(wire
+		(pts
+			(xy 151.29 53.9) (xy 151.29 56.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c552ab90-20a7-42dd-b56a-1e8076a245e3")
+	)
+	(wire
+		(pts
+			(xy 151.29 56.4) (xy 161.29 56.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c7cf8a62-f212-4d9d-9e9e-76faaea55949")
+	)
+	(wire
+		(pts
+			(xy 131.29 51.4) (xy 151.29 51.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ce29aaf5-0af6-4ba4-9edf-f0d2c646a470")
+	)
+	(wire
+		(pts
+			(xy 131.29 111.4) (xy 146.29 111.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f68d7b04-6d99-4847-b398-e77e7bc4508e")
+	)
+	(wire
+		(pts
+			(xy 151.29 81.4) (xy 151.29 83.9)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fc780140-1357-476f-ad65-b3fae18bb531")
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 146.29 118.9 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "002838d3-54d1-4b2e-bf54-12236b1255cd")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 146.29 118.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+3V3"
+		(shape passive)
+		(at 146.29 101.4 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "07a525cf-e170-41cc-9581-7e9071d5830a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 146.29 101.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+3V3"
+		(shape passive)
+		(at 146.29 123.9 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "1095a836-847f-4bf5-8c34-d324cd2bae5f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 146.29 123.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 161.29 88.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "10f2b696-145f-49c8-b000-7eb2f021e0ca")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 161.29 88.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "BOOT0"
+		(shape input)
+		(at 121.29 111.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "1655e015-281b-4f32-8cf2-d8a43f7119ae")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 121.29 111.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "UART_TX"
+		(shape output)
+		(at 121.29 81.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "365220fc-28a4-42b8-8c23-60ae9e1d6c31")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 121.29 81.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "NRST_BTN"
+		(shape output)
+		(at 121.29 133.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "46e8a7ee-15c7-458f-8a2d-1f8507acae72")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 121.29 133.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 161.29 56.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "7d5af1fa-4a12-44c0-a9ee-1b4f29db5326")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 161.29 56.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "SWDIO"
+		(shape bidirectional)
+		(at 121.29 51.4 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "84b5ab72-bea7-4a61-b4b9-606dfdcc7f20")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 121.29 51.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+3V3"
+		(shape passive)
+		(at 156.29 46.4 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "986c6128-2d24-4e9e-95f3-fc4d608b864d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 156.29 46.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 146.29 141.4 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "9a399d6c-c837-4e0c-9453-c476c9d7c392")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 146.29 141.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "SWDCLK"
+		(shape bidirectional)
+		(at 121.29 53.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "dc4262e6-43a0-4c0b-8ebd-ad6224201bdc")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 121.29 53.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "UART_RX"
+		(shape input)
+		(at 121.29 83.9 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "f57ab8b2-9eb2-4c49-b988-822e5c7519c5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 121.29 83.9 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+)
