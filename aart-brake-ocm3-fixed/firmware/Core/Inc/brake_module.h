@@ -2,7 +2,7 @@
 #define BRAKE_MODULE_H
 
 /* ============================================================
- *  AART Slot Car Braking Module  — Rev 5
+ *  AART Slot Car Braking Module  — Rev 6
  *  Target  : STM32G041K6U6 (QFN-32)
  *  Library : libopencm3
  *
@@ -26,7 +26,7 @@
  *    PA13 SWDIO      AF0  → J10 pin 1 (SWD debug header)
  *    PA14 SWDCLK     AF0  → J10 pin 2 (SWD debug header)
  *    PB6  GPIO OUT  Status LED          (blinks on flash save)
- *    PB8  BOOT0          → J12 (BOOT0 button, pulls to 3.3V for ROM bootloader)
+ *    PB8  BOOT0          → J12 (BOOT0 button for ROM bootloader)
  *
  *  Toggle decoding (PA2=bit0, PA4=bit1 — LOW=asserted):
  *    PA2=H PA4=H → MODE_A  Brushed motor, positive anti-brake
@@ -39,6 +39,22 @@
  *    V_BLACK < BRAKE_ENTER_MV (500mV)  → enter brake state
  *    V_BLACK > BRAKE_EXIT_MV  (1500mV) → exit brake state
  *    Between thresholds → hold current state (no chatter)
+ *
+ *  ── Latvian brake (track call / emergency stop) ──────────
+ *  Monitors WHITE rail dV/dt each 1ms tick.
+ *  If WHITE drops faster than latvian_dvdt_mv_per_ms, fires
+ *  an immediate dead short regardless of mode, pot, or ramp.
+ *  Q2 is also cut — keep-alive cannot run without WHITE rail.
+ *
+ *  Use case: marshal hits track kill switch during a race.
+ *  WHITE collapses instantly; all cars must stop as fast as
+ *  physically possible. The software fires before the MCU
+ *  browns out; the hardware pull-up on GD1 holds the brake
+ *  on after MCU power is gone.
+ *
+ *  Release: WHITE rises above BRAKE_EXIT_MV.
+ *  Enable/disable: SET LATVIAN_DVDT <mV_per_ms> via UART.
+ *    0 = disabled (default). Recommended starting value: 1000.
  *
  *  ── Pot mapping ──────────────────────────────────────────
  *  Mode A (brushed + positive anti-brake):
@@ -56,37 +72,23 @@
  *  ── Brake ramp-in (modes A and B only) ──────────────────
  *  On brake entry, CCR ramps exponentially from BRAKE_CCR_OFF
  *  to target over a saved ramp time (0–200ms).
- *  Shape: CCR += (target - CCR) * alpha / 256  each 1ms tick
- *  alpha is derived from ramp_ms: shorter time = higher alpha.
- *  At ramp_ms=0 braking is immediate (alpha=256, one step).
+ *  Latvian brake ALWAYS bypasses ramp-in — immediate dead short.
  *
  *  ── Capture button (dual function) ──────────────────────
  *  Mode C: hold → pot dials keep-alive voltage; release → save
- *  Mode A/B: hold → pot dials ramp time (CCW=0ms, CW=200ms);
- *            release → save
+ *  Mode A/B: hold → pot dials ramp time (CCW=0ms, CW=200ms)
  *  Both save to flash page 31. LED blinks 3× on save.
  *
- *  ── Keep-alive suppression (mode C) ─────────────────────
- *  Q2 suppressed when V_BLACK > KA setpoint voltage.
- *  Prevents Q2 fighting controller output during throttle.
- *
  *  ── Component selection notes ───────────────────────────
- *  D1  P6KE18CA (bidirectional TVS) — not P6KE18A. Both
- *      polarity transients must be clamped.
- *  D2/D3  SS310 (3A, 100V) — not SS34 (40V). Inductive
- *      turn-off spikes require 100V reverse rating.
- *  D4  MBRS360 or SS54 — not SS34. Sees repetitive 46A
- *      pulses at 20kHz in mode C. Most stressed diode.
- *  F1  500mA-1A polyfuse in WHITE rail only. Never in
- *      BLACK path — motor startup is 40A.
- *  R8  18kΩ (not 15kΩ) — 15k gives 3.82V at 16V rail,
- *      exceeding the 3.3V ADC reference.
+ *  D1  P6KE18CA (bidirectional TVS) — CA suffix essential.
+ *  D2/D3  SS310 (3A, 100V) — 100V reverse rating required.
+ *  D4  MBRS360 or SS54 — repetitive 46A peak in mode C.
+ *  F1  500mA-1A polyfuse in WHITE rail only. Not in track path.
+ *  R8  18kΩ — 15k gives 3.82V at 16V, exceeds ADC reference.
  *
  *  ── BSCRA/ISRA legality note ─────────────────────────────
- *  Anti-brake voltage is sourced directly from the WHITE rail
- *  (track PSU). No stored energy (capacitors, batteries) is
- *  used. This satisfies the direct track power requirement
- *  in current BSCRA and ISRA controller regulations.
+ *  All injection voltages sourced directly from WHITE rail.
+ *  No stored energy. Satisfies direct track power requirement.
  * ============================================================ */
 
 #include <libopencm3/stm32/rcc.h>
@@ -101,20 +103,24 @@
 #include <stdbool.h>
 
 /* ── Voltage dividers ────────────────────────────────────── */
-/* WHITE sense (PA0): R8=18k, R9=4k7 → ratio 4.7/22.7=0.2070
- * V_PA0 = V_WHITE × 0.2070 → 3.31V at 16V rail              */
 #define WHITE_DIV_NUM          47U
 #define WHITE_DIV_DEN          227U
-
-/* BLACK sense (PA1): R10=22k, R11=4k7 → ratio 4.7/26.7=0.1760
- * V_PA1 = V_BLACK × 0.1760 → 2.82V at 16V rail              */
 #define BLACK_DIV_NUM          47U
 #define BLACK_DIV_DEN          267U
 
-/* ── Brake hysteresis thresholds (mV on BLACK) ───────────── */
+/* ── Brake hysteresis (mV on BLACK) ──────────────────────── */
 #define BRAKE_ENTER_MV         500U
 #define BRAKE_EXIT_MV          1500U
 #define RAIL_UNDERVOLTAGE_MV   5000U
+
+/* ── Latvian brake defaults ──────────────────────────────── */
+/* dV/dt threshold on WHITE rail (mV per 1ms tick).
+ * 0 = disabled. Recommended: 1000 (1V/ms = 1000V/s).
+ * At 12V nominal, a 1V/ms drop means the rail hits zero in
+ * 12ms — well within one PWM period at 20kHz.               */
+#define LATVIAN_DVDT_DEFAULT   0U        /* disabled until SET via UART */
+#define LATVIAN_DVDT_MIN       100U      /* minimum meaningful threshold */
+#define LATVIAN_DVDT_MAX       5000U     /* 5V/ms — catches only instant cuts */
 
 /* ── ADC ─────────────────────────────────────────────────── */
 #define ADC_MAX                4095U
@@ -123,48 +129,38 @@
 #define BTN_PRESSED_THRESHOLD  2200U
 
 /* ── PWM ─────────────────────────────────────────────────── */
-/* TIM3 @ 20kHz: 64MHz PSC=0 ARR=3199                        */
 #define PWM_ARR                3199U
-
-/* Q1 brake (N-ch low-side, TIM3_CH1 INVERTED):
- *   CCR=0       → pin HIGH → FET ON  → dead short
- *   CCR=PWM_ARR → pin LOW  → FET OFF
- * Safe default: 10k pull-up on GD1 input → brake on at power-off */
 #define BRAKE_CCR_HARD         0U
-#define BRAKE_CCR_SOFT         2720U    /* ~8Ω effective */
+#define BRAKE_CCR_SOFT         2720U
 #define BRAKE_CCR_OFF          PWM_ARR
-
-/* Q2 keep-alive / anti-brake (P-ch high-side, TIM3_CH2 normal):
- *   CCR=0       → FET off
- *   CCR=KA_MAX  → ~2V effective (2/16 × 3200 = 400 at 16V)  */
 #define KA_CCR_MAX             400U
 #define KA_CCR_OFF             0U
 
 /* ── Brake ramp-in ───────────────────────────────────────── */
-/* Exponential ramp: each 1ms tick applies
- *   ccr += (target - ccr) * alpha / 256
- * alpha=256 → immediate (one step); alpha=3 → ~200ms to 95%
- * Pot maps CCW=0ms(alpha=256) to CW=200ms(alpha=3)
- * RAMP_MS_MAX: maximum ramp time settable via pot             */
 #define RAMP_MS_MAX            200U
-#define RAMP_ALPHA_INSTANT     256U     /* 0ms — immediate     */
-#define RAMP_ALPHA_MIN         3U       /* 200ms               */
-
-/* Maps ramp_ms (0–200) to alpha (256–3) linearly             */
+#define RAMP_ALPHA_INSTANT     256U
+#define RAMP_ALPHA_MIN         3U
 #define RAMP_MS_TO_ALPHA(ms)   ((ms) == 0U ? RAMP_ALPHA_INSTANT \
     : (uint16_t)(RAMP_ALPHA_INSTANT - \
       ((uint32_t)(RAMP_ALPHA_INSTANT - RAMP_ALPHA_MIN) * (ms)) \
       / RAMP_MS_MAX))
 
 /* ── Flash NV storage ────────────────────────────────────── */
-/* Page 31 (0x08007C00), 1K — reserved by linker script.
- * 64-bit record layout:
- *   [63:48] ramp_ms   (uint16, 0–200)
- *   [47:32] ka_ccr    (uint16, 0–KA_CCR_MAX)
- *   [31:0]  magic     (0xAA270001)                           */
+/* Page 31 (0x08007C00), 1K — reserved by linker (LENGTH=31K).
+ * Three 64-bit double-word writes (24 bytes total):
+ *
+ *   Offset 0x00:  [63:32] = {ramp_ms:16, ka_ccr:16}
+ *                 [31:0]  = magic (0xAA270002)
+ *   Offset 0x08:  [63:32] = {brake_exit_mv:16, brake_enter_mv:16}
+ *                 [31:0]  = 0xFFFFFFFF (padding)
+ *   Offset 0x10:  [63:32] = {latvian_dvdt:16, brake_ccr_soft:16}
+ *                 [31:0]  = 0xFFFFFFFF (padding)
+ *
+ * Magic bumped to 0xAA270002 — old single-word records are
+ * automatically invalidated and defaults used until SAVE.    */
 #define FLASH_SAVE_PAGE        31U
 #define FLASH_SAVE_ADDR        (0x08000000U + (FLASH_SAVE_PAGE * 1024U))
-#define FLASH_MAGIC            0xAA270001U
+#define FLASH_MAGIC            0xAA270002U
 
 /* ── Timing ──────────────────────────────────────────────── */
 #define BTN_DEBOUNCE_MS        20U
@@ -183,25 +179,25 @@
 #define LED_PIN                GPIO6
 
 /* ── DMA ─────────────────────────────────────────────────── */
-/* ADC scan: CH0(WHITE) → CH1(BLACK) → CH3(pot) → CH5(btn)  */
 #define ADC_DMA_CHANNEL        DMA_CHANNEL1
 #define ADC_DMAMUX_REQ         5U
 #define ADC_NUM_CHANNELS       4U
 
 /* ── Types ───────────────────────────────────────────────── */
 typedef enum {
-    MODE_A = 0,   /* brushed motor, positive anti-brake       */
-    MODE_B,       /* brushed motor, reduced braking only      */
-    MODE_C,       /* brushless motor, eCom keep-alive         */
+    MODE_A = 0,
+    MODE_B,
+    MODE_C,
 } ModeSelect_t;
 
 typedef enum {
     STATE_PASSTHROUGH = 0,
-    STATE_RAMP_IN,          /* brake ramp-in in progress       */
-    STATE_BRAKING,          /* full brake applied              */
-    STATE_ANTI_BRAKE,       /* positive anti-brake active      */
-    STATE_KEEPALIVE_ONLY,   /* mode C, throttle active         */
-    STATE_CAPTURE,          /* capture button held             */
+    STATE_RAMP_IN,
+    STATE_BRAKING,
+    STATE_ANTI_BRAKE,
+    STATE_KEEPALIVE_ONLY,
+    STATE_CAPTURE,
+    STATE_LATVIAN_BRAKE,    /* emergency dead short — track call  */
     STATE_SAFE_BRAKE,
 } OpState_t;
 
@@ -209,15 +205,17 @@ typedef struct {
     ModeSelect_t  mode_sel;
     OpState_t     state;
     uint16_t      pot_raw;
-    uint16_t      white_mv;
+    uint16_t      white_mv;         /* current WHITE voltage mV   */
+    uint16_t      white_prev_mv;    /* previous tick WHITE mV     */
     uint16_t      black_mv;
     uint16_t      btn_raw;
-    uint16_t      brake_ccr;        /* current TIM3_CH1 CCR   */
-    uint16_t      brake_ccr_target; /* ramp destination       */
-    uint16_t      ka_ccr;           /* current TIM3_CH2 CCR   */
-    uint16_t      saved_ka_ccr;     /* from flash             */
-    uint16_t      saved_ramp_ms;    /* from flash, 0–200      */
-    bool          brake_active;     /* hysteresis state       */
+    uint16_t      brake_ccr;
+    uint16_t      brake_ccr_target;
+    uint16_t      ka_ccr;
+    uint16_t      saved_ka_ccr;
+    uint16_t      saved_ramp_ms;
+    bool          brake_active;     /* normal brake hysteresis    */
+    bool          latvian_active;   /* Latvian brake latched       */
     bool          btn_pressed;
     bool          capture_active;
 } BrakeCtx_t;
@@ -227,8 +225,13 @@ void                brake_init(void);
 void                brake_tick(void);
 OpState_t           brake_get_state(void);
 ModeSelect_t        brake_get_mode_sel(void);
-const BrakeCtx_t   *brake_get_ctx(void);      /* for UART telemetry */
+const BrakeCtx_t   *brake_get_ctx(void);
 void                brake_force_safe(void);
 void                brake_systick_isr(void);
+void                flash_save_all(uint16_t ka_ccr,   uint16_t ramp_ms,
+                                   uint16_t b_enter,  uint16_t b_exit,
+                                   uint16_t b_soft,   uint16_t latvian);
+/* Trigger the status LED blink sequence (e.g. after UART SAVE) */
+void                brake_led_blink(void);
 
 #endif /* BRAKE_MODULE_H */

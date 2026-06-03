@@ -66,37 +66,94 @@ static uint16_t ka_ccr_to_mv(uint16_t ccr, uint16_t white_mv)
 }
 
 /* ── Flash load ──────────────────────────────────────────── */
-/* Record layout: [63:48]=ramp_ms [47:32]=ka_ccr [31:0]=magic */
+/* Reads all saved params. Populates both s_ctx (ka_ccr,
+ * ramp_ms) and the uart_debug params struct. Falls back to
+ * compile-time defaults if magic is absent or wrong version.*/
 static void flash_load(void)
 {
-    uint32_t magic   = *(volatile uint32_t *)(FLASH_SAVE_ADDR);
-    uint32_t payload = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 4U);
+    uint32_t magic = *(volatile uint32_t *)(FLASH_SAVE_ADDR);
 
-    if (magic == FLASH_MAGIC) {
-        uint16_t ka_ccr  = (uint16_t)(payload & 0xFFFFU);
-        uint16_t ramp_ms = (uint16_t)(payload >> 16U);
-
-        s_ctx.saved_ka_ccr  = (ka_ccr  <= KA_CCR_MAX)  ? ka_ccr  : KA_CCR_OFF;
-        s_ctx.saved_ramp_ms = (ramp_ms <= RAMP_MS_MAX)  ? ramp_ms : 0U;
-    } else {
+    if (magic != FLASH_MAGIC) {
+        /* No valid save — use defaults                       */
         s_ctx.saved_ka_ccr  = KA_CCR_OFF;
         s_ctx.saved_ramp_ms = 0U;
+        /* uart_debug params already initialised to defaults  */
+        return;
     }
+
+    /* Word 0 (offset 0x04): ka_ccr[15:0] | ramp_ms[31:16]  */
+    uint32_t w0 = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 4U);
+    uint16_t ka_ccr  = (uint16_t)(w0 & 0xFFFFU);
+    uint16_t ramp_ms = (uint16_t)(w0 >> 16U);
+
+    /* Word 1 (offset 0x0C): brake_enter[15:0] | brake_exit[31:16] */
+    uint32_t w1 = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 12U);
+    uint16_t brake_enter = (uint16_t)(w1 & 0xFFFFU);
+    uint16_t brake_exit  = (uint16_t)(w1 >> 16U);
+
+    /* Word 2 (offset 0x14): brake_soft[15:0] | latvian[31:16] */
+    uint32_t w2 = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 20U);
+    uint16_t brake_soft = (uint16_t)(w2 & 0xFFFFU);
+    uint16_t latvian    = (uint16_t)(w2 >> 16U);
+
+    /* Clamp and apply — reject out-of-range values           */
+    s_ctx.saved_ka_ccr  = (ka_ccr  <= KA_CCR_MAX)  ? ka_ccr  : KA_CCR_OFF;
+    s_ctx.saved_ramp_ms = (ramp_ms <= RAMP_MS_MAX)  ? ramp_ms : 0U;
+
+    /* Push the rest into the uart_debug runtime params.
+     * We call back through the public API to avoid a circular
+     * dependency — uart_debug owns the params struct.        */
+    uart_debug_load_params(brake_enter, brake_exit,
+                           brake_soft, latvian);
 }
 
-/* ── Flash save ──────────────────────────────────────────── */
+/* ── Flash save (capture button path — ka_ccr + ramp_ms) ── */
+/* Called when capture button released. Reads current uart
+ * params for the other fields so everything stays in sync.  */
 static void flash_save(uint16_t ka_ccr, uint16_t ramp_ms)
 {
-    if (ka_ccr  > KA_CCR_MAX)  ka_ccr  = KA_CCR_MAX;
-    if (ramp_ms > RAMP_MS_MAX) ramp_ms = RAMP_MS_MAX;
+    const DebugParams_t *p = uart_debug_get_params();
+    flash_save_all(ka_ccr, ramp_ms,
+                   p->brake_enter_mv,
+                   p->brake_exit_mv,
+                   p->brake_ccr_soft,
+                   p->latvian_dvdt_mv_per_ms);
+}
 
-    uint64_t record = ((uint64_t)ramp_ms << 48U)
-                    | ((uint64_t)ka_ccr  << 32U)
-                    | (uint64_t)FLASH_MAGIC;
+/* ── Flash save all params ───────────────────────────────── */
+/* Called by UART SAVE command and by flash_save() above.
+ * Writes three 64-bit double-words to page 31.              */
+void flash_save_all(uint16_t ka_ccr,   uint16_t ramp_ms,
+                    uint16_t b_enter,  uint16_t b_exit,
+                    uint16_t b_soft,   uint16_t latvian)
+{
+    /* Clamp all values */
+    if (ka_ccr  > KA_CCR_MAX)     ka_ccr  = KA_CCR_MAX;
+    if (ramp_ms > RAMP_MS_MAX)    ramp_ms = RAMP_MS_MAX;
+    if (latvian > LATVIAN_DVDT_MAX && latvian != 0U)
+                                   latvian = LATVIAN_DVDT_MAX;
 
     flash_unlock();
     flash_erase_page(FLASH_SAVE_PAGE);
-    flash_program_double_word(FLASH_SAVE_ADDR, record);
+
+    /* DW0: magic | ka_ccr:ramp_ms                           */
+    flash_program_double_word(FLASH_SAVE_ADDR + 0x00U,
+        ((uint64_t)ramp_ms << 48U) |
+        ((uint64_t)ka_ccr  << 32U) |
+        (uint64_t)FLASH_MAGIC);
+
+    /* DW1: 0xFFFFFFFF padding | brake_exit:brake_enter      */
+    flash_program_double_word(FLASH_SAVE_ADDR + 0x08U,
+        ((uint64_t)0xFFFFFFFFUL << 32U) |
+        ((uint64_t)b_exit  << 16U) |
+        (uint64_t)b_enter);
+
+    /* DW2: 0xFFFFFFFF padding | latvian:brake_soft          */
+    flash_program_double_word(FLASH_SAVE_ADDR + 0x10U,
+        ((uint64_t)0xFFFFFFFFUL << 32U) |
+        ((uint64_t)latvian << 16U) |
+        (uint64_t)b_soft);
+
     flash_lock();
 
     s_ctx.saved_ka_ccr  = ka_ccr;
@@ -485,7 +542,11 @@ static void tick_mode_c(void)
 /* ── Public: init ────────────────────────────────────────── */
 void brake_init(void)
 {
-    s_ctx = (BrakeCtx_t){ .state = STATE_SAFE_BRAKE };
+    s_ctx = (BrakeCtx_t){
+        .state          = STATE_SAFE_BRAKE,
+        .latvian_active = false,
+        .white_prev_mv  = 0U,
+    };
 
     clock_setup();
     gpio_setup();
@@ -509,17 +570,47 @@ void brake_tick(void)
     }
 
     if (s_adc_ready) {
-        s_ctx.white_mv = raw_to_mv(s_adc_buf[0], WHITE_DIV_NUM, WHITE_DIV_DEN);
-        s_ctx.black_mv = raw_to_mv(s_adc_buf[1], BLACK_DIV_NUM, BLACK_DIV_DEN);
-        s_ctx.pot_raw  = s_adc_buf[2];
-        s_ctx.btn_raw  = s_adc_buf[3];
-        s_adc_ready    = false;
+        s_ctx.white_prev_mv = s_ctx.white_mv;   /* save previous sample */
+        s_ctx.white_mv  = raw_to_mv(s_adc_buf[0], WHITE_DIV_NUM, WHITE_DIV_DEN);
+        s_ctx.black_mv  = raw_to_mv(s_adc_buf[1], BLACK_DIV_NUM, BLACK_DIV_DEN);
+        s_ctx.pot_raw   = s_adc_buf[2];
+        s_ctx.btn_raw   = s_adc_buf[3];
+        s_adc_ready     = false;
     }
 
-    /* Undervoltage guard */
+    /* WHITE rail undervoltage guard */
     if (s_ctx.white_mv < RAIL_UNDERVOLTAGE_MV && s_ctx.white_mv > 0U) {
         brake_force_safe();
         return;
+    }
+
+    /* ── Latvian brake: WHITE dV/dt detection ────────────── */
+    {
+        const DebugParams_t *p = uart_debug_get_params();
+        if (p->latvian_dvdt_mv_per_ms > 0U && s_ctx.white_prev_mv > 0U) {
+            /* Only meaningful if we have a valid previous reading */
+            if (s_ctx.white_prev_mv > s_ctx.white_mv) {
+                uint16_t drop = s_ctx.white_prev_mv - s_ctx.white_mv;
+                if (drop >= p->latvian_dvdt_mv_per_ms) {
+                    s_ctx.latvian_active = true;
+                }
+            }
+        }
+        /* Release: WHITE has recovered above exit threshold   */
+        if (s_ctx.latvian_active &&
+            s_ctx.white_mv > BRAKE_EXIT_MV &&
+            s_ctx.black_mv > BRAKE_EXIT_MV) {
+            s_ctx.latvian_active = false;
+        }
+        /* While Latvian brake is active: dead short, Q2 off,
+         * bypass all normal mode logic                        */
+        if (s_ctx.latvian_active) {
+            set_brake_ccr(BRAKE_CCR_HARD);
+            set_ka_ccr(KA_CCR_OFF);
+            s_ctx.state = STATE_LATVIAN_BRAKE;
+            led_blink_tick();
+            return;
+        }
     }
 
     /* Brake hysteresis */
@@ -557,6 +648,7 @@ void brake_force_safe(void)
 OpState_t    brake_get_state(void)    { return s_ctx.state; }
 ModeSelect_t brake_get_mode_sel(void) { return s_ctx.mode_sel; }
 const BrakeCtx_t *brake_get_ctx(void) { return &s_ctx; }
+void         brake_led_blink(void)    { led_blink_start(); }
 
 /* ── ISR: DMA1 CH1 complete ──────────────────────────────── */
 void dma1_channel1_isr(void)

@@ -59,15 +59,19 @@
  * at runtime via UART commands. Initialised from the
  * compile-time values in uart_debug_init().                  */
 typedef struct {
-    uint16_t brake_enter_mv;    /* default BRAKE_ENTER_MV      */
-    uint16_t brake_exit_mv;     /* default BRAKE_EXIT_MV       */
-    uint16_t brake_ccr_soft;    /* default BRAKE_CCR_SOFT      */
-    uint16_t ka_ccr_max;        /* default KA_CCR_MAX          */
+    uint16_t brake_enter_mv;
+    uint16_t brake_exit_mv;
+    uint16_t brake_ccr_soft;
+    uint16_t ka_ccr_max;
+    uint16_t latvian_dvdt_mv_per_ms;  /* 0 = disabled             */
 } DebugParams_t;
 
 /* ── Public API ──────────────────────────────────────────── */
 void uart_debug_init(void);
-void uart_debug_tick(const BrakeCtx_t *ctx);  /* call from main loop */
+void uart_debug_tick(const BrakeCtx_t *ctx);
 const DebugParams_t *uart_debug_get_params(void);
+/* Called by flash_load() to restore saved params on boot     */
+void uart_debug_load_params(uint16_t brake_enter, uint16_t brake_exit,
+                             uint16_t brake_soft,  uint16_t latvian_dvdt);
 
 #endif /* UART_DEBUG_H */
