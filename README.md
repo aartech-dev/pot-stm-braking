@@ -1,5 +1,10 @@
 # AART Slot Car Braking Module
 
+## TODO
+
+    - Verify the design  
+    - Get AI to produce KiCad files - again and retrofit the pretty libs etc.
+
 **AART — Adrian & Richard's Technologies**
 
 An [open source](https://creativecommons.org/licenses/by-nc-sa/4.0/) standalone electronic braking controller for slot car racing, supporting brushed and brushless motors. Connects between the hand controller and the track via standard 4mm banana plugs. Compatible with any conventional resistor or transistor hand controller.
