@@ -1,0 +1,247 @@
+(footprint "TO-220-3_L10.0-W4.5-P2.54-L"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "N/P-Channel TO-220AB MOSFETs ROHS")
+	(tags "N/P-Channel TO-220AB MOSFETs ROHS")
+	(property "Reference" "REF**"
+		(at 0 -4.005 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "6521bfd8-60f4-4396-a872-b6b274f0966b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "TO-220-3_L10.0-W4.5-P2.54-L"
+		(at 0 4.005 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ec893fa2-93b8-49a6-8993-a9ab95c2023b")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://jlc-prod-smt.oss-eu-central-1.aliyuncs.com/smtDataManualFile/8588890232008167424-C144151.pdf?response-content-disposition=attachment%3B%20filename%3DC144151.pdf%3B%20filename%2A%3DUTF-8%27%27C144151.pdf&x-oss-date=20260603T171421Z&x-oss-expires=1800&x-oss-security-token=CAISgAN1q6Ft5B2yfSjIr5nRCOKMiZpP0qCReFT6rGsUdcRCu474iDz2IHhMdHJsAOodtv0%2FmmhT6PkclqRLcbhpcmfjV%2BZHzLB8qeNKyBRB4J7b16cNrbH4M4H6aXeirtuwDsz9SNTCALjPD3nPii50x5bjaDymRCbLGJaViJlhHLN1Ow6jdmhpCctxLAlvo9NgFxm3D%2Fu2NQPwiWf9FVdhvhEG6Vly8qOi2MaRmFy8yFTx0b0SvJ%2BjYMrmPctoN9JnSdC5mfdzau3a1TJ84gRD0a5wkaVA1zbDs5bfISEIuUzebreLqY03dV4mOvdqIcMe8qigz88fk%2FfIioH6xyxKOexoSCnFTOiiupCcQLPyao9jLu6iayqViY7QaIOTqQohZmkAMwVOasAsI3Ngh4zF97Qt0cVNkXO9gWfLI8DtuMleWholfsB5EAPyAFpORa%2Bb5wchMHn6pr9EWOXuJZUIn3b%2FstWNupKq5ldctHSeoXq108CXVnU5PXYIAqTAmKKWD5sagAE6aukpzaGxghDP0slvjE92Y1XgEPkvWDQWROvur82X907c1GzIBsBlFsZRz2L%2FsUn7V4%2BIwZEO3%2FHGw8D6lwsAkodHV6BYoxIFvgV9L7Eu1XZQoR%2BGYZyAXMoOTmoVd6iqraHYxP1TXkO3HSBKkpwNDHU4JqnPMMBnhbze7%2BhNgCAA&x-oss-signature-version=OSS4-HMAC-SHA256&x-oss-credential=STS.NZdCX8dEnebzzrKHkAyKnTKSj%2F20260603%2Feu-central-1%2Foss%2Faliyun_v4_request&x-oss-signature=07dbe7d5213da94f57f33df38aa255878288e78adceee70e75476cae9b9d3984"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "34aac619-992e-4816-97c0-0c51effdb1c6")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "Description" "N/P-Channel TO-220AB MOSFETs ROHS"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b701da8f-7130-4c0e-bfbf-f0ab6d9ecddc")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(property "LCSC Part" "C144151"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "23fe18a5-f2b1-4be6-ad61-db6a5e44278e")
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+	)
+	(attr smd)
+	(duplicate_pad_numbers_are_jumpers no)
+	(fp_line
+		(start -5.3 -3.09)
+		(end -5.3 -3.09)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "c96fab4e-7dd4-4f7a-a37a-1418bfdabadf")
+	)
+	(fp_line
+		(start -5.3 -3.09)
+		(end 5.3 -3.09)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "29707e52-127c-4bbf-998d-e82e253d6c5f")
+	)
+	(fp_line
+		(start -5.3 1.7)
+		(end -5.3 -3.09)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "65d41584-e323-441b-b6b1-3525bfba8ece")
+	)
+	(fp_line
+		(start 5.3 -3.09)
+		(end 5.3 1.7)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "38cb43fa-9587-47e3-ab48-654bd0c39fc8")
+	)
+	(fp_line
+		(start 5.3 -2.49)
+		(end -5.3 -2.49)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "3b12bb8a-5d4a-4dc3-a416-0a180386f0a1")
+	)
+	(fp_line
+		(start 5.3 1.7)
+		(end -5.3 1.7)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "58cb64f6-4f4e-42f2-93a1-f57aca3ec17e")
+	)
+	(fp_arc
+		(start -2.77 2.33)
+		(mid -2.768726 2.729996)
+		(end -2.772548 2.330016)
+		(stroke
+			(width 0.4)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "85609d55-239e-4eaa-a807-b275adc2b902")
+	)
+	(fp_circle
+		(center -5 -3)
+		(end -4.97 -3)
+		(stroke
+			(width 0.06)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "6349a4e2-5746-4065-9e4f-0833b353ec25")
+	)
+	(fp_circle
+		(center -2.92 2.15)
+		(end -2.62 2.15)
+		(stroke
+			(width 0.6)
+			(type solid)
+		)
+		(fill no)
+		(layer "Cmts.User")
+		(uuid "075e3af7-f8ad-4692-9d41-79f54ee76594")
+	)
+	(fp_line
+		(start -5 -3)
+		(end 5 -3)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "c6cd68e3-9966-4021-8ac7-bbe719418e53")
+	)
+	(fp_line
+		(start -5 1.5)
+		(end -5 -3)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "dba11caf-5d2e-447a-83eb-5835541ba634")
+	)
+	(fp_line
+		(start 5 -3)
+		(end 5 1.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "093214dc-bdfc-4708-8cf1-4d4c0e5b1df2")
+	)
+	(fp_line
+		(start 5 1.5)
+		(end -5 1.5)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "b582cf87-1038-4f1d-9dd3-4047bf3c376f")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "a798b23b-e48c-4d50-b085-7a0353b443fa")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at -2.54 0)
+		(size 1.8 2.6)
+		(drill 1.199998)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "a82c46cb-73e5-4329-85c4-d82ac038b437")
+	)
+	(pad "2" thru_hole oval
+		(at 0 0)
+		(size 1.8 2.6)
+		(drill 1.199998)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "79036cd2-690d-4655-a8de-88e6d2c824e6")
+	)
+	(pad "3" thru_hole oval
+		(at 2.54 0)
+		(size 1.8 2.6)
+		(drill 1.199998)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "66f68b57-9ee7-403c-ad90-53e830e2c2eb")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/project.3dshapes/TO-220-3_L10.0-W4.5-P2.54-L.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)
