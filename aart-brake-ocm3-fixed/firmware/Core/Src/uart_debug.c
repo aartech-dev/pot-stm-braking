@@ -1,6 +1,6 @@
 /* ============================================================
  *  uart_debug.c — USART1 telemetry and command interface
- *  Target  : STM32G041K6U6 (QFN-32)
+ *  Target  : STM32G051K6U6 (QFN-32)
  *  Library : libopencm3
  * ============================================================ */
 
@@ -92,6 +92,8 @@ static const char *state_name(OpState_t s)
         case STATE_ANTI_BRAKE:     return "ANTI";
         case STATE_KEEPALIVE_ONLY: return "KA";
         case STATE_CAPTURE:        return "CAP";
+        case STATE_RAMP_IN:        return "RAMP";
+        case STATE_RELEASE:        return "RELEASE";
         case STATE_LATVIAN_BRAKE:  return "LATVIAN";
         case STATE_SAFE_BRAKE:     return "SAFE";
         default:                   return "?";
@@ -114,24 +116,34 @@ static void process_command(const char *line)
     /* Skip leading whitespace                                */
     while (*line == ' ') line++;
 
-    if (strncmp(line, "GET", 3) == 0) {
+    if (strncmp(line, "GET ID", 6) == 0) {
+        tx_str("#ID: "); tx_str(FW_ID_STRING); tx_str("\r\n");
+
+    } else if (strncmp(line, "GET", 3) == 0) {
         tx_str("#params: brake_enter="); tx_u16(s_params.brake_enter_mv);
         tx_str("mV brake_exit=");        tx_u16(s_params.brake_exit_mv);
-        tx_str("mV brake_soft=");        tx_u16(s_params.brake_ccr_soft);
-        tx_str(" ka_max=");              tx_u16(s_params.ka_ccr_max);
+        tx_str(" brake_ohms=");          tx_u16(brake_ohms_label_at((uint8_t)s_params.brake_ohms_idx));
+        tx_str(" ka_max=");              tx_u16(s_params.ka_dac_max);
         tx_str(" latvian_dvdt=");        tx_u16(s_params.latvian_dvdt_mv_per_ms);
         tx_str("mV/ms");
         if (s_params.latvian_dvdt_mv_per_ms == 0U) tx_str(" (DISABLED)");
-        tx_str("\r\n");
+        tx_str(" release_ms_a="); tx_u16(s_params.release_ms_a);
+        tx_str("ms release_ms_b="); tx_u16(s_params.release_ms_b);
+        tx_str("ms release_ms_c="); tx_u16(s_params.release_ms_c);
+        tx_str("ms\r\n");
 
     } else if (strncmp(line, "HELP", 4) == 0) {
         tx_str("#Commands:\r\n");
         tx_str("#  SET BRAKE_ENTER <mV>       brake entry threshold\r\n");
         tx_str("#  SET BRAKE_EXIT  <mV>       brake exit threshold\r\n");
-        tx_str("#  SET BRAKE_SOFT  <ccr>      minimum brake CCR (~8ohm)\r\n");
-        tx_str("#  SET KA_MAX      <ccr>      max keep-alive/anti-brake CCR\r\n");
+        tx_str("#  SET BRAKE_OHMS  <ohm>      min brake R, snaps to 2/3/4/6/8 ohm (default 3)\r\n");
+        tx_str("#  SET KA_MAX      <dac>      max keep-alive/anti-brake DAC value (default 2480)\r\n");
         tx_str("#  SET LATVIAN_DVDT <mV/ms>   Latvian brake dV/dt threshold\r\n");
         tx_str("#                             0=disabled, 1000=recommended\r\n");
+        tx_str("#  SET RELEASE_MS_A <ms>      trail brake release time mode A (0-500)\r\n");
+        tx_str("#  SET RELEASE_MS_B <ms>      trail brake release time mode B (0-500)\r\n");
+        tx_str("#  SET RELEASE_MS_C <ms>      trail brake release time mode C (0-500)\r\n");
+        tx_str("#  SET RAMP_MS     <ms>       brake ramp-in time (0-200, 0=instant)\r\n");
         tx_str("#  SAVE            save ALL current params to flash\r\n");
         tx_str("#  GET             print current runtime values\r\n");
         tx_str("#  HELP            this list\r\n");
@@ -140,16 +152,19 @@ static void process_command(const char *line)
         /* Save all runtime params + current ka_ccr/ramp_ms to flash */
         const BrakeCtx_t *ctx = brake_get_ctx();
         tx_str("#Saving to flash...\r\n");
-        flash_save_all(ctx->saved_ka_ccr,
-                       ctx->saved_ramp_ms,
+        flash_save_all(ctx->saved_ka_dac,
+                       s_params.ramp_ms,
                        s_params.brake_enter_mv,
                        s_params.brake_exit_mv,
-                       s_params.brake_ccr_soft,
-                       s_params.latvian_dvdt_mv_per_ms);
+                       s_params.brake_ohms_idx,
+                       s_params.latvian_dvdt_mv_per_ms,
+                       s_params.release_ms_a,
+                       s_params.release_ms_b,
+                       s_params.release_ms_c);
         tx_str("#Saved: brake_enter="); tx_u16(s_params.brake_enter_mv);
         tx_str("mV brake_exit=");       tx_u16(s_params.brake_exit_mv);
-        tx_str("mV brake_soft=");       tx_u16(s_params.brake_ccr_soft);
-        tx_str(" ka_ccr=");             tx_u16(ctx->saved_ka_ccr);
+        tx_str(" brake_ohms=");         tx_u16(brake_ohms_label_at((uint8_t)s_params.brake_ohms_idx));
+        tx_str(" ka_dac=");              tx_u16(ctx->saved_ka_dac);
         tx_str(" ramp_ms=");            tx_u16(ctx->saved_ramp_ms);
         tx_str(" latvian_dvdt=");       tx_u16(s_params.latvian_dvdt_mv_per_ms);
         tx_str("mV/ms\r\n");
@@ -168,13 +183,19 @@ static void process_command(const char *line)
         } else if (strncmp(rest, "BRAKE_EXIT", 10) == 0) {
             s_params.brake_exit_mv = val;
             tx_str("#OK brake_exit="); tx_u16(val); tx_str("mV\r\n");
-        } else if (strncmp(rest, "BRAKE_SOFT", 10) == 0) {
-            if (val > PWM_ARR) val = PWM_ARR;
-            s_params.brake_ccr_soft = val;
-            tx_str("#OK brake_soft="); tx_u16(val); tx_str("\r\n");
+        } else if (strncmp(rest, "BRAKE_OHMS", 10) == 0) {
+            /* Select nearest stored table to requested resistance.
+             * Tables are non-linear: 2,3,4,6,8 ohm.                 */
+            if (val < BRAKE_OHMS_ARG_MIN) val = BRAKE_OHMS_ARG_MIN;
+            if (val > BRAKE_OHMS_ARG_MAX) val = BRAKE_OHMS_ARG_MAX;
+            uint8_t idx = brake_ohms_nearest(val);
+            s_params.brake_ohms_idx = idx;
+            tx_str("#OK brake_ohms="); tx_u16(brake_ohms_label_at(idx));
+            tx_str(" ohm (nearest to "); tx_u16(val);
+            tx_str(", live now, SAVE to persist)\r\n");
         } else if (strncmp(rest, "KA_MAX", 6) == 0) {
-            if (val > KA_CCR_MAX) val = KA_CCR_MAX;
-            s_params.ka_ccr_max = val;
+            if (val > 4095U) val = 4095U;
+            s_params.ka_dac_max = val;
             tx_str("#OK ka_max="); tx_u16(val); tx_str("\r\n");
         } else if (strncmp(rest, "LATVIAN_DVDT", 12) == 0) {
             /* Clamp: 0=disable, or between MIN and MAX          */
@@ -189,6 +210,24 @@ static void process_command(const char *line)
                 tx_str("#OK latvian_dvdt="); tx_u16(val);
                 tx_str("mV/ms (ENABLED)\r\n");
             }
+        } else if (strncmp(rest, "RELEASE_MS_A", 12) == 0) {
+            if (val > RELEASE_MS_MAX) val = RELEASE_MS_MAX;
+            s_params.release_ms_a = val;
+            tx_str("#OK release_ms_a="); tx_u16(val); tx_str("ms\r\n");
+        } else if (strncmp(rest, "RELEASE_MS_B", 12) == 0) {
+            if (val > RELEASE_MS_MAX) val = RELEASE_MS_MAX;
+            s_params.release_ms_b = val;
+            tx_str("#OK release_ms_b="); tx_u16(val); tx_str("ms\r\n");
+        } else if (strncmp(rest, "RELEASE_MS_C", 12) == 0) {
+            if (val > RELEASE_MS_MAX) val = RELEASE_MS_MAX;
+            s_params.release_ms_c = val;
+            tx_str("#OK release_ms_c="); tx_u16(val); tx_str("ms\r\n");
+
+        } else if (strncmp(rest, "RAMP_MS", 7) == 0) {
+            if (val > RAMP_MS_MAX) val = RAMP_MS_MAX;
+            s_params.ramp_ms = val;
+            tx_str("#OK ramp_ms="); tx_u16(val); tx_str("ms (SAVE to apply)\r\n");
+
         } else {
             tx_str("#ERR: unknown param\r\n");
         }
@@ -233,9 +272,14 @@ void uart_debug_init(void)
     /* Initialise runtime params from compile-time defaults   */
     s_params.brake_enter_mv         = BRAKE_ENTER_MV;
     s_params.brake_exit_mv          = BRAKE_EXIT_MV;
-    s_params.brake_ccr_soft         = BRAKE_CCR_SOFT;
-    s_params.ka_ccr_max             = KA_CCR_MAX;
+    s_params.brake_soft_dac         = DAC_BRAKE_SOFT;
+    s_params.brake_ohms_idx         = BRAKE_OHMS_DEFAULT;
+    s_params.ka_dac_max             = DAC_KA_MAX;
     s_params.latvian_dvdt_mv_per_ms = LATVIAN_DVDT_DEFAULT;
+    s_params.release_ms_a          = 0U;
+    s_params.release_ms_b          = 0U;
+    s_params.release_ms_c          = 0U;
+    s_params.ramp_ms               = 0U;
 
     /* Clock enable                                           */
     rcc_periph_clock_enable(RCC_USART1);
@@ -262,8 +306,8 @@ void uart_debug_init(void)
     usart_enable(USART1);
 
     /* Banner                                                 */
-    tx_str("\r\n#AART Brake Module v6 — UART debug active\r\n");
-    tx_str("#tick,state,mode,white_mv,black_mv,brake_ccr,"
+    tx_str("\r\n#AART Brake Module v8 — UART debug active\r\n");
+    tx_str("#tick,state,mode,white_mv,black_mv,brake_dac,"
            "ka_ccr,pot_raw,ramp_ms,brake_active,latvian_active\r\n");
     tx_str("#Type HELP for command list\r\n");
 }
@@ -298,19 +342,27 @@ void uart_debug_tick(const BrakeCtx_t *ctx)
 }
 
 /* ── Public: load params from flash (called by flash_load) ── */
-void uart_debug_load_params(uint16_t brake_enter, uint16_t brake_exit,
-                             uint16_t brake_soft,  uint16_t latvian_dvdt)
+void uart_debug_load_params(uint16_t brake_enter,    uint16_t brake_exit,
+                             uint16_t brake_ohms_idx, uint16_t latvian_dvdt,
+                             uint16_t rel_ms_a,       uint16_t rel_ms_b,
+                             uint16_t rel_ms_c)
 {
-    /* Validate before applying — protect against flash corruption */
+    /* Validate before applying — protect against flash corruption.
+     * Release times are also restored directly into the brake context
+     * by flash_load(); they are accepted here for signature symmetry
+     * and mirrored into s_params so GET reports them.                */
     if (brake_enter > 0U && brake_enter < 5000U)
         s_params.brake_enter_mv = brake_enter;
     if (brake_exit > brake_enter && brake_exit < 16000U)
         s_params.brake_exit_mv = brake_exit;
-    if (brake_soft <= PWM_ARR)
-        s_params.brake_ccr_soft = brake_soft;
+    if (brake_ohms_idx < BRAKE_OHMS_COUNT)
+        s_params.brake_ohms_idx = brake_ohms_idx;
     if (latvian_dvdt == 0U ||
         (latvian_dvdt >= LATVIAN_DVDT_MIN && latvian_dvdt <= LATVIAN_DVDT_MAX))
         s_params.latvian_dvdt_mv_per_ms = latvian_dvdt;
+    if (rel_ms_a <= RELEASE_MS_MAX) s_params.release_ms_a = rel_ms_a;
+    if (rel_ms_b <= RELEASE_MS_MAX) s_params.release_ms_b = rel_ms_b;
+    if (rel_ms_c <= RELEASE_MS_MAX) s_params.release_ms_c = rel_ms_c;
 }
 
 /* ── Public: get runtime params ─────────────────────────── */

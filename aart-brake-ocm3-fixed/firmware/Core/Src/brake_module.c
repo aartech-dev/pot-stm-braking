@@ -1,7 +1,12 @@
 /* ============================================================
- *  brake_module.c — AART Slot Car Braking Module  Rev 5
- *  Target  : STM32G041K6U6 (QFN-32)
+ *  brake_module.c — AART Slot Car Braking Module  Rev 7
+ *  Target  : STM32G051K6U6 (QFN-32)
  *  Library : libopencm3
+ *
+ *  Output stage: DAC1 (PA4) → Q2 brake, DAC2 (PA5) → Q1 KA.
+ *  Both FETs operated in linear (triode) region — no PWM.
+ *  D_PG (LTC4412) in BLACK controller input path.
+ *  R10/R11 BLACK sense on motor side of D_PG.
  * ============================================================ */
 
 #include "brake_module.h"
@@ -12,14 +17,11 @@ static BrakeCtx_t        s_ctx;
 static volatile uint32_t s_tick_ms   = 0;
 static volatile bool     s_adc_ready = false;
 
-/* DMA: [0]=WHITE(CH0) [1]=BLACK(CH1) [2]=pot(CH3) [3]=btn(CH5) */
+/* DMA: [0]=WHITE(CH0) [1]=BLACK(CH1) [2]=pot(CH3) [3]=btn(CH8) */
 static volatile uint16_t s_adc_buf[ADC_NUM_CHANNELS];
 
-/* Button debounce */
 static uint32_t s_btn_last_ms = 0;
 static bool     s_btn_prev    = false;
-
-/* LED blink */
 static uint32_t s_led_last_ms = 0;
 static uint8_t  s_led_blinks  = 0;
 
@@ -37,19 +39,21 @@ static uint16_t map_u16(uint16_t v,
     return (uint16_t)(ol + ((uint32_t)(v-il)*(oh-ol))/(ih-il));
 }
 
-/* ── CCR setters ─────────────────────────────────────────── */
-static void set_brake_ccr(uint16_t ccr)
+/* ── DAC setters ─────────────────────────────────────────── */
+static void set_brake_dac(uint16_t val)
 {
-    if (ccr > PWM_ARR) ccr = PWM_ARR;
-    timer_set_oc_value(TIM3, TIM_OC1, ccr);
-    s_ctx.brake_ccr = ccr;
+    if (val > 4095U) val = 4095U;
+    dac_load_data_buffer_single(DAC1, val, DAC_ALIGN_RIGHT, DAC_BRAKE_CHAN);
+    dac_software_trigger(DAC1, DAC_BRAKE_CHAN);
+    s_ctx.brake_dac = val;
 }
 
-static void set_ka_ccr(uint16_t ccr)
+static void set_ka_dac(uint16_t val)
 {
-    if (ccr > KA_CCR_MAX) ccr = KA_CCR_MAX;
-    timer_set_oc_value(TIM3, TIM_OC2, ccr);
-    s_ctx.ka_ccr = ccr;
+    if (val > 4095U) val = 4095U;
+    dac_load_data_buffer_single(DAC1, val, DAC_ALIGN_RIGHT, DAC_KA_CHAN);
+    dac_software_trigger(DAC1, DAC_KA_CHAN);
+    s_ctx.ka_dac = val;
 }
 
 /* ── ADC raw → millivolts ────────────────────────────────── */
@@ -59,108 +63,21 @@ static uint16_t raw_to_mv(uint16_t raw, uint16_t num, uint16_t den)
                       / (4095U * num));
 }
 
-/* ── Keep-alive CCR → millivolts ─────────────────────────── */
-static uint16_t ka_ccr_to_mv(uint16_t ccr, uint16_t white_mv)
+/* ── Keep-alive floor: should Q1 run? ───────────────────── */
+/* Q1 only activates when V_BLACK_to_track would drop below
+ * the saved keep-alive DAC floor. Suppressed when controller
+ * is delivering power above the floor voltage.              */
+static bool ka_should_run(uint16_t black_mv, uint16_t white_mv)
 {
-    return (uint16_t)(((uint32_t)ccr * white_mv) / (PWM_ARR + 1U));
+    /* Convert saved ka_dac to an approximate voltage on track.
+     * Q1 P-ch: gate at DAC voltage, source at WHITE rail.
+     * Simple approximation: floor_mv = (1 - dac/4095) * white_mv */
+    uint32_t floor_mv = ((uint32_t)(4095U - s_ctx.saved_ka_dac)
+                         * white_mv) / 4095U;
+    return black_mv < (uint16_t)floor_mv;
 }
 
-/* ── Flash load ──────────────────────────────────────────── */
-/* Reads all saved params. Populates both s_ctx (ka_ccr,
- * ramp_ms) and the uart_debug params struct. Falls back to
- * compile-time defaults if magic is absent or wrong version.*/
-static void flash_load(void)
-{
-    uint32_t magic = *(volatile uint32_t *)(FLASH_SAVE_ADDR);
-
-    if (magic != FLASH_MAGIC) {
-        /* No valid save — use defaults                       */
-        s_ctx.saved_ka_ccr  = KA_CCR_OFF;
-        s_ctx.saved_ramp_ms = 0U;
-        /* uart_debug params already initialised to defaults  */
-        return;
-    }
-
-    /* Word 0 (offset 0x04): ka_ccr[15:0] | ramp_ms[31:16]  */
-    uint32_t w0 = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 4U);
-    uint16_t ka_ccr  = (uint16_t)(w0 & 0xFFFFU);
-    uint16_t ramp_ms = (uint16_t)(w0 >> 16U);
-
-    /* Word 1 (offset 0x0C): brake_enter[15:0] | brake_exit[31:16] */
-    uint32_t w1 = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 12U);
-    uint16_t brake_enter = (uint16_t)(w1 & 0xFFFFU);
-    uint16_t brake_exit  = (uint16_t)(w1 >> 16U);
-
-    /* Word 2 (offset 0x14): brake_soft[15:0] | latvian[31:16] */
-    uint32_t w2 = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 20U);
-    uint16_t brake_soft = (uint16_t)(w2 & 0xFFFFU);
-    uint16_t latvian    = (uint16_t)(w2 >> 16U);
-
-    /* Clamp and apply — reject out-of-range values           */
-    s_ctx.saved_ka_ccr  = (ka_ccr  <= KA_CCR_MAX)  ? ka_ccr  : KA_CCR_OFF;
-    s_ctx.saved_ramp_ms = (ramp_ms <= RAMP_MS_MAX)  ? ramp_ms : 0U;
-
-    /* Push the rest into the uart_debug runtime params.
-     * We call back through the public API to avoid a circular
-     * dependency — uart_debug owns the params struct.        */
-    uart_debug_load_params(brake_enter, brake_exit,
-                           brake_soft, latvian);
-}
-
-/* ── Flash save (capture button path — ka_ccr + ramp_ms) ── */
-/* Called when capture button released. Reads current uart
- * params for the other fields so everything stays in sync.  */
-static void flash_save(uint16_t ka_ccr, uint16_t ramp_ms)
-{
-    const DebugParams_t *p = uart_debug_get_params();
-    flash_save_all(ka_ccr, ramp_ms,
-                   p->brake_enter_mv,
-                   p->brake_exit_mv,
-                   p->brake_ccr_soft,
-                   p->latvian_dvdt_mv_per_ms);
-}
-
-/* ── Flash save all params ───────────────────────────────── */
-/* Called by UART SAVE command and by flash_save() above.
- * Writes three 64-bit double-words to page 31.              */
-void flash_save_all(uint16_t ka_ccr,   uint16_t ramp_ms,
-                    uint16_t b_enter,  uint16_t b_exit,
-                    uint16_t b_soft,   uint16_t latvian)
-{
-    /* Clamp all values */
-    if (ka_ccr  > KA_CCR_MAX)     ka_ccr  = KA_CCR_MAX;
-    if (ramp_ms > RAMP_MS_MAX)    ramp_ms = RAMP_MS_MAX;
-    if (latvian > LATVIAN_DVDT_MAX && latvian != 0U)
-                                   latvian = LATVIAN_DVDT_MAX;
-
-    flash_unlock();
-    flash_erase_page(FLASH_SAVE_PAGE);
-
-    /* DW0: magic | ka_ccr:ramp_ms                           */
-    flash_program_double_word(FLASH_SAVE_ADDR + 0x00U,
-        ((uint64_t)ramp_ms << 48U) |
-        ((uint64_t)ka_ccr  << 32U) |
-        (uint64_t)FLASH_MAGIC);
-
-    /* DW1: 0xFFFFFFFF padding | brake_exit:brake_enter      */
-    flash_program_double_word(FLASH_SAVE_ADDR + 0x08U,
-        ((uint64_t)0xFFFFFFFFUL << 32U) |
-        ((uint64_t)b_exit  << 16U) |
-        (uint64_t)b_enter);
-
-    /* DW2: 0xFFFFFFFF padding | latvian:brake_soft          */
-    flash_program_double_word(FLASH_SAVE_ADDR + 0x10U,
-        ((uint64_t)0xFFFFFFFFUL << 32U) |
-        ((uint64_t)latvian << 16U) |
-        (uint64_t)b_soft);
-
-    flash_lock();
-
-    s_ctx.saved_ka_ccr  = ka_ccr;
-    s_ctx.saved_ramp_ms = ramp_ms;
-}
-
-/* ── LED blink ───────────────────────────────────────────── */
+/* ── LED ─────────────────────────────────────────────────── */
 static void led_on(void)  { gpio_set(LED_PORT, LED_PIN); }
 static void led_off(void) { gpio_clear(LED_PORT, LED_PIN); }
 
@@ -179,7 +96,7 @@ static void led_blink_tick(void)
     if (--s_led_blinks & 1U) { led_on(); } else { led_off(); }
 }
 
-/* ── Clock ───────────────────────────────────────────────── */
+/* ── Clock (64MHz for UART accuracy; DAC unaffected by clock) */
 static void clock_setup(void)
 {
     const struct rcc_clock_scale cfg = {
@@ -206,131 +123,135 @@ static void gpio_setup(void)
     rcc_periph_clock_enable(RCC_GPIOA);
     rcc_periph_clock_enable(RCC_GPIOB);
 
-    /* PA0 WHITE, PA1 BLACK, PA3 pot, PA5 button — ADC analog */
+    /* PA0 WHITE sense, PA1 BLACK sense, PA3 pot — ADC analog   */
     gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE,
-                    GPIO0 | GPIO1 | GPIO3 | GPIO5);
+                    GPIO0 | GPIO1 | GPIO3);
 
-    /* PA2 toggle bit0, PA4 toggle bit1 — digital pull-up     */
-    gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP,
-                    GPIO2 | GPIO4);
+    /* PA4 DAC1 (Q2 brake), PA5 DAC2 (Q1 KA) — analog          */
+    gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE,
+                    GPIO4 | GPIO5);
 
-    /* PA6 TIM3_CH1, PA7 TIM3_CH2 — PWM AF1                  */
-    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE,
-                    GPIO6 | GPIO7);
-    gpio_set_af(GPIOA, GPIO_AF1, GPIO6 | GPIO7);
+    /* PB0 toggle bit0, PB1 toggle bit1, PB3 capture btn        */
+    gpio_mode_setup(GPIOB, GPIO_MODE_INPUT, GPIO_PUPD_PULLUP,
+                    GPIO0 | GPIO1 | GPIO3);
 
-    /* PB6 — status LED                                       */
+    /* PB6 status LED                                            */
     gpio_mode_setup(LED_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, LED_PIN);
     led_off();
 }
 
-/* ── TIM3 PWM ────────────────────────────────────────────── */
-static void timer_setup(void)
+/* ── DAC setup ───────────────────────────────────────────── */
+static void dac_setup(void)
 {
-    rcc_periph_clock_enable(RCC_TIM3);
-    rcc_periph_reset_pulse(RST_TIM3);
+    rcc_periph_clock_enable(RCC_DAC1);
 
-    timer_set_mode(TIM3, TIM_CR1_CKD_CK_INT,
-                   TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
-    timer_set_prescaler(TIM3, 0);
-    timer_set_period(TIM3, PWM_ARR);
-    timer_enable_preload(TIM3);
+    /* Both channels: software trigger, output buffer enabled   */
+    dac_trigger_enable(DAC1, DAC_BRAKE_CHAN);
+    dac_trigger_enable(DAC1, DAC_KA_CHAN);
+    dac_set_trigger_source(DAC1, DAC_CR_TSEL1_SW);  /* CH1 sw trigger */
+    dac_set_trigger_source(DAC1, DAC_CR_TSEL2_SW);  /* CH2 sw trigger */
+    dac_enable(DAC1, DAC_BRAKE_CHAN);
+    dac_enable(DAC1, DAC_KA_CHAN);
 
-    /* CH1 brake — INVERTED: CCR=0 → HIGH → Q1 ON → dead short */
-    timer_set_oc_mode(TIM3, TIM_OC1, TIM_OCM_PWM1);
-    timer_set_oc_polarity_low(TIM3, TIM_OC1);
-    timer_enable_oc_preload(TIM3, TIM_OC1);
-    timer_set_oc_value(TIM3, TIM_OC1, BRAKE_CCR_HARD);
-    timer_enable_oc_output(TIM3, TIM_OC1);
-
-    /* CH2 keep-alive — normal: CCR=0 → Q2 off                */
-    timer_set_oc_mode(TIM3, TIM_OC2, TIM_OCM_PWM1);
-    timer_set_oc_polarity_high(TIM3, TIM_OC2);
-    timer_enable_oc_preload(TIM3, TIM_OC2);
-    timer_set_oc_value(TIM3, TIM_OC2, KA_CCR_OFF);
-    timer_enable_oc_output(TIM3, TIM_OC2);
-
-    timer_generate_event(TIM3, TIM_EGR_UG);
-    timer_enable_counter(TIM3);
+    /* Safe defaults: Q2 brake off (0V), Q1 KA off (3.3V)       */
+    set_brake_dac(DAC_BRAKE_OFF);
+    set_ka_dac(DAC_KA_OFF);
 }
 
-/* ── DMA ─────────────────────────────────────────────────── */
+/* ── Voltmeter PWM (TIM3_CH1, PB4 AF1) ──────────────────── */
+static void voltmeter_setup(void)
+{
+    rcc_periph_clock_enable(RCC_TIM3);
+
+    /* PB4 → TIM3_CH1 AF1                                      */
+    gpio_mode_setup(VOLTMETER_PWM_PORT, GPIO_MODE_AF,
+                    GPIO_PUPD_NONE, VOLTMETER_PWM_PIN);
+    gpio_set_af(VOLTMETER_PWM_PORT, GPIO_AF1, VOLTMETER_PWM_PIN);
+
+    timer_set_mode(VOLTMETER_TIM, TIM_CR1_CKD_CK_INT,
+                   TIM_CR1_CMS_EDGE, TIM_CR1_DIR_UP);
+    timer_set_prescaler(VOLTMETER_TIM, VOLTMETER_TIM_PSC);
+    timer_set_period(VOLTMETER_TIM, VOLTMETER_TIM_ARR);
+
+    /* CH1 PWM mode 1, output enabled                          */
+    timer_set_oc_mode(VOLTMETER_TIM, TIM_OC1, TIM_OCM_PWM1);
+    timer_set_oc_value(VOLTMETER_TIM, TIM_OC1, 0U);
+    timer_enable_oc_output(VOLTMETER_TIM, TIM_OC1);
+    timer_enable_preload(VOLTMETER_TIM);
+    timer_enable_counter(VOLTMETER_TIM);
+}
+
+/* Update voltmeter display each 1ms tick.
+ * Normal mode: display V_WHITE (track supply voltage).
+ * Capture active: display DAC2 setting as equivalent voltage.  */
+static void voltmeter_update(bool capture_active, uint16_t white_mv,
+                              uint16_t preview_dac)
+{
+    uint32_t duty;
+    if (capture_active) {
+        /* Show live pot-derived setpoint during button hold.
+         * preview_dac is the current capture_* field for this mode.
+         * Invert: lower DAC → more conduction → higher display.  */
+        uint32_t inverted = (uint32_t)(4095U - preview_dac);
+        duty = (inverted * VOLTMETER_TIM_ARR) / 4095U;
+    } else {
+        /* Scale V_WHITE to 0–ARR. Cap at VOLTMETER_SCALE_MV.   */
+        uint32_t mv = (white_mv > VOLTMETER_SCALE_MV)
+                      ? VOLTMETER_SCALE_MV : white_mv;
+        duty = (mv * VOLTMETER_TIM_ARR) / VOLTMETER_SCALE_MV;
+    }
+    if (duty > VOLTMETER_TIM_ARR) duty = VOLTMETER_TIM_ARR;
+    timer_set_oc_value(VOLTMETER_TIM, TIM_OC1, (uint16_t)duty);
+}
 static void dma_setup(void)
 {
     rcc_periph_clock_enable(RCC_DMA1);
-    dma_channel_reset(DMA1, ADC_DMA_CHANNEL);
-    MMIO32(0x40020800U) = ADC_DMAMUX_REQ;  /* DMAMUX1_C0CR → ADC1 */
+    /* DMAMUX: route ADC1 request (id=5) to DMA1 CH1            */
+    MMIO32(0x40020800U) = 5U;
 
-    dma_set_peripheral_address(DMA1, ADC_DMA_CHANNEL,
-                               (uint32_t)&ADC_DR(ADC1));
-    dma_set_memory_address(DMA1, ADC_DMA_CHANNEL,
-                           (uint32_t)s_adc_buf);
+    dma_channel_reset(DMA1, ADC_DMA_CHANNEL);
+    dma_set_peripheral_address(DMA1, ADC_DMA_CHANNEL, (uint32_t)&ADC1_DR);
+    dma_set_memory_address(DMA1, ADC_DMA_CHANNEL, (uint32_t)s_adc_buf);
     dma_set_number_of_data(DMA1, ADC_DMA_CHANNEL, ADC_NUM_CHANNELS);
     dma_set_read_from_peripheral(DMA1, ADC_DMA_CHANNEL);
+    dma_enable_memory_increment_mode(DMA1, ADC_DMA_CHANNEL);
     dma_set_peripheral_size(DMA1, ADC_DMA_CHANNEL, DMA_CCR_PSIZE_16BIT);
     dma_set_memory_size(DMA1, ADC_DMA_CHANNEL, DMA_CCR_MSIZE_16BIT);
-    dma_enable_memory_increment_mode(DMA1, ADC_DMA_CHANNEL);
     dma_enable_circular_mode(DMA1, ADC_DMA_CHANNEL);
     dma_enable_transfer_complete_interrupt(DMA1, ADC_DMA_CHANNEL);
     nvic_enable_irq(NVIC_DMA1_CHANNEL1_IRQ);
-    nvic_set_priority(NVIC_DMA1_CHANNEL1_IRQ, 1);
     dma_enable_channel(DMA1, ADC_DMA_CHANNEL);
 }
 
-/* ── ADC ─────────────────────────────────────────────────── */
 static void adc_setup(void)
 {
-    rcc_periph_clock_enable(RCC_ADC);
+    rcc_periph_clock_enable(RCC_ADC1);
     adc_power_off(ADC1);
-    adc_set_clk_source(ADC1, ADC_CLKSOURCE_PCLK_DIV2);
+
+    /* Calibrate, then set up 4-channel scan                     */
     adc_calibrate(ADC1);
+
+    ADC_CFGR1(ADC1) = ADC_CFGR1_RES_12_BIT | ADC_CFGR1_DMACFG |
+                      ADC_CFGR1_DMAEN;
+    ADC_SMPR(ADC1)  = ADC_SMPR_SMPx_039DOT5CYC;
+
+    /* CH0=WHITE CH1=BLACK CH3=pot CH8=capture btn (PB0)        */
+    ADC_CHSELR(ADC1) = (1U << 0) | (1U << 1) | (1U << 3) | (1U << 8);
+
     adc_power_on(ADC1);
-    while (!adc_is_power_off(ADC1) == false);
-
-    adc_set_resolution(ADC1, ADC_CFGR1_RES_12_BIT);
-    adc_set_single_conversion_mode(ADC1);
-    adc_set_right_aligned(ADC1);
-    adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMPx_039DOT5CYC);
-
-    uint8_t channels[4] = { 0, 1, 3, 5 };
-    adc_set_regular_sequence(ADC1, 4, channels);
-    adc_enable_dma(ADC1);
-    adc_enable_dma_circular_mode(ADC1);
+    /* Wait for ADC ready */
+    while (!(ADC_ISR(ADC1) & ADC_ISR_ADRDY)) {}
 }
 
 /* ── SysTick ─────────────────────────────────────────────── */
 static void systick_setup(void)
 {
-    systick_set_reload(64000U - 1U);
-    systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
-    systick_counter_enable();
+    systick_set_frequency(1000, 64000000);
     systick_interrupt_enable();
+    systick_counter_enable();
 }
 
-/* ── Button debounce ─────────────────────────────────────── */
-static bool read_btn(void)
-{
-    bool raw = (s_ctx.btn_raw < BTN_PRESSED_THRESHOLD);
-    if (raw != s_btn_prev) {
-        s_btn_last_ms = now_ms();
-        s_btn_prev    = raw;
-    }
-    if ((now_ms() - s_btn_last_ms) >= BTN_DEBOUNCE_MS) return raw;
-    return s_ctx.btn_pressed;
-}
-
-/* ── Toggle ──────────────────────────────────────────────── */
-static ModeSelect_t read_toggle(void)
-{
-    bool t0 = (gpio_get(TOGGLE0_PORT, TOGGLE0_PIN) == 0U);
-    bool t1 = (gpio_get(TOGGLE1_PORT, TOGGLE1_PIN) == 0U);
-    if (!t0 && !t1) return MODE_A;
-    if ( t0 && !t1) return MODE_B;
-    if (!t0 &&  t1) return MODE_C;
-    return MODE_B;
-}
-
-/* ── Brake hysteresis ────────────────────────────────────── */
+/* ── Brake hysteresis update ─────────────────────────────── */
 static bool update_brake_active(bool cur, uint16_t black_mv)
 {
     const DebugParams_t *p = uart_debug_get_params();
@@ -339,322 +260,498 @@ static bool update_brake_active(bool cur, uint16_t black_mv)
     return cur;
 }
 
-/* ── Keep-alive suppression ──────────────────────────────── */
-static bool ka_should_run(uint16_t black_mv, uint16_t white_mv)
+/* ── Toggle and capture button read ─────────────────────── */
+static ModeSelect_t read_toggle(void)
 {
-    if (s_ctx.saved_ka_ccr == KA_CCR_OFF) return false;
-    return (black_mv <= ka_ccr_to_mv(s_ctx.saved_ka_ccr, white_mv));
+    bool b0 = !gpio_get(TOGGLE0_PORT, TOGGLE0_PIN);  /* LOW = asserted */
+    bool b1 = !gpio_get(TOGGLE1_PORT, TOGGLE1_PIN);
+    if (!b0 && !b1) return MODE_A;
+    if ( b0 && !b1) return MODE_B;
+    if (!b0 &&  b1) return MODE_C;
+    return MODE_B;   /* invalid → safe default */
 }
 
-/* ── Exponential brake ramp ──────────────────────────────── */
-/* Applies one tick of the exponential ramp toward target.
- * Returns true when target is reached (within 1 CCR count).
+static bool read_btn(void)
+{
+    bool pressed = !gpio_get(CAPTURE_BTN_PORT, CAPTURE_BTN_PIN);
+    if (pressed == s_btn_prev) {
+        s_btn_last_ms = now_ms();
+        s_btn_prev    = pressed;
+        return pressed;
+    }
+    if ((now_ms() - s_btn_last_ms) >= BTN_DEBOUNCE_MS) {
+        s_btn_prev    = pressed;
+        s_btn_last_ms = now_ms();
+    }
+    return s_btn_prev;
+}
+
+/* ── Exponential ramp-in (brake entry) ───────────────────── */
+/* ── Lookup tables ───────────────────────────────────────────
+ * Used in Mode B (anti-brake) only.
+ * Pot index 0 (CCW) = min brake + max anti-brake/injection
+ * Pot index 255 (CW) = max brake + zero injection
+ * Exponential shape (gamma=1.8) — fine control at soft end.
  *
- * The ramp works on the CCR value directly. Because the brake
- * FET polarity is INVERTED, a lower CCR = more braking. The
- * ramp therefore needs to decrease CCR from BRAKE_CCR_OFF
- * (PWM_ARR=3199, FET off) down toward the target CCR.
- *
- * Each tick: distance = current - target (always positive since
- * we are ramping downward). Step = distance * alpha / 256.
- * CCR decreases by step each tick.                           */
+ * In Mode A: pot maps LINEARLY to Q2 brake only (no table).
+ * In Mode C: ka_dac_table used to show/save KA floor.        */
+/* ── Configurable minimum brake resistance (non-linear set) ──
+ * Five precomputed tables selected by SET BRAKE_OHMS. Nominal
+ * full-scale resistances 2,3,4,6,8Ω (geometric-ish: finer steps
+ * at the firm/low-ohm end). Higher DAC = higher Q2 gate voltage
+ * = lower Rds = lower resistance. Labels are ESTIMATES; calibrate
+ * per motor and regenerate via tools/gen_brake_tables.py.
+ * No runtime table math: Mode B is a pure lookup; Mode A/C use
+ * the selected soft endpoint in a single linear map.            */
+static const uint16_t brake_ohms_label[BRAKE_OHMS_COUNT] = {
+    2, 3, 4, 6, 8,
+};
+
+static const uint16_t brake_soft_dac_by_ohm[BRAKE_OHMS_COUNT] = {
+    2300, 2200, 2100, 1950, 1860,
+};
+
+static const uint16_t brake_tables[BRAKE_OHMS_COUNT][256] = {
+  /* index 0: ~2 ohm full scale (soft=2300) */
+  {
+    2300, 2300, 2300, 2300, 2300, 2301, 2301, 2301, 2302, 2302, 2302, 2303, 2303, 2304, 2304, 2305,
+    2305, 2306, 2307, 2307, 2308, 2309, 2310, 2310, 2311, 2312, 2313, 2314, 2315, 2316, 2317, 2318,
+    2319, 2320, 2321, 2322, 2323, 2325, 2326, 2327, 2328, 2330, 2331, 2332, 2334, 2335, 2336, 2338,
+    2339, 2341, 2342, 2344, 2345, 2347, 2349, 2350, 2352, 2354, 2355, 2357, 2359, 2361, 2362, 2364,
+    2366, 2368, 2370, 2372, 2374, 2376, 2378, 2380, 2382, 2384, 2386, 2388, 2390, 2392, 2394, 2396,
+    2399, 2401, 2403, 2405, 2408, 2410, 2412, 2415, 2417, 2420, 2422, 2424, 2427, 2429, 2432, 2434,
+    2437, 2440, 2442, 2445, 2447, 2450, 2453, 2455, 2458, 2461, 2464, 2467, 2469, 2472, 2475, 2478,
+    2481, 2484, 2487, 2490, 2493, 2496, 2499, 2502, 2505, 2508, 2511, 2514, 2517, 2520, 2523, 2527,
+    2530, 2533, 2536, 2540, 2543, 2546, 2550, 2553, 2556, 2560, 2563, 2567, 2570, 2574, 2577, 2581,
+    2584, 2588, 2591, 2595, 2599, 2602, 2606, 2610, 2613, 2617, 2621, 2624, 2628, 2632, 2636, 2640,
+    2644, 2647, 2651, 2655, 2659, 2663, 2667, 2671, 2675, 2679, 2683, 2687, 2691, 2695, 2700, 2704,
+    2708, 2712, 2716, 2720, 2725, 2729, 2733, 2738, 2742, 2746, 2751, 2755, 2759, 2764, 2768, 2773,
+    2777, 2782, 2786, 2791, 2795, 2800, 2804, 2809, 2813, 2818, 2823, 2827, 2832, 2837, 2841, 2846,
+    2851, 2856, 2861, 2865, 2870, 2875, 2880, 2885, 2890, 2895, 2900, 2904, 2909, 2914, 2919, 2925,
+    2930, 2935, 2940, 2945, 2950, 2955, 2960, 2965, 2971, 2976, 2981, 2986, 2992, 2997, 3002, 3007,
+    3013, 3018, 3024, 3029, 3034, 3040, 3045, 3051, 3056, 3062, 3067, 3073, 3078, 3084, 3089, 3095,
+  },
+  /* index 1: ~3 ohm full scale (soft=2200) */
+  {
+    2200, 2200, 2200, 2200, 2201, 2201, 2201, 2201, 2202, 2202, 2203, 2203, 2204, 2204, 2205, 2205,
+    2206, 2207, 2208, 2208, 2209, 2210, 2211, 2212, 2213, 2214, 2215, 2216, 2217, 2218, 2219, 2220,
+    2221, 2223, 2224, 2225, 2226, 2228, 2229, 2230, 2232, 2233, 2235, 2236, 2238, 2239, 2241, 2243,
+    2244, 2246, 2248, 2249, 2251, 2253, 2255, 2257, 2258, 2260, 2262, 2264, 2266, 2268, 2270, 2272,
+    2274, 2276, 2279, 2281, 2283, 2285, 2287, 2290, 2292, 2294, 2297, 2299, 2301, 2304, 2306, 2309,
+    2311, 2314, 2316, 2319, 2321, 2324, 2327, 2329, 2332, 2335, 2337, 2340, 2343, 2346, 2348, 2351,
+    2354, 2357, 2360, 2363, 2366, 2369, 2372, 2375, 2378, 2381, 2384, 2387, 2391, 2394, 2397, 2400,
+    2404, 2407, 2410, 2413, 2417, 2420, 2424, 2427, 2430, 2434, 2437, 2441, 2444, 2448, 2452, 2455,
+    2459, 2462, 2466, 2470, 2474, 2477, 2481, 2485, 2489, 2493, 2496, 2500, 2504, 2508, 2512, 2516,
+    2520, 2524, 2528, 2532, 2536, 2540, 2544, 2549, 2553, 2557, 2561, 2565, 2570, 2574, 2578, 2582,
+    2587, 2591, 2596, 2600, 2604, 2609, 2613, 2618, 2622, 2627, 2631, 2636, 2641, 2645, 2650, 2654,
+    2659, 2664, 2669, 2673, 2678, 2683, 2688, 2693, 2697, 2702, 2707, 2712, 2717, 2722, 2727, 2732,
+    2737, 2742, 2747, 2752, 2757, 2762, 2768, 2773, 2778, 2783, 2788, 2794, 2799, 2804, 2810, 2815,
+    2820, 2826, 2831, 2836, 2842, 2847, 2853, 2858, 2864, 2869, 2875, 2881, 2886, 2892, 2897, 2903,
+    2909, 2914, 2920, 2926, 2932, 2937, 2943, 2949, 2955, 2961, 2967, 2973, 2979, 2985, 2990, 2996,
+    3002, 3009, 3015, 3021, 3027, 3033, 3039, 3045, 3051, 3057, 3064, 3070, 3076, 3082, 3089, 3095,
+  },
+  /* index 2: ~4 ohm full scale (soft=2100) */
+  {
+    2100, 2100, 2100, 2100, 2101, 2101, 2101, 2102, 2102, 2102, 2103, 2103, 2104, 2105, 2105, 2106,
+    2107, 2108, 2108, 2109, 2110, 2111, 2112, 2113, 2114, 2115, 2116, 2117, 2119, 2120, 2121, 2122,
+    2124, 2125, 2126, 2128, 2129, 2131, 2132, 2134, 2135, 2137, 2139, 2140, 2142, 2144, 2146, 2147,
+    2149, 2151, 2153, 2155, 2157, 2159, 2161, 2163, 2165, 2167, 2169, 2171, 2174, 2176, 2178, 2180,
+    2183, 2185, 2187, 2190, 2192, 2195, 2197, 2200, 2202, 2205, 2207, 2210, 2213, 2215, 2218, 2221,
+    2223, 2226, 2229, 2232, 2235, 2238, 2241, 2244, 2247, 2250, 2253, 2256, 2259, 2262, 2265, 2268,
+    2271, 2275, 2278, 2281, 2285, 2288, 2291, 2295, 2298, 2301, 2305, 2308, 2312, 2315, 2319, 2323,
+    2326, 2330, 2334, 2337, 2341, 2345, 2349, 2352, 2356, 2360, 2364, 2368, 2372, 2376, 2380, 2384,
+    2388, 2392, 2396, 2400, 2404, 2408, 2412, 2417, 2421, 2425, 2429, 2434, 2438, 2442, 2447, 2451,
+    2456, 2460, 2465, 2469, 2474, 2478, 2483, 2487, 2492, 2497, 2501, 2506, 2511, 2516, 2520, 2525,
+    2530, 2535, 2540, 2545, 2550, 2554, 2559, 2564, 2569, 2575, 2580, 2585, 2590, 2595, 2600, 2605,
+    2610, 2616, 2621, 2626, 2632, 2637, 2642, 2648, 2653, 2658, 2664, 2669, 2675, 2680, 2686, 2691,
+    2697, 2703, 2708, 2714, 2720, 2725, 2731, 2737, 2743, 2748, 2754, 2760, 2766, 2772, 2778, 2784,
+    2790, 2796, 2802, 2808, 2814, 2820, 2826, 2832, 2838, 2844, 2850, 2857, 2863, 2869, 2875, 2882,
+    2888, 2894, 2901, 2907, 2913, 2920, 2926, 2933, 2939, 2946, 2952, 2959, 2966, 2972, 2979, 2985,
+    2992, 2999, 3006, 3012, 3019, 3026, 3033, 3040, 3046, 3053, 3060, 3067, 3074, 3081, 3088, 3095,
+  },
+  /* index 3: ~6 ohm full scale (soft=1950) */
+  {
+    1950, 1950, 1950, 1950, 1951, 1951, 1951, 1952, 1952, 1953, 1953, 1954, 1955, 1955, 1956, 1957,
+    1958, 1959, 1960, 1961, 1962, 1963, 1964, 1965, 1966, 1968, 1969, 1970, 1971, 1973, 1974, 1976,
+    1977, 1979, 1980, 1982, 1984, 1985, 1987, 1989, 1991, 1993, 1995, 1996, 1998, 2000, 2002, 2005,
+    2007, 2009, 2011, 2013, 2015, 2018, 2020, 2022, 2025, 2027, 2030, 2032, 2035, 2037, 2040, 2042,
+    2045, 2048, 2051, 2053, 2056, 2059, 2062, 2065, 2068, 2071, 2073, 2077, 2080, 2083, 2086, 2089,
+    2092, 2095, 2099, 2102, 2105, 2108, 2112, 2115, 2119, 2122, 2126, 2129, 2133, 2136, 2140, 2144,
+    2147, 2151, 2155, 2159, 2162, 2166, 2170, 2174, 2178, 2182, 2186, 2190, 2194, 2198, 2202, 2206,
+    2210, 2215, 2219, 2223, 2227, 2232, 2236, 2240, 2245, 2249, 2254, 2258, 2263, 2267, 2272, 2276,
+    2281, 2286, 2291, 2295, 2300, 2305, 2310, 2314, 2319, 2324, 2329, 2334, 2339, 2344, 2349, 2354,
+    2359, 2364, 2370, 2375, 2380, 2385, 2391, 2396, 2401, 2407, 2412, 2417, 2423, 2428, 2434, 2439,
+    2445, 2450, 2456, 2462, 2467, 2473, 2479, 2484, 2490, 2496, 2502, 2508, 2514, 2520, 2525, 2531,
+    2537, 2543, 2549, 2556, 2562, 2568, 2574, 2580, 2586, 2593, 2599, 2605, 2611, 2618, 2624, 2631,
+    2637, 2643, 2650, 2656, 2663, 2670, 2676, 2683, 2689, 2696, 2703, 2709, 2716, 2723, 2730, 2737,
+    2744, 2750, 2757, 2764, 2771, 2778, 2785, 2792, 2799, 2806, 2813, 2821, 2828, 2835, 2842, 2849,
+    2857, 2864, 2871, 2879, 2886, 2893, 2901, 2908, 2916, 2923, 2931, 2938, 2946, 2954, 2961, 2969,
+    2977, 2984, 2992, 3000, 3008, 3015, 3023, 3031, 3039, 3047, 3055, 3063, 3071, 3079, 3087, 3095,
+  },
+  /* index 4: ~8 ohm full scale (soft=1860) */
+  {
+    1860, 1860, 1860, 1860, 1861, 1861, 1861, 1862, 1862, 1863, 1864, 1864, 1865, 1866, 1867, 1868,
+    1868, 1869, 1870, 1872, 1873, 1874, 1875, 1876, 1878, 1879, 1880, 1882, 1883, 1885, 1886, 1888,
+    1889, 1891, 1893, 1895, 1896, 1898, 1900, 1902, 1904, 1906, 1908, 1910, 1912, 1914, 1917, 1919,
+    1921, 1923, 1926, 1928, 1931, 1933, 1936, 1938, 1941, 1943, 1946, 1949, 1951, 1954, 1957, 1960,
+    1963, 1965, 1968, 1971, 1974, 1977, 1981, 1984, 1987, 1990, 1993, 1996, 2000, 2003, 2006, 2010,
+    2013, 2017, 2020, 2024, 2027, 2031, 2035, 2038, 2042, 2046, 2049, 2053, 2057, 2061, 2065, 2069,
+    2073, 2077, 2081, 2085, 2089, 2093, 2097, 2102, 2106, 2110, 2114, 2119, 2123, 2127, 2132, 2136,
+    2141, 2145, 2150, 2155, 2159, 2164, 2169, 2173, 2178, 2183, 2188, 2192, 2197, 2202, 2207, 2212,
+    2217, 2222, 2227, 2232, 2238, 2243, 2248, 2253, 2258, 2264, 2269, 2274, 2280, 2285, 2291, 2296,
+    2302, 2307, 2313, 2318, 2324, 2329, 2335, 2341, 2347, 2352, 2358, 2364, 2370, 2376, 2382, 2388,
+    2394, 2400, 2406, 2412, 2418, 2424, 2430, 2436, 2443, 2449, 2455, 2462, 2468, 2474, 2481, 2487,
+    2494, 2500, 2507, 2513, 2520, 2526, 2533, 2540, 2546, 2553, 2560, 2567, 2573, 2580, 2587, 2594,
+    2601, 2608, 2615, 2622, 2629, 2636, 2643, 2650, 2658, 2665, 2672, 2679, 2686, 2694, 2701, 2708,
+    2716, 2723, 2731, 2738, 2746, 2753, 2761, 2768, 2776, 2784, 2791, 2799, 2807, 2815, 2822, 2830,
+    2838, 2846, 2854, 2862, 2870, 2878, 2886, 2894, 2902, 2910, 2918, 2926, 2934, 2943, 2951, 2959,
+    2967, 2976, 2984, 2992, 3001, 3009, 3018, 3026, 3035, 3043, 3052, 3060, 3069, 3078, 3086, 3095,
+  },
+};
+
+static const uint16_t ka_dac_table[256] = {
+    2480, 2480, 2480, 2480, 2481, 2481, 2481, 2481, 2482, 2482, 2483, 2484, 2484, 2485, 2486, 2487,
+    2488, 2489, 2490, 2491, 2492, 2494, 2495, 2496, 2498, 2499, 2501, 2503, 2505, 2507, 2509, 2511,
+    2514, 2516, 2519, 2521, 2524, 2527, 2530, 2533, 2536, 2539, 2543, 2546, 2550, 2554, 2558, 2562,
+    2566, 2570, 2575, 2580, 2584, 2589, 2594, 2599, 2604, 2610, 2615, 2621, 2626, 2632, 2638, 2645,
+    2651, 2658, 2664, 2671, 2678, 2685, 2693, 2700, 2708, 2716, 2724, 2732, 2740, 2749, 2757, 2766,
+    2775, 2784, 2793, 2803, 2812, 2822, 2832, 2842, 2852, 2862, 2873, 2884, 2894, 2905, 2917, 2928,
+    2940, 2951, 2963, 2975, 2988, 3000, 3013, 3026, 3039, 3052, 3065, 3079, 3092, 3106, 3120, 3134,
+    3149, 3163, 3178, 3192, 3207, 3222, 3238, 3253, 3269, 3284, 3300, 3316, 3333, 3349, 3366, 3382,
+    3399, 3416, 3434, 3451, 3469, 3487, 3505, 3523, 3541, 3560, 3578, 3597, 3616, 3635, 3655, 3674,
+    3694, 3714, 3734, 3754, 3774, 3795, 3815, 3836, 3857, 3878, 3899, 3921, 3942, 3964, 3986, 4008,
+    4030, 4052, 4075, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+    4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+    4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+    4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+    4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+    4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+};
+
+/* ── Flash load ──────────────────────────────────────────── */
+static void flash_load(void)
+{
+    uint32_t magic = *(volatile uint32_t *)(FLASH_SAVE_ADDR);
+    if (magic != FLASH_MAGIC) {
+        s_ctx.saved_ka_dac       = DEFAULT_KA_DAC;
+        s_ctx.saved_ramp_ms      = 0U;
+        s_ctx.saved_release_ms_a = 0U;
+        s_ctx.saved_release_ms_b = 0U;
+        s_ctx.saved_release_ms_c = 0U;
+        return;
+    }
+    uint32_t w0hi = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 4U);
+    uint16_t ka   = (uint16_t)(w0hi & 0xFFFFU);
+    uint16_t ramp = (uint16_t)(w0hi >> 16U);
+
+    uint32_t w1hi = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 12U);
+    uint16_t b_enter = (uint16_t)(w1hi & 0xFFFFU);
+    uint16_t b_exit  = (uint16_t)(w1hi >> 16U);
+
+    uint32_t w2hi = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 20U);
+    uint16_t b_ohms  = (uint16_t)(w2hi & 0xFFFFU);
+    uint16_t latvian = (uint16_t)(w2hi >> 16U);
+
+    uint32_t w3lo = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 28U);
+    uint32_t w3hi = *(volatile uint32_t *)(FLASH_SAVE_ADDR + 32U);
+    uint16_t rel_a = (uint16_t)(w3lo & 0xFFFFU);
+    uint16_t rel_b = (uint16_t)(w3hi & 0xFFFFU);
+    uint16_t rel_c = (uint16_t)(w3hi >> 16U);
+
+    s_ctx.saved_ka_dac       = (ka   <= 4095U)           ? ka   : DEFAULT_KA_DAC;
+    s_ctx.saved_ramp_ms      = (ramp <= RAMP_MS_MAX)     ? ramp : 0U;
+    s_ctx.saved_release_ms_a = (rel_a <= RELEASE_MS_MAX) ? rel_a : 0U;
+    s_ctx.saved_release_ms_b = (rel_b <= RELEASE_MS_MAX) ? rel_b : 0U;
+    s_ctx.saved_release_ms_c = (rel_c <= RELEASE_MS_MAX) ? rel_c : 0U;
+
+    uart_debug_load_params(b_enter, b_exit, b_ohms, latvian,
+                           rel_a, rel_b, rel_c);
+}
+
+void flash_save_all(uint16_t ka_dac,
+                    uint16_t ramp_ms,
+                    uint16_t b_enter,
+                    uint16_t b_exit,
+                    uint16_t b_ohms_idx,
+                    uint16_t latvian,
+                    uint16_t rel_ms_a,
+                    uint16_t rel_ms_b,
+                    uint16_t rel_ms_c)
+{
+    if (ka_dac > 4095U)             ka_dac   = DEFAULT_KA_DAC;
+    if (ramp_ms > RAMP_MS_MAX)      ramp_ms  = 0U;
+    if (b_ohms_idx >= BRAKE_OHMS_COUNT) b_ohms_idx = BRAKE_OHMS_DEFAULT;
+    if (rel_ms_a > RELEASE_MS_MAX)  rel_ms_a = 0U;
+    if (rel_ms_b > RELEASE_MS_MAX)  rel_ms_b = 0U;
+    if (rel_ms_c > RELEASE_MS_MAX)  rel_ms_c = 0U;
+
+    flash_unlock();
+    flash_erase_page(FLASH_SAVE_PAGE);
+    flash_program_double_word(FLASH_SAVE_ADDR + 0x00U,
+        ((uint64_t)ramp_ms << 48U) | ((uint64_t)ka_dac << 32U) | FLASH_MAGIC);
+    flash_program_double_word(FLASH_SAVE_ADDR + 0x08U,
+        ((uint64_t)0xFFFFFFFFUL << 32U) | ((uint64_t)b_exit << 16U) | b_enter);
+    flash_program_double_word(FLASH_SAVE_ADDR + 0x10U,
+        ((uint64_t)0xFFFFFFFFUL << 32U) | ((uint64_t)latvian << 16U) | b_ohms_idx);
+    flash_program_double_word(FLASH_SAVE_ADDR + 0x18U,
+        ((uint64_t)rel_ms_c << 48U) | ((uint64_t)rel_ms_b << 32U) |
+        ((uint64_t)0xFFFFU  << 16U) | rel_ms_a);
+    flash_lock();
+
+    s_ctx.saved_ka_dac       = ka_dac;
+    s_ctx.saved_ramp_ms      = ramp_ms;
+    s_ctx.saved_release_ms_a = rel_ms_a;
+    s_ctx.saved_release_ms_b = rel_ms_b;
+    s_ctx.saved_release_ms_c = rel_ms_c;
+}
+
+static void do_save(void)
+{
+    const DebugParams_t *p = uart_debug_get_params();
+    flash_save_all(s_ctx.saved_ka_dac, s_ctx.saved_ramp_ms,
+                   p->brake_enter_mv, p->brake_exit_mv,
+                   p->brake_soft_dac, p->latvian_dvdt_mv_per_ms,
+                   s_ctx.saved_release_ms_a,
+                   s_ctx.saved_release_ms_b,
+                   s_ctx.saved_release_ms_c);
+}
+
+/* ── Ramp tick ───────────────────────────────────────────── */
 static bool ramp_tick(uint16_t target, uint16_t alpha)
 {
-    uint16_t cur = s_ctx.brake_ccr;
-
-    if (cur <= target) {
-        set_brake_ccr(target);
-        return true;  /* reached */
+    uint16_t cur = s_ctx.brake_dac;
+    if (alpha >= RAMP_ALPHA_INSTANT || cur == target) {
+        set_brake_dac(target); return true;
     }
-
-    uint32_t distance = cur - target;
-    uint32_t step     = (distance * alpha) / 256U;
-
-    /* Ensure at least 1 count of progress per tick             */
-    if (step == 0U) step = 1U;
-
-    uint32_t next = (step >= distance) ? target : (cur - step);
-    set_brake_ccr((uint16_t)next);
-    return (next <= target);
-}
-
-/* ============================================================
- *  Capture handler — shared by modes A/B and C
- *
- *  Mode A/B: pot dials ramp_ms (CCW=0ms, CW=200ms)
- *            on release: save ramp_ms (ka_ccr unchanged)
- *
- *  Mode C:   pot dials ka_ccr (CCW=0V, CW=2V)
- *            on release: save ka_ccr (ramp_ms unchanged)
- *
- *  Returns true while capture is active (caller should return).
- * ============================================================ */
-static bool handle_capture(bool is_mode_c)
-{
-    if (s_ctx.btn_pressed) {
-        s_ctx.capture_active = true;
-
-        if (is_mode_c) {
-            /* Dial keep-alive voltage */
-            uint16_t ccr = map_u16(s_ctx.pot_raw, 0, ADC_MAX,
-                                   KA_CCR_OFF, KA_CCR_MAX);
-            set_brake_ccr(BRAKE_CCR_OFF);
-            set_ka_ccr(ccr);
-        } else {
-            /* Dial ramp time — display on LED would be nice but
-             * we just track the pot position here              */
-            set_brake_ccr(BRAKE_CCR_OFF);
-            set_ka_ccr(KA_CCR_OFF);
-        }
-        s_ctx.state = STATE_CAPTURE;
-        return true;
-    }
-
-    if (s_ctx.capture_active) {
-        s_ctx.capture_active = false;
-
-        if (is_mode_c) {
-            /* Save keep-alive CCR, preserve ramp_ms            */
-            flash_save(s_ctx.ka_ccr, s_ctx.saved_ramp_ms);
-        } else {
-            /* Convert pot position to ramp_ms and save         */
-            uint16_t ramp_ms = map_u16(s_ctx.pot_raw, 0, ADC_MAX,
-                                       0, RAMP_MS_MAX);
-            flash_save(s_ctx.saved_ka_ccr, ramp_ms);
-        }
-        led_blink_start();
-    }
+    int32_t err  = (int32_t)target - (int32_t)cur;
+    int32_t step = (err * (int32_t)alpha) / 256;
+    if (step == 0) step = (err > 0) ? 1 : -1;
+    set_brake_dac((uint16_t)((int32_t)cur + step));
     return false;
 }
 
-/* ============================================================
- *  MODE A — Brushed motor, positive anti-brake
- *
- *  Brake trigger: V_BLACK < BRAKE_ENTER_MV
- *
- *  Brake region (CCW → centre):
- *    CCR ramps exponentially from BRAKE_CCR_OFF to target
- *    using saved_ramp_ms. Target = map(pot, 0→centre, soft→hard)
- *
- *  Anti-brake region (centre → CW):
- *    Q1 off, Q2 ramps 0→KA_CCR_MAX (~2V positive anti-brake)
- *    No ramp-in for anti-brake — takes effect immediately.
- * ============================================================ */
-static void tick_mode_a(void)
+/* ── Release ramp ────────────────────────────────────────── */
+static bool release_ramp_tick(uint16_t release_ms)
 {
-    if (handle_capture(false)) return;
-
-    if (!s_ctx.brake_active) {
-        set_brake_ccr(BRAKE_CCR_OFF);
-        set_ka_ccr(KA_CCR_OFF);
-        s_ctx.state = STATE_PASSTHROUGH;
-        return;
+    if (s_ctx.black_mv > (BRAKE_EXIT_MV + RELEASE_SNAP_MV)) {
+        set_brake_dac(DAC_BRAKE_OFF); return true;
     }
-
-    uint16_t pot = s_ctx.pot_raw;
-    uint16_t lo  = ADC_CENTRE - ADC_DEADBAND;
-    uint16_t hi  = ADC_CENTRE + ADC_DEADBAND;
-
-    if (pot <= hi) {
-        /* Reduced braking / dead short region */
-        uint16_t target = (pot >= lo)
-            ? BRAKE_CCR_HARD
-            : map_u16(pot, 0, lo,
-                      uart_debug_get_params()->brake_ccr_soft,
-                      BRAKE_CCR_HARD);
-
-        s_ctx.brake_ccr_target = target;
-        set_ka_ccr(KA_CCR_OFF);
-
-        uint16_t alpha = RAMP_MS_TO_ALPHA(s_ctx.saved_ramp_ms);
-        bool done = ramp_tick(target, alpha);
-        s_ctx.state = done ? STATE_BRAKING : STATE_RAMP_IN;
-
-    } else {
-        /* Positive anti-brake region */
-        uint16_t ccr = map_u16(pot, hi, ADC_MAX,
-                               KA_CCR_OFF, KA_CCR_MAX);
-        set_brake_ccr(BRAKE_CCR_OFF);
-        set_ka_ccr(ccr);
-        s_ctx.state = STATE_ANTI_BRAKE;
+    if (release_ms == 0U || s_ctx.brake_dac == DAC_BRAKE_OFF) {
+        set_brake_dac(DAC_BRAKE_OFF); return true;
     }
+    uint32_t step = ((uint32_t)DAC_BRAKE_HARD + release_ms - 1U) / release_ms;
+    if (step == 0U) step = 1U;
+    if (s_ctx.brake_dac <= (uint16_t)step) {
+        set_brake_dac(DAC_BRAKE_OFF); return true;
+    }
+    set_brake_dac(s_ctx.brake_dac - (uint16_t)step);
+    return false;
 }
 
-/* ============================================================
- *  MODE B — Brushed motor, reduced braking only
- *
- *  Full pot range → brake resistance with exponential ramp-in.
- *  CCW=8Ω, CW=dead short. No injection ever.
- * ============================================================ */
-static void tick_mode_b(void)
+/* ── Active brake table selection ────────────────────────────
+ * SET BRAKE_OHMS <1-5> picks one of five precomputed tables.
+ * No runtime table math: the chosen table and its soft endpoint
+ * are used directly. Higher gate voltage = lower Rds = lower
+ * resistance. The 1..5Ω labels are nominal; calibrate per motor.  */
+static uint8_t active_ohms_idx(void)
 {
-    if (handle_capture(false)) return;
-
-    if (!s_ctx.brake_active) {
-        set_brake_ccr(BRAKE_CCR_OFF);
-        set_ka_ccr(KA_CCR_OFF);
-        s_ctx.state = STATE_PASSTHROUGH;
-        return;
-    }
-
-    uint16_t target = map_u16(s_ctx.pot_raw, 0, ADC_MAX,
-                              uart_debug_get_params()->brake_ccr_soft,
-                              BRAKE_CCR_HARD);
-    s_ctx.brake_ccr_target = target;
-    set_ka_ccr(KA_CCR_OFF);
-
-    uint16_t alpha = RAMP_MS_TO_ALPHA(s_ctx.saved_ramp_ms);
-    bool done = ramp_tick(target, alpha);
-    s_ctx.state = done ? STATE_BRAKING : STATE_RAMP_IN;
+    uint8_t idx = uart_debug_get_params()->brake_ohms_idx;
+    if (idx >= BRAKE_OHMS_COUNT) idx = BRAKE_OHMS_DEFAULT;
+    return idx;
 }
 
-/* ============================================================
- *  MODE C — Brushless motor, eCom keep-alive
- *
- *  No ramp-in. Brushless ESC needs prompt braking.
- *  Keep-alive suppressed when V_BLACK > KA setpoint.
- * ============================================================ */
-static void tick_mode_c(void)
+/* Public helpers for the UART layer (label table lives here). */
+uint16_t brake_ohms_label_at(uint8_t idx)
 {
-    if (handle_capture(true)) return;
-
-    /* Keep-alive suppression */
-    if (ka_should_run(s_ctx.black_mv, s_ctx.white_mv)) {
-        set_ka_ccr(s_ctx.saved_ka_ccr);
-    } else {
-        set_ka_ccr(KA_CCR_OFF);
-    }
-
-    if (s_ctx.brake_active) {
-        uint16_t target = map_u16(s_ctx.pot_raw, 0, ADC_MAX,
-                                  uart_debug_get_params()->brake_ccr_soft,
-                                  BRAKE_CCR_HARD);
-        set_brake_ccr(target);
-        s_ctx.state = STATE_BRAKING;
-    } else {
-        set_brake_ccr(BRAKE_CCR_OFF);
-        s_ctx.state = (s_ctx.ka_ccr > 0U)
-                      ? STATE_KEEPALIVE_ONLY
-                      : STATE_PASSTHROUGH;
-    }
+    if (idx >= BRAKE_OHMS_COUNT) idx = BRAKE_OHMS_DEFAULT;
+    return brake_ohms_label[idx];
 }
 
-/* ── Public: init ────────────────────────────────────────── */
-void brake_init(void)
+/* Map a requested resistance (Ω) to the nearest stored table index. */
+uint8_t brake_ohms_nearest(uint16_t ohms)
 {
-    s_ctx = (BrakeCtx_t){
-        .state          = STATE_SAFE_BRAKE,
-        .latvian_active = false,
-        .white_prev_mv  = 0U,
-    };
-
-    clock_setup();
-    gpio_setup();
-    dma_setup();
-    adc_setup();
-    timer_setup();
-    systick_setup();
-
-    flash_load();
-    adc_start_conversion_regular(ADC1);
+    uint8_t  best_i = BRAKE_OHMS_DEFAULT;
+    uint16_t best_d = 0xFFFFU;
+    for (uint8_t i = 0; i < BRAKE_OHMS_COUNT; i++) {
+        uint16_t lbl = brake_ohms_label[i];
+        uint16_t d   = (ohms > lbl) ? (ohms - lbl) : (lbl - ohms);
+        if (d < best_d) { best_d = d; best_i = i; }
+    }
+    return best_i;
 }
 
-/* ── Public: 1ms tick ────────────────────────────────────── */
+/* ── Main brake_tick ─────────────────────────────────────── */
 void brake_tick(void)
 {
-    static uint32_t last_adc_ms = 0;
+    extern volatile bool     s_adc_ready;
+    extern volatile uint16_t s_adc_buf[ADC_NUM_CHANNELS];
 
-    if ((now_ms() - last_adc_ms) >= 1U) {
-        adc_start_conversion_regular(ADC1);
-        last_adc_ms = now_ms();
+    if (!s_adc_ready) return;
+    s_adc_ready = false;
+
+    s_ctx.white_prev_mv = s_ctx.white_mv;
+    s_ctx.white_mv  = raw_to_mv(s_adc_buf[0], WHITE_DIV_NUM, WHITE_DIV_DEN);
+    s_ctx.black_mv  = raw_to_mv(s_adc_buf[1], BLACK_DIV_NUM, BLACK_DIV_DEN);
+    s_ctx.pot_raw   = s_adc_buf[2];
+    s_ctx.pot_idx   = (uint8_t)(s_ctx.pot_raw >> 4);
+
+    /* Toggle read */
+    bool t0 = (gpio_get(TOGGLE0_PORT, TOGGLE0_PIN) == 0);
+    bool t1 = (gpio_get(TOGGLE1_PORT, TOGGLE1_PIN) == 0);
+    ModeSelect_t new_mode;
+    if      ( t0 && !t1) new_mode = MODE_B;
+    else if (!t0 &&  t1) new_mode = MODE_C;
+    else                 new_mode = MODE_A;
+
+    bool leaving_c = (s_ctx.mode_sel == MODE_C && new_mode != MODE_C);
+    bool entering_c = (s_ctx.mode_sel != MODE_C && new_mode == MODE_C);
+
+    s_ctx.mode_prev = s_ctx.mode_sel;
+    s_ctx.mode_sel  = new_mode;
+
+    /* On leaving Mode C: arm the 500ms debounce save        */
+    if (leaving_c) {
+        s_ctx.ka_pending_save = true;
+        s_ctx.ka_save_tick    = now_ms();
     }
 
-    if (s_adc_ready) {
-        s_ctx.white_prev_mv = s_ctx.white_mv;   /* save previous sample */
-        s_ctx.white_mv  = raw_to_mv(s_adc_buf[0], WHITE_DIV_NUM, WHITE_DIV_DEN);
-        s_ctx.black_mv  = raw_to_mv(s_adc_buf[1], BLACK_DIV_NUM, BLACK_DIV_DEN);
-        s_ctx.pot_raw   = s_adc_buf[2];
-        s_ctx.btn_raw   = s_adc_buf[3];
-        s_adc_ready     = false;
+    /* Process pending KA save after debounce period         */
+    if (s_ctx.ka_pending_save &&
+        (now_ms() - s_ctx.ka_save_tick) >= KA_SAVE_DEBOUNCE_MS) {
+        s_ctx.saved_ka_dac    = ka_dac_table[s_ctx.pot_idx];
+        s_ctx.ka_pending_save = false;
+        do_save();
+        led_blink_start();
     }
 
-    /* WHITE rail undervoltage guard */
-    if (s_ctx.white_mv < RAIL_UNDERVOLTAGE_MV && s_ctx.white_mv > 0U) {
-        brake_force_safe();
-        return;
-    }
-
-    /* ── Latvian brake: WHITE dV/dt detection ────────────── */
-    {
-        const DebugParams_t *p = uart_debug_get_params();
-        if (p->latvian_dvdt_mv_per_ms > 0U && s_ctx.white_prev_mv > 0U) {
-            /* Only meaningful if we have a valid previous reading */
-            if (s_ctx.white_prev_mv > s_ctx.white_mv) {
-                uint16_t drop = s_ctx.white_prev_mv - s_ctx.white_mv;
-                if (drop >= p->latvian_dvdt_mv_per_ms) {
-                    s_ctx.latvian_active = true;
-                }
-            }
-        }
-        /* Release: WHITE has recovered above exit threshold   */
-        if (s_ctx.latvian_active &&
-            s_ctx.white_mv > BRAKE_EXIT_MV &&
-            s_ctx.black_mv > BRAKE_EXIT_MV) {
-            s_ctx.latvian_active = false;
-        }
-        /* While Latvian brake is active: dead short, Q2 off,
-         * bypass all normal mode logic                        */
-        if (s_ctx.latvian_active) {
-            set_brake_ccr(BRAKE_CCR_HARD);
-            set_ka_ccr(KA_CCR_OFF);
+    /* Latvian brake */
+    if (uart_debug_get_params()->latvian_dvdt_mv_per_ms > 0U) {
+        int32_t dv = (int32_t)s_ctx.white_prev_mv - (int32_t)s_ctx.white_mv;
+        if (dv > (int32_t)uart_debug_get_params()->latvian_dvdt_mv_per_ms) {
+            set_ka_dac(DAC_KA_OFF);
+            set_brake_dac(DAC_BRAKE_HARD);
             s_ctx.state = STATE_LATVIAN_BRAKE;
-            led_blink_tick();
-            return;
+            goto done;
         }
     }
+    if (s_ctx.state == STATE_LATVIAN_BRAKE &&
+        s_ctx.white_mv > RAIL_UNDERVOLTAGE_MV)
+        s_ctx.state = STATE_PASSTHROUGH;
 
-    /* Brake hysteresis */
     s_ctx.brake_active = update_brake_active(s_ctx.brake_active,
                                               s_ctx.black_mv);
 
-    /* When brake releases, reset ramp so next entry starts fresh */
-    if (!s_ctx.brake_active && s_ctx.brake_ccr != BRAKE_CCR_OFF) {
-        set_brake_ccr(BRAKE_CCR_OFF);
+    /* ── MODE_C: KA tuning ─────────────────────────────── */
+    if (s_ctx.mode_sel == MODE_C) {
+        /* Pot dials KA floor live; voltmeter shows it       */
+        uint16_t ka_preview = ka_dac_table[s_ctx.pot_idx];
+        set_ka_dac(ka_preview);
+
+        /* Still brake normally during tuning               */
+        if (!s_ctx.brake_active) {
+            if (s_ctx.state == STATE_BRAKING || s_ctx.state == STATE_RAMP_IN)
+                s_ctx.state = STATE_RELEASE;
+            if (s_ctx.state == STATE_RELEASE) {
+                if (!release_ramp_tick(s_ctx.saved_release_ms_c))
+                    goto done;
+            }
+            set_brake_dac(DAC_BRAKE_OFF);
+            s_ctx.state = STATE_KA_TUNING;
+        } else {
+            uint16_t brk = map_u16(s_ctx.pot_raw, 0, ADC_MAX,
+                                   brake_soft_dac_by_ohm[active_ohms_idx()],
+                                   DAC_BRAKE_HARD);
+            s_ctx.brake_dac_target = brk;
+            uint16_t alpha = RAMP_MS_TO_ALPHA(s_ctx.saved_ramp_ms);
+            s_ctx.state = ramp_tick(brk, alpha) ? STATE_BRAKING : STATE_RAMP_IN;
+        }
+        voltmeter_update(true, s_ctx.white_mv, ka_dac_table[s_ctx.pot_idx]);
+        led_blink_tick();
+        return;
     }
 
-    s_ctx.btn_pressed = read_btn();
-    s_ctx.mode_sel    = read_toggle();
+    /* ── MODE_A: brake only, linear pot ───────────────── */
+    if (s_ctx.mode_sel == MODE_A) {
+        /* Q1: apply saved KA floor whenever V_BLACK low    */
+        bool ka_active = ka_should_run(s_ctx.black_mv, s_ctx.white_mv)
+                         && (s_ctx.saved_ka_dac < DAC_KA_OFF);
+        set_ka_dac(ka_active ? s_ctx.saved_ka_dac : DAC_KA_OFF);
 
-    switch (s_ctx.mode_sel) {
-        case MODE_A: tick_mode_a(); break;
-        case MODE_B: tick_mode_b(); break;
-        case MODE_C: tick_mode_c(); break;
-        default:     tick_mode_b(); break;
+        if (!s_ctx.brake_active) {
+            if (s_ctx.state == STATE_BRAKING || s_ctx.state == STATE_RAMP_IN)
+                s_ctx.state = STATE_RELEASE;
+            if (s_ctx.state == STATE_RELEASE) {
+                if (!release_ramp_tick(s_ctx.saved_release_ms_a))
+                    goto done;
+            }
+            set_brake_dac(DAC_BRAKE_OFF);
+            s_ctx.state = ka_active ? STATE_KEEPALIVE_ONLY : STATE_PASSTHROUGH;
+        } else {
+            /* Linear map: pot CCW = selected soft floor, CW = HARD */
+            uint16_t brk = map_u16(s_ctx.pot_raw, 0, ADC_MAX,
+                                   brake_soft_dac_by_ohm[active_ohms_idx()],
+                                   DAC_BRAKE_HARD);
+            s_ctx.brake_dac_target = brk;
+            set_ka_dac(DAC_KA_OFF);   /* Q1 off during braking  */
+            uint16_t alpha = RAMP_MS_TO_ALPHA(s_ctx.saved_ramp_ms);
+            s_ctx.state = ramp_tick(brk, alpha) ? STATE_BRAKING : STATE_RAMP_IN;
+        }
+        goto done;
     }
 
+    /* ── MODE_B: anti-brake table, brushed ────────────── */
+    {
+        uint8_t  idx     = s_ctx.pot_idx;
+        uint16_t brk_tgt = brake_tables[active_ohms_idx()][idx];
+        uint16_t ka_tgt  = ka_dac_table[idx];
+        uint16_t alpha   = RAMP_MS_TO_ALPHA(s_ctx.saved_ramp_ms);
+
+        if (!s_ctx.brake_active) {
+            if (s_ctx.state == STATE_BRAKING || s_ctx.state == STATE_RAMP_IN)
+                s_ctx.state = STATE_RELEASE;
+            if (s_ctx.state == STATE_RELEASE) {
+                if (!release_ramp_tick(s_ctx.saved_release_ms_b)) {
+                    set_ka_dac(DAC_KA_OFF);
+                    goto done;
+                }
+            }
+            set_brake_dac(DAC_BRAKE_OFF);
+            /* Anti-brake: Q1 at table value after brake exit */
+            set_ka_dac(ka_tgt);
+            s_ctx.state = (ka_tgt < DAC_KA_OFF)
+                          ? STATE_ANTI_BRAKE : STATE_PASSTHROUGH;
+        } else {
+            set_ka_dac(DAC_KA_OFF);
+            s_ctx.brake_dac_target = brk_tgt;
+            s_ctx.state = ramp_tick(brk_tgt, alpha)
+                          ? STATE_BRAKING : STATE_RAMP_IN;
+        }
+    }
+
+done:
+    /* Voltmeter: track voltage normally                     */
+    voltmeter_update(false, s_ctx.white_mv, 0U);
     led_blink_tick();
 }
 
-/* ── Public: force safe brake (ISR-safe) ────────────────── */
+/* ── brake_init ──────────────────────────────────────────── */
+void brake_init(void)
+{
+    s_ctx = (BrakeCtx_t){
+        .state        = STATE_SAFE_BRAKE,
+        .saved_ka_dac = DEFAULT_KA_DAC,
+    };
+    clock_setup();
+    gpio_setup();
+    dac_setup();
+    voltmeter_setup();
+    dma_setup();
+    adc_setup();
+    systick_setup();
+    uart_debug_init();
+    flash_load();
+    s_ctx.state = STATE_PASSTHROUGH;
+}
+
+/* ── brake_force_safe ────────────────────────────────────── */
 void brake_force_safe(void)
-{
-    TIM3_CCR1       = BRAKE_CCR_HARD;
-    TIM3_CCR2       = KA_CCR_OFF;
-    s_ctx.state     = STATE_SAFE_BRAKE;
-    s_ctx.brake_ccr = BRAKE_CCR_HARD;
-    s_ctx.ka_ccr    = KA_CCR_OFF;
-}
-
-OpState_t    brake_get_state(void)    { return s_ctx.state; }
-ModeSelect_t brake_get_mode_sel(void) { return s_ctx.mode_sel; }
-const BrakeCtx_t *brake_get_ctx(void) { return &s_ctx; }
-void         brake_led_blink(void)    { led_blink_start(); }
-
-/* ── ISR: DMA1 CH1 complete ──────────────────────────────── */
-void dma1_channel1_isr(void)
-{
-    if (dma_get_interrupt_flag(DMA1, ADC_DMA_CHANNEL, DMA_TCIF)) {
-        dma_clear_interrupt_flags(DMA1, ADC_DMA_CHANNEL, DMA_TCIF);
-        s_adc_ready = true;
-    }
-}

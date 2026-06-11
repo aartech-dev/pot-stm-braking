@@ -61,17 +61,23 @@
 typedef struct {
     uint16_t brake_enter_mv;
     uint16_t brake_exit_mv;
-    uint16_t brake_ccr_soft;
-    uint16_t ka_ccr_max;
-    uint16_t latvian_dvdt_mv_per_ms;  /* 0 = disabled             */
+    uint16_t brake_soft_dac;          /* legacy DAC value (superseded by ohms) */
+    uint16_t brake_ohms_idx;          /* 0-4 = ~1..5Ω full-scale brake table   */
+    uint16_t ka_dac_max;              /* DAC value for maximum KA/anti-brake */
+    uint16_t latvian_dvdt_mv_per_ms;  /* 0 = disabled                        */
+    uint16_t release_ms_a;
+    uint16_t release_ms_b;
+    uint16_t release_ms_c;
+    uint16_t ramp_ms;                 /* brake ramp-in time (ms), applied on SAVE */
 } DebugParams_t;
 
 /* ── Public API ──────────────────────────────────────────── */
 void uart_debug_init(void);
 void uart_debug_tick(const BrakeCtx_t *ctx);
 const DebugParams_t *uart_debug_get_params(void);
-/* Called by flash_load() to restore saved params on boot     */
-void uart_debug_load_params(uint16_t brake_enter, uint16_t brake_exit,
-                             uint16_t brake_soft,  uint16_t latvian_dvdt);
+void uart_debug_load_params(uint16_t brake_enter,    uint16_t brake_exit,
+                             uint16_t brake_ohms_idx, uint16_t latvian_dvdt,
+                             uint16_t rel_ms_a,       uint16_t rel_ms_b,
+                             uint16_t rel_ms_c);
 
 #endif /* UART_DEBUG_H */

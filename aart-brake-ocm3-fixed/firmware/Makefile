@@ -1,7 +1,7 @@
 # ============================================================
 #  AART Brake Module Firmware — Makefile
 #  Library : libopencm3
-#  Target  : STM32G041J6M6 (Cortex-M0+, 32K flash, 8K RAM)
+#  Target  : STM32G051K6U6 (Cortex-M0+, 32K flash, 18K RAM, DAC)
 #
 #  Requires: LIBOPENCM3_DIR to be set (done by Docker environment,
 #            or override: make LIBOPENCM3_DIR=../libopencm3)
@@ -40,14 +40,14 @@ INCS = \
     -I$(LIBOPENCM3_INC)
 
 # ── Defines ──────────────────────────────────────────────────
-# STM32G041 — libopencm3 uses this to select the right headers
+# STM32G051 — libopencm3 uses this to select the right headers
 DEFS = -DSTM32G0
 
 # ── Linker script ─────────────────────────────────────────────
 # libopencm3 dropped per-device .ld files (breaking change, Nov 2020).
 # We provide our own: MEMORY{} block + INCLUDE cortex-m-generic.ld
-# STM32G041J6: 32K flash @ 0x08000000, 8K RAM @ 0x20000000
-LDSCRIPT = stm32g041j6.ld
+# STM32G051K6: 32K flash @ 0x08000000, 18K RAM @ 0x20000000
+LDSCRIPT = stm32g051k6.ld
 
 # ── Compiler flags ───────────────────────────────────────────
 CFLAGS  = $(ARCH_FLAGS) \

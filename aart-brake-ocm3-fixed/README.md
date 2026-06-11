@@ -1,6 +1,6 @@
 # AART Brake Module — Docker Toolchain (libopencm3)
 
-STM32G041J6M6 firmware built with **libopencm3** — no ST HAL,
+STM32G051K6U6 firmware built with **libopencm3** — no ST HAL,
 no CubeMX, no proprietary dependencies. Everything in the repo.
 
 ---
@@ -113,7 +113,7 @@ Output in `./build/`:
 | `aart_brake.bin` | Raw binary |
 | `aart_brake.map` | Linker map |
 
-Expected size on STM32G041 (32K flash, 8K RAM):
+Expected size on STM32G051K6U6 (32K flash, 18K RAM, DAC):
 - Text: ~4–6 KB
 - BSS: ~100 bytes
 - Very comfortable margins.
@@ -200,7 +200,7 @@ On the G0 ADC, `adc_calibrate()` must be called **before**
 in the right order — see `adc_setup()` in brake_module.c.
 
 ### Linker script
-libopencm3 ships `stm32g041j6.ld` with the correct
+libopencm3 ships `stm32g051k6.ld` with the correct
 flash (32K) and RAM (8K) sizes for this exact part.
 No need to write your own.
 
