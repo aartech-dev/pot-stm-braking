@@ -1,0 +1,216 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" viewBox="0 0 680 580">
+<title>AART Brake Module — User Interface (Rev 11)</title>
+<desc>Three-mode toggle interface. Mode A: brake only all motors, linear pot, KA floor from Mode C. Mode B: brushed anti-brake, lookup table couples brake and anti-brake. Mode C: KA tuning mode, pot dials floor live, save on leaving after 500ms.</desc>
+<defs>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="#555" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+  <style>
+    text { font-family: Arial, sans-serif; }
+    .th  { font-size: 13px; font-weight: 600; fill: #222; }
+    .ts  { font-size: 11px; fill: #444; }
+    .tn  { font-size: 10px; fill: #666; }
+    .th2 { font-size: 12px; font-weight: 600; fill: #333; }
+    .box-gray   { fill: #F1EFE8; stroke: #888; stroke-width: 0.75; }
+    .box-blue   { fill: #E6F1FB; stroke: #185FA5; stroke-width: 0.75; }
+    .box-green  { fill: #E1F5EE; stroke: #0F6E56; stroke-width: 0.75; }
+    .box-coral  { fill: #FAECE7; stroke: #993C1D; stroke-width: 0.75; }
+    .box-amber  { fill: #FAEEDA; stroke: #854F0B; stroke-width: 0.75; }
+    .box-purple { fill: #EEEDFE; stroke: #534AB7; stroke-width: 0.75; }
+    .hdr-blue   { fill: #185FA5; }
+    .hdr-green  { fill: #0F6E56; }
+    .hdr-coral  { fill: #993C1D; }
+    .divider    { stroke: #ddd; stroke-width: 0.5; }
+  </style>
+</defs>
+
+<!-- ══ TITLE ══════════════════════════════════════════════ -->
+<text class="th" x="340" y="20" text-anchor="middle" font-size="15">AART Brake Module — User Interface Rev 11</text>
+
+<!-- ══ PHYSICAL CONTROLS (left column) ═══════════════════ -->
+<rect class="box-gray" x="18" y="36" width="128" height="56" rx="7"/>
+<text class="th" x="82" y="54" text-anchor="middle">Mode toggle</text>
+<text class="ts" x="82" y="70" text-anchor="middle">3-position switch</text>
+<text class="ts" x="82" y="84" text-anchor="middle">A · B · C</text>
+
+<rect class="box-gray" x="18" y="106" width="128" height="52" rx="7"/>
+<text class="th" x="82" y="124" text-anchor="middle">Potentiometer</text>
+<text class="ts" x="82" y="140" text-anchor="middle">10kΩ linear, no detent</text>
+<text class="tn" x="82" y="152" text-anchor="middle">CCW=min  CW=max</text>
+
+<rect class="box-amber" x="18" y="172" width="128" height="48" rx="7"/>
+<text class="th" x="82" y="190" text-anchor="middle">LED voltmeter</text>
+<text class="ts" x="82" y="206" text-anchor="middle">0.28″ / 0.36″ module</text>
+<text class="tn" x="82" y="218" text-anchor="middle">J14 3-wire</text>
+
+<!-- ══ MODE COLUMN HEADERS ════════════════════════════════ -->
+<!-- Mode A — blue -->
+<rect class="box-blue" x="168" y="36" width="152" height="52" rx="7"/>
+<text class="th" x="244" y="54" text-anchor="middle" fill="#185FA5">Mode A</text>
+<text class="ts" x="244" y="68" text-anchor="middle">Brake only</text>
+<text class="tn" x="244" y="82" text-anchor="middle">brushed + brushless</text>
+
+<!-- Mode B — green -->
+<rect class="box-green" x="334" y="36" width="152" height="52" rx="7"/>
+<text class="th" x="410" y="54" text-anchor="middle" fill="#0F6E56">Mode B</text>
+<text class="ts" x="410" y="68" text-anchor="middle">Anti-brake</text>
+<text class="tn" x="410" y="82" text-anchor="middle">brushed only</text>
+
+<!-- Mode C — coral -->
+<rect class="box-coral" x="500" y="36" width="164" height="52" rx="7"/>
+<text class="th" x="582" y="54" text-anchor="middle" fill="#993C1D">Mode C</text>
+<text class="ts" x="582" y="68" text-anchor="middle">KA tuning</text>
+<text class="tn" x="582" y="82" text-anchor="middle">brushless — setup only</text>
+
+<line class="divider" x1="168" y1="96" x2="664" y2="96"/>
+
+<!-- ══ ROW 1: POT FUNCTION ════════════════════════════════ -->
+<text class="tn" x="158" y="118" text-anchor="end">Pot</text>
+<text class="tn" x="158" y="130" text-anchor="end">function</text>
+
+<rect class="box-blue" x="168" y="104" width="152" height="56" rx="5"/>
+<text class="ts" x="244" y="120" text-anchor="middle">Linear: CCW→CW</text>
+<text class="ts" x="244" y="134" text-anchor="middle">soft min → dead short</text>
+<text class="tn" x="244" y="148" text-anchor="middle">2/3/4/6/8Ω (SET BRAKE_OHMS)</text>
+<text class="tn" x="244" y="156" text-anchor="middle">(no lookup table)</text>
+
+<rect class="box-green" x="334" y="104" width="152" height="56" rx="5"/>
+<text class="ts" x="410" y="120" text-anchor="middle">Table: brake + anti-brake</text>
+<text class="ts" x="410" y="134" text-anchor="middle">CCW = min brake</text>
+<text class="ts" x="410" y="148" text-anchor="middle">+ max anti-brake (~2V)</text>
+<text class="tn" x="410" y="158" text-anchor="middle">CW = max brake, no inject</text>
+
+<rect class="box-coral" x="500" y="104" width="164" height="56" rx="5"/>
+<text class="ts" x="582" y="120" text-anchor="middle">Dials KA floor live</text>
+<text class="ts" x="582" y="134" text-anchor="middle">CCW = 0V (no floor)</text>
+<text class="ts" x="582" y="148" text-anchor="middle">CW = ~2V floor</text>
+<text class="tn" x="582" y="158" text-anchor="middle">Voltmeter shows value</text>
+
+<line class="divider" x1="168" y1="166" x2="664" y2="166"/>
+
+<!-- ══ ROW 2: Q1 BEHAVIOUR ════════════════════════════════ -->
+<text class="tn" x="158" y="184" text-anchor="end">Q1</text>
+<text class="tn" x="158" y="196" text-anchor="end">output</text>
+
+<rect class="box-blue" x="168" y="172" width="152" height="56" rx="5"/>
+<text class="ts" x="244" y="188" text-anchor="middle">Applies saved_ka_dac</text>
+<text class="ts" x="244" y="202" text-anchor="middle">as floor when V_BLACK</text>
+<text class="ts" x="244" y="216" text-anchor="middle">drops below threshold</text>
+<text class="tn" x="244" y="224" text-anchor="middle">0 if no floor saved</text>
+
+<rect class="box-green" x="334" y="172" width="152" height="56" rx="5"/>
+<text class="ts" x="410" y="188" text-anchor="middle">Anti-brake injection</text>
+<text class="ts" x="410" y="202" text-anchor="middle">after brake exit:</text>
+<text class="ts" x="410" y="216" text-anchor="middle">ka_dac_table[pot]</text>
+<text class="tn" x="410" y="224" text-anchor="middle">Q1 off during braking</text>
+
+<rect class="box-coral" x="500" y="172" width="164" height="56" rx="5"/>
+<text class="ts" x="582" y="188" text-anchor="middle">Live KA preview</text>
+<text class="ts" x="582" y="202" text-anchor="middle">ka_dac_table[pot]</text>
+<text class="ts" x="582" y="216" text-anchor="middle">applied to Q1 live</text>
+<text class="tn" x="582" y="224" text-anchor="middle">for eCom verification</text>
+
+<line class="divider" x1="168" y1="234" x2="664" y2="234"/>
+
+<!-- ══ ROW 3: VOLTMETER ═══════════════════════════════════ -->
+<text class="tn" x="158" y="252" text-anchor="end">Voltmeter</text>
+
+<rect class="box-amber" x="168" y="240" width="152" height="32" rx="5"/>
+<text class="ts" x="244" y="260" text-anchor="middle">Track voltage 0–16V</text>
+
+<rect class="box-amber" x="334" y="240" width="152" height="32" rx="5"/>
+<text class="ts" x="410" y="260" text-anchor="middle">Track voltage 0–16V</text>
+
+<rect class="box-coral" x="500" y="240" width="164" height="32" rx="5"/>
+<text class="ts" x="582" y="256" text-anchor="middle">Live KA floor voltage</text>
+<text class="tn" x="582" y="268" text-anchor="middle">(not track voltage)</text>
+
+<line class="divider" x1="168" y1="278" x2="664" y2="278"/>
+
+<!-- ══ ROW 4: KA SAVE GESTURE ════════════════════════════ -->
+<text class="tn" x="158" y="295" text-anchor="end">KA save</text>
+<text class="tn" x="158" y="307" text-anchor="end">gesture</text>
+
+<!-- Mode A — receives saved value, no action here -->
+<rect class="box-blue" x="168" y="283" width="152" height="44" rx="5"/>
+<text class="ts" x="244" y="299" text-anchor="middle">Uses saved_ka_dac</text>
+<text class="ts" x="244" y="313" text-anchor="middle">set from Mode C</text>
+<text class="tn" x="244" y="323" text-anchor="middle">(no gesture in Mode A)</text>
+
+<!-- Mode B — no KA floor -->
+<rect class="box-green" x="334" y="283" width="152" height="44" rx="5"/>
+<text class="ts" x="410" y="299" text-anchor="middle">No KA floor</text>
+<text class="ts" x="410" y="313" text-anchor="middle">anti-brake from table</text>
+<text class="tn" x="410" y="323" text-anchor="middle">(brushed only)</text>
+
+<!-- Mode C — save on leaving -->
+<rect class="box-coral" x="500" y="283" width="164" height="44" rx="5"/>
+<text class="ts" x="582" y="299" text-anchor="middle">Toggle to A or B</text>
+<text class="ts" x="582" y="313" text-anchor="middle">→ 500ms debounce</text>
+<text class="ts" x="582" y="323" text-anchor="middle">→ save + LED blinks 3×</text>
+
+<line class="divider" x1="168" y1="333" x2="664" y2="333"/>
+
+<!-- ══ ROW 5: UART-ONLY ═══════════════════════════════════ -->
+<text class="tn" x="158" y="350" text-anchor="end">UART-only</text>
+
+<rect class="box-purple" x="168" y="338" width="496" height="30" rx="5"/>
+<text class="ts" x="416" y="357" text-anchor="middle">SET BRAKE_OHMS · SET KA_MAX · SET RAMP_MS · SET RELEASE_MS_A/B/C · SET BRAKE_ENTER/EXIT · SET LATVIAN_DVDT · GET · SAVE</text>
+
+<!-- ══ DIVIDER ════════════════════════════════════════════ -->
+<line x1="18" y1="382" x2="664" y2="382" stroke="#ccc" stroke-width="0.5"/>
+
+<!-- ══ KA WORKFLOW DIAGRAM ════════════════════════════════ -->
+<text class="th" x="340" y="400" text-anchor="middle">Keep-alive floor setup workflow</text>
+
+<!-- Timeline arrow -->
+<line x1="30" y1="450" x2="650" y2="450" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+<text class="tn" x="645" y="463" text-anchor="end">time →</text>
+
+<!-- Segment 1: in Mode A -->
+<rect x="30" y="428" width="100" height="18" rx="3" class="box-blue"/>
+<text class="tn" x="80" y="441" text-anchor="middle">Mode A (racing)</text>
+
+<!-- Toggle to C marker -->
+<line x1="130" y1="420" x2="130" y2="452" stroke="#993C1D" stroke-width="1.5" stroke-dasharray="3 2"/>
+<text class="tn" x="132" y="418" fill="#993C1D">→ Mode C</text>
+
+<!-- Segment 2: in Mode C, pot live -->
+<rect x="130" y="428" width="170" height="18" rx="3" class="box-coral"/>
+<text class="tn" x="215" y="441" text-anchor="middle">Mode C — rotate pot, watch voltmeter</text>
+
+<!-- Toggle back marker -->
+<line x1="300" y1="420" x2="300" y2="452" stroke="#0F6E56" stroke-width="1.5" stroke-dasharray="3 2"/>
+<text class="tn" x="302" y="418" fill="#0F6E56">→ Mode A</text>
+
+<!-- Segment 3: debounce 500ms -->
+<rect x="300" y="428" width="80" height="18" rx="3" fill="#FFF3DC" stroke="#854F0B" stroke-width="0.75"/>
+<text class="tn" x="340" y="441" text-anchor="middle">500ms</text>
+
+<!-- Save marker -->
+<line x1="380" y1="420" x2="380" y2="452" stroke="#185FA5" stroke-width="1.5" stroke-dasharray="3 2"/>
+<text class="tn" x="382" y="418" fill="#185FA5">save +</text>
+<text class="tn" x="382" y="428" fill="#185FA5">LED×3</text>
+
+<!-- Segment 4: back in Mode A with floor -->
+<rect x="380" y="428" width="240" height="18" rx="3" class="box-blue"/>
+<text class="tn" x="500" y="441" text-anchor="middle">Mode A — brake + saved KA floor active</text>
+
+<!-- Bracket: Mode C period -->
+<line x1="130" y1="472" x2="300" y2="472" stroke="#993C1D" stroke-width="1"/>
+<line x1="130" y1="467" x2="130" y2="477" stroke="#993C1D" stroke-width="1"/>
+<line x1="300" y1="467" x2="300" y2="477" stroke="#993C1D" stroke-width="1"/>
+<text class="tn" x="215" y="487" text-anchor="middle" fill="#993C1D">dial in floor on voltmeter</text>
+
+<!-- Bracket: debounce -->
+<line x1="300" y1="505" x2="380" y2="505" stroke="#854F0B" stroke-width="1"/>
+<line x1="300" y1="500" x2="300" y2="510" stroke="#854F0B" stroke-width="1"/>
+<line x1="380" y1="500" x2="380" y2="510" stroke="#854F0B" stroke-width="1"/>
+<text class="tn" x="340" y="520" text-anchor="middle" fill="#854F0B">debounce</text>
+
+<!-- Zero floor note -->
+<rect x="30" y="538" width="620" height="28" rx="5" fill="#F8F8F8" stroke="#ccc" stroke-width="0.5"/>
+<text class="tn" x="340" y="551" text-anchor="middle">To zero the KA floor: toggle to Mode C → rotate pot full CCW → toggle back to Mode A → wait 500ms. LED blinks when saved.</text>
+<text class="tn" x="340" y="562" text-anchor="middle">To set anti-brake without KA floor: use Mode B. Mode B does not apply the saved KA floor.</text>
+
+</svg>
