@@ -1,0 +1,38 @@
+U1 STM32G051K6U6  C5270224  "ARM Cortex-M0+ UFQFPN-32(5x5) Microcontrollers (MCU/MPU/SOC) ROHS"                 
+U2 AMS1117-3.3  C6186 C347222 "-40?~+125? 0.003%Vout 1 1.1V@(800mA) 15V 1A 3.3V 5mA 72dB@(120Hz) Fixed Over Current Protection?Short Circuit Protection?Thermal shutdown Positive SOT-223 Voltage Regulators - Linear, Low Drop Out (LDO) Regulators ROHS"                 
+U3 CH340N  C2977777  "-20?~+70? 1 2Mbps 3.3V?5V USB 2.0 USB to serial SOP-8 USB Converters ROHS"        SOP-8    USB-UART bridge    
+U4 MCP1700-5002  C631989  "-40?~+125?@(Tj) 1 1.6uA 250mA 350mV@(250mA) 44dB@(1kHz) 5V 6V Fixed Over Temperature Protection?Short Circuit Protection Positive TO-92-3 Voltage Regulators - Linear, Low Drop Out (LDO) Regulators ROHS"          (GD2 brake buffer only; GD1 on WHITE) 
+U5 TPS12120QRGERQ1 TPS1212-Q1 C48907823  "Automotive 74V low-Iq high-side driver with bidirectional current monitoring, I2t and diagnostics | RGE | 23 | -40 to 125" https://www.ti.com/product/TPS1212-Q1/part-details/TPS12120QRGERQ1   VQFN-23  Smart high-side switch controller for Q5/Q6 (VS from WHITE):   
+GD2 MCP6006T-E/OT  C4369359  "-40?~+125? 1 1.6mV 1.8V~5.5V 119pA 1MHz 1pA 25nV/?Hz@1kHz 30mA 3V/us 600nV/? 6V 70uA 90dB Rail-to-Rail Input, Rail-to-Rail Output SOT-23-5 Operational Amplifier ROHS"       -> Q2, linear)        
+GD1 MCP6006T-E/OT  C4369359  "-40?~+125? 1 1.6mV 1.8V~5.5V 119pA 1MHz 1pA 25nV/?Hz@1kHz 30mA 3V/us 600nV/? 6V 70uA 90dB Rail-to-Rail Input, Rail-to-Rail Output SOT-23-5 Operational Amplifier ROHS"    SOT-23-5  Anti-brake CURRENT-SOURCE loop on WHITE rail (PWM demand -> Q1; Rsense 0.1ohm)
+Q1 TIP147  C84047  "1000 100V 10A 125W 1mA 3V 3V 5V PNP TO-247 Darlington Transistors ROHS"    TO-220  PNP Darlington anti-brake current-source pass (100V 10A 125W) + HEATSINK  
+Q2 IRFP250N IRFP250NPBF C20624228 C2580 "-55?~+150? 1 N-channel 101pF 104W 2.8nF 200V 30A 355pF 4V 80m?@10V N-Channel TO-247 MOSFETs ROHS"  TO-247  Wide-SOA N-ch brake FET (30A 200V) + HEATSINK      
+       SUP70060E / RFP50N06 / FDP61N20)           
+Rsense 0.1ohm WSR3R1000FEA 1-2W C511044 "-65?~+275? 100m? 3W ±1% ±75ppm/? 4527 Chip Resistor - Surface Mount ROHS" anti-brake current sense (0.3V at 3A)           
+Q_LS 2N2222    PWM level-shift   C_KA 470n + R 10k/1k  PWM->DC demand filter     
+Q5   STL059N4S8AG  PowerFLAT  Reverse-block N-ch (40V 0.59mohm)            
+Q6   STL059N4S8AG  PowerFLAT  Reverse-block N-ch (common-source with Q5)           
+     (alt Q5/Q6: Vishay SiJK140E 0.34mohm)             
+Diodes                      
+D1   P6KE18CA   SMB  TVS bidirectional (WHITE rail clamp; CA essential)        
+D2   SS310      SMB  Q2 catch diode (100V)        
+D4   MBRS360    SMB  Anti-brake follower reverse block (emitter -> track)       
+RSNS ~0.5-0.75mohm    TPS1212 main-path current sense (CS1+/CS1-)             
+CI2t/CTMR/RIOC   TPS1212  I2t breaker time, retry timer, OCP threshold           
+D5   LED  Red   805  Status LED (PB6)          
+Passives                      
+F1   500mA-1A  polyfuse 1812  WHITE rail MCU/analog supply ONLY (never BLACK)        
+R2   10k  402  GD2 input safe-default pull-up            
+R3   10R  402  Q2 gate    R_BASE 1k 402  Q1 Darlington base    
+Rsense 0.1ohm    anti-brake current sense   RSNS ~0.5-0.75mohm  TPS1212 main-path sense       
+Q_LS 2N2222    PWM level-shift   C_KA 470n + R 10k/1k  PWM->DC filter      
+R8   15k  / R9 4k7  WHITE sense divider (PA0)          
+R10 22k  /  R11 4k7 BLACK sense divider (PA1, track side of switch)        
+R5   10k   Pot ref to 3.3V    R12 330R  Status LED     
+C1-C7 decoupling  (LDO  rails + MCU VDD/VDDA)              
+Connectors                      
+J1-J6   4mm  banana  Track + controller WHITE/BLACK/RED (x2 sides)          
+J7   3-pin  2.54mm  Mode toggle A/B/C (PB0/PB1/GND)            
+J10 4-pin  SWD   J11 3-pin UART  J12 BOOT0  J13 NRST        
+J14 3-pin  voltmeter                   
+NOTE: J9  capture  button REMOVED (toggle replaces it; PB3 reserved/optional)           

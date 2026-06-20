@@ -2,7 +2,7 @@
 #define BRAKE_MODULE_H
 
 /* ============================================================
- *  AART Slot Car Braking Module  — Rev 11
+ *  AART Slot Car Braking Module  — Revision 11
  *  Target  : STM32G051K6U6 (QFN-32)
  *  Library : libopencm3
  *
@@ -95,15 +95,20 @@
  * = lower Rds(on) = LOWER resistance. The 1..5Ω labels are
  * nominal estimates; calibrate per motor and regenerate tables
  * with tools/gen_brake_tables.py. No runtime table math.        */
-#define BRAKE_OHMS_COUNT       5U      /* tables: 2,3,4,6,8Ω     */
-#define BRAKE_OHMS_DEFAULT     1U      /* index 1 = ~3Ω default  */
+#define BRAKE_OHMS_COUNT       7U      /* 25,15,5,4,3,2,1Ω      */
+#define BRAKE_OHMS_DEFAULT     4U      /* index 4 = ~3Ω default  */
 #define BRAKE_OHMS_ARG_MIN     1U      /* SET BRAKE_OHMS Ω clamp  */
-#define BRAKE_OHMS_ARG_MAX     12U     /* (snapped to nearest)   */
+#define BRAKE_OHMS_ARG_MAX     30U     /* (snapped to nearest)   */
 
-/* Q1 P-ch KA/anti-brake — lower = more conduction           */
-#define DAC_KA_OFF             4095U   /* 3.3V → Q1 off        */
-#define DAC_KA_MAX             2480U   /* ~2.0V → max inject   */
-#define DEFAULT_KA_DAC         DAC_KA_OFF
+/* Q1 anti-brake CURRENT SOURCE — PWM duty sets demand        */
+/* 50kHz PWM -> level-shift + RC filter -> current-source ref. */
+/* 0 = off, KA_PWM_MAX = ~3A. Higher duty = more current.      */
+#define KA_PWM_OFF             0U      /* 0% duty = 0A (off)    */
+#define KA_PWM_MAX             2480U   /* full duty -> ~3A      */
+#define DAC_KA_OFF             KA_PWM_OFF   /* compat alias      */
+#define DAC_KA_MAX             KA_PWM_MAX   /* compat alias      */
+#define DEFAULT_KA_DAC         KA_PWM_OFF
+#define KA_PWM_ARR             2499U   /* TIM ARR for 50kHz @ 125MHz tim clk; confirm on bench */
 
 /* ── KA save debounce (ms after leaving Mode C) ─────────── */
 #define KA_SAVE_DEBOUNCE_MS    500U
@@ -152,7 +157,9 @@
 #define LED_PORT               GPIOB
 #define LED_PIN                GPIO6
 #define DAC_BRAKE_CHAN         DAC_CHANNEL1   /* PA4 → Q2 */
-#define DAC_KA_CHAN            DAC_CHANNEL2   /* PA5 → Q1 */
+/* Anti-brake is PWM now: PA5 = TIM2_CH1 (AF2). DAC_CH2 freed. */
+#define KA_PWM_TIMER           TIM2
+#define KA_PWM_OC              TIM_OC1        /* PA5 TIM2_CH1 */
 #define ADC_DMA_CHANNEL        DMA_CHANNEL1
 #define ADC_DMAMUX_REQ         5U
 

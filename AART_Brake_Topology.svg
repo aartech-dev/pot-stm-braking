@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="680" viewBox="0 0 680 640" role="img">
 <title>AART brake module — circuit topology Rev 11</title>
-<desc>Three rails: WHITE (+12-16V) top, BLACK (controller/track) middle, RED (0V) bottom. On BLACK, a two N-channel common-source bidirectional switch (Q5/Q6) driven by LTC7001 (U5) from the WHITE rail is the low-loss reverse-blocking pass element between controller-in and track-out. 3.3V LDO and 5V LDO (U4) from WHITE. MCU STM32G051 provides DAC1 and DAC2. Brake stage block: Q2 IRFP250N wide-SOA N-channel low-side FET, gate from DAC1 via op-amp buffer GD2, shunts BLACK-to-track to RED; heatsink. Anti-brake follower block: DAC2 drives op-amp GD1 on the 5V rail, GD1 drives the base of Q1 TIP122 NPN Darlington, collector to WHITE, emitter is the injection node fed back to GD1 and through D4 into BLACK-to-track; heatsink. The floating-supply P-channel scheme is removed.</desc>
+<desc>Three rails: WHITE (+12-16V) top, BLACK (controller/track) middle, RED (0V) bottom. On BLACK, a two N-channel common-source bidirectional switch (Q5/Q6) driven by the TPS1212-Q1 (U5) from the WHITE rail is the low-loss reverse-blocking pass element between controller-in and track-out. The TPS1212-Q1 (VS from WHITE) drives the pair, senses current via RSNS, and pulls its gate off on reverse (I_DIR, ~6-10us) or on overcurrent (I2t/SCP). Slower than a 0.75us ideal-diode controller but adds protection. 3.3V LDO and 5V LDO (U4) from WHITE. MCU STM32G051 provides DAC1 (brake) and a 50kHz PWM (anti-brake demand). Brake stage block: Q2 IRFP250N wide-SOA N-channel low-side FET, gate from DAC1 via op-amp buffer GD2, shunts BLACK-to-track to RED; heatsink. Anti-brake current-source block: a 50kHz PWM demand (filtered to DC) drives op-amp GD1 powered from the WHITE rail (~16V; it senses near the rail, so a 5V op-amp cannot be used); GD1 regulates Q1 TIP147 to a constant current set by Rsense (0.1 ohm) in the WHITE leg; injection through D4 into BLACK-to-track; heatsink. Bounded ~3A at stall. The floating-supply P-channel scheme is removed.</desc>
 <defs>
   <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
     <path d="M2 1L8 5L2 9" fill="none" stroke="#555" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -54,19 +54,19 @@
 <line class="power" x1="230" y1="64" x2="230" y2="98"/>
 <rect class="box-purple" x="196" y="98" width="92" height="32" rx="5"/>
 <text class="th" x="242" y="113" text-anchor="middle">U4 LDO 5V</text>
-<text class="tss" x="242" y="125" text-anchor="middle">GD1 rail</text>
+<text class="tss" x="242" y="125" text-anchor="middle">GD2 rail</text>
 
 <rect class="box-gray" x="332" y="150" width="156" height="84" rx="6"/>
 <text class="th" x="410" y="171" text-anchor="middle">STM32G051K6</text>
 <text class="tss" x="410" y="187" text-anchor="middle">DAC1 → brake (PA4)</text>
-<text class="tss" x="410" y="201" text-anchor="middle">DAC2 → anti-brake (PA5)</text>
+<text class="tss" x="410" y="201" text-anchor="middle">PWM → anti-brake (PA5)</text>
 <text class="tss" x="410" y="215" text-anchor="middle">ADC sense · pot · toggle</text>
 <text class="tss" x="410" y="229" text-anchor="middle">USART1 · voltmeter PWM</text>
 
 <line class="power" x1="92" y1="300" x2="150" y2="300"/>
 <rect class="box-amber" x="146" y="280" width="112" height="40" rx="5"/>
 <text class="th" x="200" y="296" text-anchor="middle">Q5/Q6 N-ch pair</text>
-<text class="tss" x="200" y="308" text-anchor="middle">+ U5 LTC7001 (from WHITE)</text>
+<text class="tss" x="200" y="308" text-anchor="middle">+ U5 TPS1212-Q1 (from WHITE)</text>
 <line class="power" x1="250" y1="300" x2="600" y2="300"/>
 <circle cx="520" cy="300" r="3" fill="#333"/>
 <text class="tss" x="520" y="291" text-anchor="middle">BLACK_to_track</text>
@@ -88,9 +88,9 @@
 <text class="tss" x="588" y="438" text-anchor="start">heatsink</text>
 
 <rect class="cont-teal" x="96" y="360" width="200" height="180" rx="8"/>
-<text class="th" x="108" y="376" text-anchor="start">Anti-brake follower</text>
+<text class="th" x="108" y="376" text-anchor="start">Anti-brake current src</text>
 <polygon points="116,398 116,452 168,425" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.75"/>
-<text class="th" x="134" y="429" text-anchor="middle">GD1</text>
+<text class="th" x="134" y="429" text-anchor="middle">GD1</text><text class="tss" x="134" y="442" text-anchor="middle">HV op-amp · WHITE</text>
 <text class="ts" x="110" y="408" text-anchor="end">+</text>
 <text class="ts" x="110" y="448" text-anchor="end">−</text>
 <line class="gate" x1="168" y1="425" x2="192" y2="425"/>
@@ -98,8 +98,8 @@
 <text class="tss" x="212" y="429" text-anchor="middle">R_BASE</text>
 <line class="gate" x1="232" y1="425" x2="250" y2="425" marker-end="url(#arrow)"/>
 <rect class="box-teal" x="170" y="462" width="118" height="48" rx="5"/>
-<text class="th" x="229" y="481" text-anchor="middle">Q1 TIP122</text>
-<text class="tss" x="229" y="494" text-anchor="middle">NPN Darlington</text>
+<text class="th" x="229" y="481" text-anchor="middle">Q1 TIP147</text>
+<text class="tss" x="229" y="494" text-anchor="middle">PNP Darlington</text>
 <text class="tss" x="229" y="505" text-anchor="middle">anti-brake pass</text>
 <path class="hs" d="M290 466 h16 M290 472 h16 M290 478 h16 M290 484 h16 M306 464 v22"/>
 
@@ -107,7 +107,7 @@
 <line class="gate" x1="316" y1="200" x2="316" y2="338"/>
 <line class="gate" x1="316" y1="338" x2="104" y2="338"/>
 <line class="gate" x1="104" y1="338" x2="104" y2="408" marker-end="url(#arrow)"/>
-<text class="tss" x="240" y="332" text-anchor="end">DAC2 → GD1 (+)</text>
+<text class="tss" x="240" y="332" text-anchor="end">PWM→filter→GD1 (+)</text>
 
 <line class="gate" x1="276" y1="98" x2="276" y2="462"/>
 <line class="power" x1="276" y1="64" x2="276" y2="98"/>
@@ -126,9 +126,9 @@
 <line class="fb" x1="300" y1="528" x2="88" y2="528"/>
 <line class="fb" x1="88" y1="528" x2="88" y2="448"/>
 <line class="fb" x1="88" y1="448" x2="116" y2="448" marker-end="url(#arrow)"/>
-<text class="tss" x="180" y="524" text-anchor="middle">emitter feedback → GD1 (−)</text>
+<text class="tss" x="180" y="524" text-anchor="middle">Rsense fb → GD1 (−)</text>
 
 <rect class="box-gray" x="28" y="572" width="624" height="46" rx="5"/>
-<text class="ts" x="40" y="589" text-anchor="start">Anti-brake = closed-loop voltage follower: GD1 forces the Q1 emitter (injection) to the DAC2 voltage. DAC2 = 0V → off; ~2V → max inject.</text>
-<text class="ts" x="40" y="606" text-anchor="start">Brake Q2 stays resistance-controlled (linear Rds) with a wide-SOA FET. Both power devices run linear (~10–15W) and need heatsinks. Floating-supply P-channel retired.</text>
+<text class="ts" x="40" y="589" text-anchor="start">Anti-brake = constant-current source: GD1 (HV op-amp powered from WHITE, not +5V) regulates I = Vdemand/Rsense (0.1 ohm). PWM demand 0 = off, full = 3A. Bounded ~3A at stall.</text>
+<text class="ts" x="40" y="606" text-anchor="start">Brake Q2 (IRFP250N) is resistance-controlled linear (~12W peak). Anti-brake pass device ~47W transient at stall. Both need heatsinks (sized by burst energy).</text>
 </svg>

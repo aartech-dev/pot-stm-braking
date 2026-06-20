@@ -48,7 +48,7 @@ from dataclasses import dataclass, field
 # ---- Fixed hardware/firmware constants (match brake_module.h) -------------
 DAC_MAX        = 4095
 DAC_BRAKE_HARD = 3095   # pot CW dead short
-DAC_KA_OFF     = 4095   # Q1 off, no anti-brake
+DAC_KA_OFF     = 0      # follower: 0V = off (polarity flipped for Darlington follower)
 TABLE_LEN      = 256
 
 
@@ -103,11 +103,13 @@ def make_ka_table(p: Profile):
 # give the low-ohm brushless profiles a different brake_gamma or ka curve
 # if you want a distinct feel per motor type.
 DEFAULT_PROFILES = [
-    Profile(label_ohms=2, brake_soft=2300, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
-    Profile(label_ohms=3, brake_soft=2200, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
-    Profile(label_ohms=4, brake_soft=2100, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
-    Profile(label_ohms=6, brake_soft=1950, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
-    Profile(label_ohms=8, brake_soft=1860, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
+    Profile(label_ohms=25, brake_soft=1700, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
+    Profile(label_ohms=15, brake_soft=1780, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
+    Profile(label_ohms=5,  brake_soft=2000, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
+    Profile(label_ohms=4,  brake_soft=2080, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
+    Profile(label_ohms=3,  brake_soft=2150, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
+    Profile(label_ohms=2,  brake_soft=2250, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
+    Profile(label_ohms=1,  brake_soft=2400, brake_gamma=1.8, ka_max=2480, ka_zero_at=0.65),
 ]
 
 

@@ -1,0 +1,337 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "8bba78dc-dee7-43a2-af4f-c9bd1840c5a0")
+	(paper "A3")
+	(title_block
+		(title "AART Brake Module — 7: Reverse-Blocking Pass Switch (two N-channel + TPS1212-Q1)")
+		(date "2026-06-19")
+		(rev "11")
+		(company "AART - Adrian & Richard's Technologies")
+		(comment 1 "Q5/Q6 common-source N-ch pair on BLACK; U5 TPS1212-Q1 smart high-side controller, VS from WHITE; RSNS current sense")
+		(comment 2 "Reverse block (I_DIR) + I2t OCP + 5us SCP + IMON/FLT. Reverse response ~6-10us. Replaces LTC7001+INA241+comparator.")
+	)
+	(lib_symbols)
+	(text "common source (TS)\n-> TPS1212 SRC"
+		(exclude_from_sim no)
+		(at 100 96 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "086b6f09-4e12-479d-b699-75d648cc95ca")
+	)
+	(text "RSNS\n~0.5-0.75mohm\n(in CS path)"
+		(exclude_from_sim no)
+		(at 131 84 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "0abf59c0-fd91-46b1-a62e-a8cbcd0c24e8")
+	)
+	(text "Q5\nSTL059N4S8AG\n40V 0.59mohm"
+		(exclude_from_sim no)
+		(at 92 84 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "4cad0a41-a584-4ebd-bad6-95d8de437091")
+	)
+	(text "U5\nTPS1212-Q1\nVQFN-23\nVS=WHITE\nGATE->Q5/Q6 gates\nCS1+/CS1- across RSNS"
+		(exclude_from_sim no)
+		(at 122 102 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "5504f4fb-901b-4260-b463-cbee891b83fb")
+	)
+	(text "PROTECTION + REVERSE BLOCK (replaces LTC7001 + INA241 + comparator):\nU5 senses main-path current across RSNS (CS1+/CS1-). On reverse current it asserts\nI_DIR (open-drain) low; glue logic pulls INP low -> GATE off -> body diodes block.\nReverse response ~6-10us (slower than a 0.75us ideal-diode controller, accepted here:\nthe slot-car controller output stage tolerates a few us of current-limited reverse).\nAlso gives I2t overcurrent (programmable breaker) + fast 5us short-circuit protection +\nbidirectional IMON + FLT diagnostics (mis-wiring protection). TI part (cost) vs ADI LTC7001."
+		(exclude_from_sim no)
+		(at 15 145 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "6e2490d0-dab7-4582-a267-e45305f63020")
+	)
+	(text "TWO N-CHANNEL BIDIRECTIONAL SWITCH + SMART CONTROLLER:\nQ5/Q6 in series, sources tied (common-source = TS/SRC). Drains to CTRL_BLACK_IN\nand TRACK_POS. Opposing body diodes block both directions when off; both channels\nconduct (low Rds) when on. U5 TPS1212-Q1 drives both gates from its GATE pin via an\ninternal charge pump. VS ties to WHITE (3.5-73V range) so control is alive regardless\nof BLACK voltage AND no VCC clamp is needed (unlike the retired LTC7001)."
+		(exclude_from_sim no)
+		(at 15 120 0)
+		(effects
+			(font
+				(size 1.1 1.1)
+			)
+			(justify left)
+		)
+		(uuid "8471df97-bbfe-4db4-a86f-c2fb5b8dc64c")
+	)
+	(text "PB3_SW_EN: optional MCU supervisory enable (EN/UVLO). Unused in Rev 11."
+		(exclude_from_sim no)
+		(at 15 196 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "c3551309-2d82-4e06-9c6d-5da4c88b793a")
+	)
+	(text "Q6\nSTL059N4S8AG\n40V 0.59mohm"
+		(exclude_from_sim no)
+		(at 152 84 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "dc091dad-c949-4c13-9d49-1bd6bcbcb5a0")
+	)
+	(text "INSERTION DROP at 40A:\n2 x 0.59mohm FET (47mV) + RSNS ~0.5-0.75mohm (20-30mV) = ~67-77mV.\nHigher than the bare-FET 47mV, but now with full protection. RSNS is a\ndrop-vs-sense-accuracy knob; set I2t/SCP/OCP thresholds for trip above 40A (~50-60A).\nBONUS: a single FET cannot do reverse-block AND forward-OCP (its body diode conducts\nthe protected direction) - the back-to-back pair is why both protections work."
+		(exclude_from_sim no)
+		(at 15 172 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "e37cce69-7bbb-4ef8-a05f-f3f96558b8fa")
+	)
+	(junction
+		(at 110 80)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "6d143896-9a6b-4ee9-bf1b-79dba3099ed2")
+	)
+	(junction
+		(at 150 80)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "cfad81b1-1b70-42cb-bc03-cee316999330")
+	)
+	(wire
+		(pts
+			(xy 150 80) (xy 150 60)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0f8dc45c-5693-43ff-973f-fad0bbd09b81")
+	)
+	(wire
+		(pts
+			(xy 120 100) (xy 150 100)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "23692074-a023-4278-a79e-dd9ccb25589a")
+	)
+	(wire
+		(pts
+			(xy 110 80) (xy 150 80)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2387de99-1efc-4332-9f31-8f8ea8301cd1")
+	)
+	(wire
+		(pts
+			(xy 110 80) (xy 110 60)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3ad305a3-c4e7-45a1-b3f6-9b1b48a474d5")
+	)
+	(wire
+		(pts
+			(xy 120 100) (xy 95 100)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "457d683c-6798-4ce1-b5ca-3f01a95f2589")
+	)
+	(wire
+		(pts
+			(xy 120 80) (xy 120 100)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "52e6d137-7dae-41ba-9287-249225fd630b")
+	)
+	(wire
+		(pts
+			(xy 150 60) (xy 175 60)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "56d2b0e9-6453-4c10-83e9-72b9f91e04a8")
+	)
+	(wire
+		(pts
+			(xy 110 60) (xy 90 60)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "73fa597f-9f72-4664-831f-ae72eec5ed11")
+	)
+	(wire
+		(pts
+			(xy 150 80) (xy 200 80)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e27f6d34-2cc6-4cd0-a31b-bb61b838b5d5")
+	)
+	(wire
+		(pts
+			(xy 60 80) (xy 110 80)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fca2e75e-a059-4adb-8a70-6292778f451b")
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 150 100 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "0149b45d-c88f-4ed4-9ce1-59461faba909")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 150 100 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "CTRL_BLACK_IN"
+		(shape input)
+		(at 60 80 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "36b69aa5-c7fa-4649-a4e7-7343a6c7415e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 60 80 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+12V_RAIL"
+		(shape input)
+		(at 90 60 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "97ea3add-33a4-4ecf-8c7c-d921bc3ca2a0")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 90 60 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "PB3_SW_EN"
+		(shape input)
+		(at 95 100 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "a329abf9-d8e4-4a4d-93c2-e409fc5dd8a8")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 95 100 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "TRACK_POS"
+		(shape output)
+		(at 200 80 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "d57034c1-3d85-4ef2-b24f-961dc44e3a1e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 200 80 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+)

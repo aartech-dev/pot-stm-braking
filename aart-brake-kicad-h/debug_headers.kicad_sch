@@ -1,80 +1,572 @@
 (kicad_sch
-  (version 20231120)
-  (generator "eeschema")
-  (paper "A4")
-  (title_block
-    (title "AART Brake Module — 3: Debug + Flash Headers")
-    (date "2026-06-03") (rev "2.0")
-    (company "AART - Adrian & Richard's Technologies")
-    (comment 1 "J10 SWD, J11 UART, J12 BOOT0, J13 NRST, J14 voltmeter")
-  )
-  (lib_symbols)
-  (wire (pts (xy 60.0 45.0) (xy 80.0 45.0)))
-  (wire (pts (xy 60.0 47.5) (xy 80.0 47.5)))
-  (wire (pts (xy 80.0 45.0) (xy 80.0 50.0)))
-  (wire (pts (xy 80.0 47.5) (xy 80.0 50.0)))
-  (wire (pts (xy 80.0 50.0) (xy 90.0 50.0)))
-  (wire (pts (xy 85.0 42.5) (xy 85.0 45.0)))
-  (wire (pts (xy 60.0 75.0) (xy 80.0 75.0)))
-  (wire (pts (xy 60.0 77.5) (xy 80.0 77.5)))
-  (wire (pts (xy 80.0 75.0) (xy 80.0 82.5)))
-  (wire (pts (xy 80.0 77.5) (xy 80.0 82.5)))
-  (wire (pts (xy 80.0 82.5) (xy 90.0 82.5)))
-  (wire (pts (xy 60.0 105.0) (xy 75.0 105.0)))
-  (wire (pts (xy 75.0 105.0) (xy 75.0 112.5)))
-  (wire (pts (xy 75.0 105.0) (xy 75.0 97.5)))
-  (wire (pts (xy 60.0 127.5) (xy 75.0 127.5)))
-  (wire (pts (xy 75.0 127.5) (xy 75.0 135.0)))
-  (wire (pts (xy 75.0 127.5) (xy 75.0 120.0)))
-  (global_label "SWDIO" (shape bidirectional) (at 50.0 45.0 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "SWDCLK" (shape bidirectional) (at 50.0 47.5 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "GND" (shape passive) (at 90.0 50.0 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "+3V3" (shape passive) (at 85.0 40.0 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "UART_TX" (shape output) (at 50.0 75.0 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "UART_RX" (shape input) (at 50.0 77.5 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "GND" (shape passive) (at 90.0 82.5 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "+3V3" (shape passive) (at 75.0 95.0 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "GND" (shape passive) (at 75.0 112.5 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "BOOT0" (shape input) (at 50.0 105.0 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "+3V3" (shape passive) (at 75.0 117.5 270)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (global_label "GND" (shape passive) (at 75.0 135.0 90)
-    (effects (font (size 1.27 1.27)) (justify right)))
-  (global_label "NRST_BTN" (shape output) (at 50.0 127.5 0)
-    (effects (font (size 1.27 1.27)) (justify left)))
-  (text "J10 — SWD DEBUG HEADER (4-pin 2.54mm)" (at 45.0 38.0 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "Pin 1: SWDIO (PA13 AF0)\nPin 2: SWDCLK (PA14 AF0)\nPin 3: GND\nPin 4: +3.3V (optional - powers target from programmer)" (at 95.0 43.0 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "Connect ST-Link V2/V3. PA13/PA14 default to SWD after reset.\nFull hardware debug: breakpoints, live variable watch.\nUse debug.sh script: starts OpenOCD + GDB at main()." (at 95.0 51.0 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "J11 — UART DEBUG / BOOTLOADER (3-pin 2.54mm)" (at 45.0 68.0 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "Pin 1: TX (PA9 USART1 AF1) -> RX of USB-UART adapter\nPin 2: RX (PA10 USART1 AF1) -> TX of USB-UART adapter\nPin 3: GND\n115200 8N1, 3.3V logic level. Do NOT connect 5V directly." (at 95.0 73.0 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "Telemetry: tick,state,mode,white_mv,black_mv,brake_ccr,\n           ka_ccr,pot_raw,ramp_ms,brake_active,latvian_active\nCommands: SET BRAKE_ENTER/EXIT/SOFT, SET KA_MAX,\n          SET LATVIAN_DVDT, SAVE, GET, HELP" (at 95.0 83.0 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "J12 — BOOT0 BUTTON (2-pin 2.54mm)" (at 45.0 98.0 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "Momentary button pulls PB8/BOOT0 to 3.3V via 10k.\nNormally LOW via internal MCU pull-down.\nHold J12 + press J13 = ROM UART bootloader entry on PA9/PA10.\nFlash: stm32flash -w aart_brake.bin /dev/ttyUSB0" (at 85.0 100.0 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-  (text "J13 — NRST BUTTON (2-pin 2.54mm)" (at 45.0 120.0 0)
-    (effects (font (size 1.5 1.5) bold)))
-  (text "Momentary button pulls NRST to GND.\nPress while holding J12 BOOT0 to enter bootloader.\nRelease J13 first, then release J12." (at 85.0 123.0 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-
-
-  (text "USB-C INTERFACE (J_USB + U3 CH340N):\n\nJ_USB (USB-C 16-pin, HRO TYPE-C-31-M-12):\n  VBUS (A4/B4) -> F_USB (500mA polyfuse) -> D_USB (BAT54 anode)\n  D_USB cathode -> LDO input (ORs with WHITE rail path)\n  D+ (A6/B6) -> U3 pin 3\n  D- (A7/B7) -> U3 pin 4\n  CC1 (A5) -> R_CC1 (5.1k) -> GND\n  CC2 (B5) -> R_CC2 (5.1k) -> GND\n  GND (A1/B1/A12/B12) -> GND\n  SBU1/SBU2/SSRX/SSTX: NC\n\nU3 CH340N SOP-8 (JLCPCB C506813):\n  Pin 1 (V3) -> VCC (short to pin 8, 3.3V mode)\n  Pin 2 (GND) -> GND\n  Pin 3 (D+) -> J_USB D+\n  Pin 4 (D-) -> J_USB D-\n  Pin 5 (RXD) -> MCU PA9 (USART1_TX)\n  Pin 6 (TXD) -> MCU PA10 (USART1_RX)\n  Pin 7 (NC)\n  Pin 8 (VCC) -> 3.3V rail + C_USB2 (100nF)\n\nPOWER PRIORITY:\n  WHITE (12-16V) via D_WHITE and USB VBUS (5V) via D_USB\n  both diode-OR into LDO input.\n  WHITE wins on voltage when track connected.\n  USB-only mode: VBUS powers LDO at 5V, FETs unpowered (WHITE=0V),\n  MCU and UART fully functional for bench configuration." (at 20 20 0)
-    (effects (font (size 1.0 1.0)) (justify left)))
-
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "17fdeb53-3abc-48dc-9fd5-711a48ebf0e8")
+	(paper "A4")
+	(title_block
+		(title "AART Brake Module — 3: Debug + Flash Headers")
+		(date "2026-06-19")
+		(rev "11")
+		(company "AART - Adrian & Richard's Technologies")
+		(comment 1 "J10 SWD, J11 UART, J12 BOOT0, J13 NRST, J14 voltmeter")
+	)
+	(lib_symbols)
+	(text "J10 — SWD DEBUG HEADER (4-pin 2.54mm)"
+		(exclude_from_sim no)
+		(at 45 38 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "14384739-2a5d-4c40-9893-031a2c175495")
+	)
+	(text "Momentary button pulls PB8/BOOT0 to 3.3V via 10k.\nNormally LOW via internal MCU pull-down.\nHold J12 + press J13 = ROM UART bootloader entry on PA9/PA10.\nFlash: stm32flash -w aart_brake.bin /dev/ttyUSB0"
+		(exclude_from_sim no)
+		(at 85 100 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "325afc69-9f3c-4dc8-8eff-165a53b474e1")
+	)
+	(text "J13 — NRST BUTTON (2-pin 2.54mm)"
+		(exclude_from_sim no)
+		(at 45 120 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "48888bc2-3893-413e-81e6-7bd83e6ad382")
+	)
+	(text "Pin 1: SWDIO (PA13 AF0)\nPin 2: SWDCLK (PA14 AF0)\nPin 3: GND\nPin 4: +3.3V (optional - powers target from programmer)"
+		(exclude_from_sim no)
+		(at 95 43 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "48d62ac3-dc41-4a98-9170-41f940b267eb")
+	)
+	(text "Momentary button pulls NRST to GND.\nPress while holding J12 BOOT0 to enter bootloader.\nRelease J13 first, then release J12."
+		(exclude_from_sim no)
+		(at 85 123 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "49024f67-f298-48ff-942a-f7cc6d7a83b6")
+	)
+	(text "J11 — UART DEBUG / BOOTLOADER (3-pin 2.54mm)"
+		(exclude_from_sim no)
+		(at 45 68 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "5234ea2f-eb96-4543-8938-0bafc79d474c")
+	)
+	(text "Connect ST-Link V2/V3. PA13/PA14 default to SWD after reset.\nFull hardware debug: breakpoints, live variable watch.\nUse debug.sh script: starts OpenOCD + GDB at main()."
+		(exclude_from_sim no)
+		(at 95 51 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "63a2d600-1ede-4bcd-a506-f48f230494f2")
+	)
+	(text "J12 — BOOT0 BUTTON (2-pin 2.54mm)"
+		(exclude_from_sim no)
+		(at 45 98 0)
+		(effects
+			(font
+				(size 1.5 1.5)
+				(bold yes)
+			)
+		)
+		(uuid "8ba712e1-4031-4f75-8ef4-1d8b95e68c08")
+	)
+	(text "Telemetry: tick,state,mode,white_mv,black_mv,brake_ccr,\n           ka_ccr,pot_raw,ramp_ms,brake_active,latvian_active\nCommands: SET BRAKE_ENTER/EXIT/SOFT, SET KA_MAX,\n          SET LATVIAN_DVDT, SAVE, GET, HELP"
+		(exclude_from_sim no)
+		(at 95 83 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "a2999393-ce89-4da3-9deb-56384584b31f")
+	)
+	(text "USB-C INTERFACE (J_USB + U3 CH340N):\n\nJ_USB (USB-C 16-pin, HRO TYPE-C-31-M-12):\n  VBUS (A4/B4) -> F_USB (500mA polyfuse) -> D_USB (BAT54 anode)\n  D_USB cathode -> LDO input (ORs with WHITE rail path)\n  D+ (A6/B6) -> U3 pin 3\n  D- (A7/B7) -> U3 pin 4\n  CC1 (A5) -> R_CC1 (5.1k) -> GND\n  CC2 (B5) -> R_CC2 (5.1k) -> GND\n  GND (A1/B1/A12/B12) -> GND\n  SBU1/SBU2/SSRX/SSTX: NC\n\nU3 CH340N SOP-8 (JLCPCB C506813):\n  Pin 1 (V3) -> VCC (short to pin 8, 3.3V mode)\n  Pin 2 (GND) -> GND\n  Pin 3 (D+) -> J_USB D+\n  Pin 4 (D-) -> J_USB D-\n  Pin 5 (RXD) -> MCU PA9 (USART1_TX)\n  Pin 6 (TXD) -> MCU PA10 (USART1_RX)\n  Pin 7 (NC)\n  Pin 8 (VCC) -> 3.3V rail + C_USB2 (100nF)\n\nPOWER PRIORITY:\n  WHITE (12-16V) via D_WHITE and USB VBUS (5V) via D_USB\n  both diode-OR into LDO input.\n  WHITE wins on voltage when track connected.\n  USB-only mode: VBUS powers LDO at 5V, FETs unpowered (WHITE=0V),\n  MCU and UART fully functional for bench configuration."
+		(exclude_from_sim no)
+		(at 20 20 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "a7973100-bcf8-4df7-8d69-e8c326822465")
+	)
+	(text "Pin 1: TX (PA9 USART1 AF1) -> RX of USB-UART adapter\nPin 2: RX (PA10 USART1 AF1) -> TX of USB-UART adapter\nPin 3: GND\n115200 8N1, 3.3V logic level. Do NOT connect 5V directly."
+		(exclude_from_sim no)
+		(at 95 73 0)
+		(effects
+			(font
+				(size 1 1)
+			)
+			(justify left)
+		)
+		(uuid "b073b471-9d4b-48df-b186-60bf175b71b9")
+	)
+	(wire
+		(pts
+			(xy 75 127.5) (xy 75 135)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1031ba3e-ca11-45be-8626-39d9de17a17f")
+	)
+	(wire
+		(pts
+			(xy 60 77.5) (xy 80 77.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "349729c2-ce27-45ac-a568-f813636ffdc9")
+	)
+	(wire
+		(pts
+			(xy 80 82.5) (xy 90 82.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4c346172-91e4-4d51-9031-c2afe33863b3")
+	)
+	(wire
+		(pts
+			(xy 75 105) (xy 75 112.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "52cc6715-a33e-4a41-922e-0f6932969716")
+	)
+	(wire
+		(pts
+			(xy 85 42.5) (xy 85 45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "66bc5571-e03a-4201-92b5-c0ae95748cbb")
+	)
+	(wire
+		(pts
+			(xy 80 75) (xy 80 82.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "7736b1fc-f0f7-4970-868b-5f014e0e127c")
+	)
+	(wire
+		(pts
+			(xy 80 45) (xy 80 50)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8115177a-6255-4614-a425-35d1acab765b")
+	)
+	(wire
+		(pts
+			(xy 75 127.5) (xy 75 120)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "84290cb3-0b36-4fe1-b43d-f906d7ddce21")
+	)
+	(wire
+		(pts
+			(xy 60 105) (xy 75 105)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8c375059-5df7-414d-ba73-f4bd40f6c01b")
+	)
+	(wire
+		(pts
+			(xy 60 127.5) (xy 75 127.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "90fa803a-81f0-4da9-b4be-21a940d04576")
+	)
+	(wire
+		(pts
+			(xy 60 75) (xy 80 75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9bbc2b1e-899a-4b33-846a-da37873f09f8")
+	)
+	(wire
+		(pts
+			(xy 75 105) (xy 75 97.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a2ddc2f1-daae-4a99-a5f5-bd561b184a0f")
+	)
+	(wire
+		(pts
+			(xy 80 50) (xy 90 50)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e4be5645-107a-4745-9533-336a3fe473b7")
+	)
+	(wire
+		(pts
+			(xy 60 45) (xy 80 45)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e79a7d30-d369-43a6-9ab8-c5c9110ba7f0")
+	)
+	(wire
+		(pts
+			(xy 60 47.5) (xy 80 47.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f92ceabe-2b60-4f3a-9331-b24e2ebc5cb5")
+	)
+	(global_label "BOOT0"
+		(shape input)
+		(at 50 105 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "0371c87d-d5ea-4789-8baa-b8da21ac7c23")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 50 105 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "UART_TX"
+		(shape output)
+		(at 50 75 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "03c11e2a-955e-4b2e-9c5a-1a4c24680333")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 50 75 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+3V3"
+		(shape passive)
+		(at 75 95 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "07e953a8-ab98-4c01-b395-fbda51a08b04")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 75 95 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 75 135 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "0c6e76ea-5137-4219-a374-8d4a34ac4564")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 75 135 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 90 50 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "158bab4b-fc0a-402c-ab1e-11cf556c09e6")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 90 50 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 90 82.5 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "2d3a1678-d96c-460c-a6d8-fdbbeb1e072f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 90 82.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "NRST_BTN"
+		(shape output)
+		(at 50 127.5 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "3b6528df-0250-4ca4-a3e7-de35b1ea131e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 50 127.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "SWDIO"
+		(shape bidirectional)
+		(at 50 45 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "4cb1ff8e-c45b-48a1-9fce-8d20e94cb6e5")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 50 45 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "SWDCLK"
+		(shape bidirectional)
+		(at 50 47.5 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "822913cb-e0a5-451e-8ab0-0db8342df604")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 50 47.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "UART_RX"
+		(shape input)
+		(at 50 77.5 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9f251d58-dcb5-43a3-b997-286ff63c0f16")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 50 77.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+3V3"
+		(shape passive)
+		(at 85 40 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "cb84bae6-c31e-43d2-a7be-35ab2d5f551f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 85 40 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 75 112.5 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "ecb1949a-7164-4569-9430-188afd6dd2be")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 75 112.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "+3V3"
+		(shape passive)
+		(at 75 117.5 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "ed8a10f4-b4da-422c-8af0-c5e409556780")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 75 117.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
 )

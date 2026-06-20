@@ -1,5 +1,5 @@
 /* ============================================================
- *  main.c — AART Slot Car Braking Module  Rev 5
+ *  main.c — AART Slot Car Braking Module  Revision 11
  *  Target : STM32G051K6U6 (QFN-32)
  *  Library: libopencm3
  * ============================================================ */
