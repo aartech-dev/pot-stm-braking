@@ -1,310 +1,48 @@
 (kicad_sch
-	(version 20260306)
-	(generator "eeschema")
-	(generator_version "10.0")
-	(uuid "ce65c425-3a4d-4648-be89-4e59d3c95446")
-	(paper "A4")
-	(title_block
-		(title "AART Brake Module — 5: Anti-brake constant-current source (3A, PWM-set)")
-		(date "2026-06-19")
-		(rev "11")
-		(company "AART - Adrian & Richard's Technologies")
-		(comment 1 "High-side op-amp current source: GD1 (HV op-amp on WHITE rail) + Q1 TIP147 PNP Darlington + Rsense 0.1ohm. I = Vdemand/Rsense, max 3A.")
-		(comment 2 "Demand = 50kHz PWM from MCU, level-shifted (2N2222) + RC filtered (470n) to DC. D4 MBRS360 reverse block.")
-	)
-	(lib_symbols)
-	(text "GD1\nHV op-amp current loop\n(WHITE rail, 0-16V)\nLM321/LM358-class >=16V"
-		(exclude_from_sim no)
-		(at 138 104 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "02035623-5931-4f87-87af-3e0170a60b0f")
-	)
-	(text "D4\nMBRS360\nreverse block"
-		(exclude_from_sim no)
-		(at 208 122 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "0e0c19b1-4af8-4e92-8b08-6f9c8d773edf")
-	)
-	(text "RETIRED - do NOT fit: floating-supply P-ch (ZD1/R_Z1/C_Z1/LM321, IRF9Z34N) and the\nvoltage-follower TIP122 NPN. See design doc 7A.7."
-		(exclude_from_sim no)
-		(at 15 188 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "2d170289-daf4-419c-a5a9-692bff754154")
-	)
-	(text "Q1\nTIP147 PNP Darlington\nTO-220 + heatsink\n(or N-MOSFET alt:\nSUP70060E/RFP50N06)"
-		(exclude_from_sim no)
-		(at 191 103 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "40cd3371-b258-41fa-8976-eef64d72cb9e")
-	)
-	(text "ANTI-BRAKE = CONSTANT-CURRENT SOURCE (this revision):\nClassic high-side op-amp current source. GD1 drives Q1 and regulates the drop across\nRsense (0.1 ohm) to equal the demand, holding I = Vdemand/Rsense regardless of motor.\nDemand: a 50kHz MCU PWM, level-shifted (2N2222) and RC-filtered (470n + R) to 0-0.3V.\nPot sets PWM duty -> current. 0% = 0A (off); full = 3A.\nWhy a current source: a stalled motor (start line) is ~short; a voltage source would\ndump unbounded current. A current source bounds it to ~3A - correct, and matches\nreal controllers (Kobic etc). Replaces the retired voltage follower (TIP122)."
-		(exclude_from_sim no)
-		(at 15 95 0)
-		(effects
-			(font
-				(size 1.1 1.1)
-			)
-			(justify left)
-		)
-		(uuid "45aaad5e-b0e7-42e9-8758-9db87929413d")
-	)
-	(text "SAFETY:\nShoot-through protection - if brake (Q2) and anti-brake fault on together, the\ncurrent source caps its contribution at ~3A instead of feeding a near-short.\nAdd open/short detection on the loop + fast OCP to guard source component failure."
-		(exclude_from_sim no)
-		(at 15 165 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "7ef2709d-0049-4617-be61-985d06dd4352")
-	)
-	(text "level shift + PWM->DC filter\n2N2222 + 470n + 10k/1k\n(KA_PWM_DEMAND from MCU 50kHz)"
-		(exclude_from_sim no)
-		(at 120 134 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "90085e48-a5f5-4534-87bd-2d5662fa3aad")
-	)
-	(text "Rsense\n0.1 ohm\n(WHITE leg)\n0.3V at 3A"
-		(exclude_from_sim no)
-		(at 176 106 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "9d65e621-2309-472b-a10f-e6e8ab476c8a")
-	)
-	(text "OP-AMP SUPPLY - CRITICAL:\nGD1 is powered from the WHITE rail (~16V), NOT +5V. Rsense is in the WHITE leg,\nso the op-amp inputs/output sit at ~16V common mode; a 5V op-amp cannot work here.\nUse a single-supply HV op-amp (LM321/LM358-class, >=16V, ideally 36V), GND-to-WHITE.\nConfirmed by the SIMetrix design (op-amp V+ = supply rail). Only GD2 (brake) is on +5V."
-		(exclude_from_sim no)
-		(at 15 150 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "a12bb87a-57fb-49b3-b20e-b8e273f47ca8")
-	)
-	(text "THERMAL (steady-state baseline, from SIMetrix design):\nVsupply max 16V, Ta 30C. At 2.75A -> Pd 44W (47W at full 3A).\nTIP147: SOA 125W@25C, Tj allow 125C, Rthjc 1C/W -> Rthca 1.16C/W, Tc 81C.\nSUP70060E: SOA 200W, Tj 150C, Rthjc 0.75 -> Rthca 1.98C/W, Tc 117C (smaller sink, hotter).\nAnti-brake is bursty: size heatsink by pulse energy / thermal capacitance\n(dT ~= Energy/Cth) not steady 47W - a ~50g Al sink (Cth ~45 J/C) rises ~2C per 2s burst."
-		(exclude_from_sim no)
-		(at 15 132 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "ed367132-b1e4-4953-95d7-300b78618f4a")
-	)
-	(junction
-		(at 150 112.27)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "39a8d93d-f91f-4b90-ba50-19c10a5a6a77")
-	)
-	(wire
-		(pts
-			(xy 190.5 127) (xy 207.01 127)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1336aad1-6d10-4fe7-aee6-eddb3d58b351")
-	)
-	(wire
-		(pts
-			(xy 207.01 127) (xy 222.25 127)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "30c64061-146e-4422-976f-5f35080afd0d")
-	)
-	(wire
-		(pts
-			(xy 150 112.27) (xy 150 140)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "375a1b98-94f6-4df6-a245-0fa614b8f2fc")
-	)
-	(wire
-		(pts
-			(xy 150 112.27) (xy 190.5 112.27)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "52a715aa-8abf-45ce-9263-3fbf115e5683")
-	)
-	(wire
-		(pts
-			(xy 207.01 140) (xy 207.01 127)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a0a5561e-56f1-4b6d-b78a-2cb6583c85b9")
-	)
-	(wire
-		(pts
-			(xy 120 112.27) (xy 150 112.27)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "beb748d9-f109-415c-84ee-4d60861c6a04")
-	)
-	(wire
-		(pts
-			(xy 150 140) (xy 207.01 140)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d3d42507-0918-46ce-81d1-379754da30dc")
-	)
-	(wire
-		(pts
-			(xy 190.5 100.33) (xy 190.5 105)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e52119b7-2339-4806-b6f8-d7b6a6861374")
-	)
-	(wire
-		(pts
-			(xy 190.5 119) (xy 190.5 127)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f62ba872-ebc4-4389-8e54-3d8d3cb091a8")
-	)
-	(global_label "KA_PWM_DEMAND"
-		(shape input)
-		(at 120 112.27 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "2b62d898-1c6c-4914-adb3-b419cfe523d4")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 120 112.27 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "TRACK_POS"
-		(shape bidirectional)
-		(at 222.25 127 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "46b6edb4-164f-4ef8-b586-c77aca72b856")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 222.25 127 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "+12V_RAIL"
-		(shape passive)
-		(at 190.5 100.33 90)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "83ba4ca1-e10b-45c9-9297-29eafc40622f")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 190.5 100.33 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "+12V_RAIL"
-		(shape input)
-		(at 138 104 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "b4769448-8897-4879-8cb3-fe8e5cf8531d")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 138 104 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
+  (version 20231120)
+  (generator "eeschema")
+  (paper "A4")
+  (title_block
+    (title "AART Brake Module — 5: Anti-brake constant-current source (3A, DAC2-set)")
+    (date "2026-06-19") (rev "11")
+    (company "AART - Adrian & Richard's Technologies")
+    (comment 1 "High-side op-amp current source: GD1 (HV op-amp on WHITE rail) + Q1 TIP147 PNP Darlington + Rsense 0.1ohm. I = Vdemand/Rsense, max 3A.")
+    (comment 2 "Demand = DC from MCU DAC2, scaled by R_KA1/R_KA2 divider + GD3 (LM7321) level translator. D4 MBRS360 reverse block.")
+  )
+  (lib_symbols)
+  (junction (at 150 112.27))
+  (wire (pts (xy 120 112.27) (xy 138 112.27)))
+  (wire (pts (xy 138 112.27) (xy 150 112.27)))
+  (wire (pts (xy 150 112.27) (xy 175 112.27)))
+  (wire (pts (xy 175 112.27) (xy 190.5 112.27)))
+  (wire (pts (xy 190.5 100.33) (xy 190.5 105)))
+  (wire (pts (xy 190.5 119) (xy 190.5 127)))
+  (wire (pts (xy 190.5 127) (xy 207.01 127)))
+  (wire (pts (xy 207.01 127) (xy 222.25 127)))
+  (wire (pts (xy 150 112.27) (xy 150 140)))
+  (wire (pts (xy 150 140) (xy 207.01 140)))
+  (wire (pts (xy 207.01 140) (xy 207.01 127)))
+  (global_label "KA_DAC_DEMAND" (shape input) (at 120 112.27 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "+12V_RAIL" (shape input) (at 138 104 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "+12V_RAIL" (shape passive) (at 190.5 100.33 270)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "TRACK_POS" (shape bidirectional) (at 222.25 127 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (text "GD1\nRRIO op-amp on WHITE rail\n(0-16V, input CMR must reach V+)\ne.g. TI LM7321 (RRIO, 2.5-32V)" (at 138 104 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "Rsense\n0.1 ohm\n(WHITE leg)\n0.3V at 3A" (at 176 106 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "Q1\nTIP147 PNP Darlington\nTO-220 + heatsink\n(or N-MOSFET alt:\nSUP70060E/RFP50N06)" (at 191 103 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "D4\nMBRS360\nreverse block" (at 208 122 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "DAC2 level translator\nR_KA1 6.8k/R_KA2 1.2k + GD3 LM7321\n(KA_DAC_DEMAND from MCU DAC2 DC)" (at 120 134 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "ANTI-BRAKE = CONSTANT-CURRENT SOURCE (this revision):\nClassic high-side op-amp current source. GD1 drives Q1 and regulates the drop across\nRsense (0.1 ohm) to equal the demand, holding I = Vdemand/Rsense regardless of motor.\nDemand: MCU DAC2 DC, scaled by R_KA1/R_KA2 divider + GD3 (LM7321) to 0-0.3V referred to WHITE.\nPot sets DAC code -> current. code 0 = 0A (off); full = 3A.\nWhy a current source: a stalled motor (start line) is ~short; a voltage source would\ndump unbounded current. A current source bounds it to ~3A - correct, and matches\nreal controllers (Kobic etc). Replaces the retired voltage follower (TIP122)." (at 15 95 0)
+    (effects (font (size 1.1 1.1)) (justify left)))
+  (text "THERMAL (steady-state baseline, from SIMetrix design):\nVsupply max 16V, Ta 30C. At 2.75A -> Pd 44W (47W at full 3A).\nTIP147: SOA 125W@25C, Tj allow 125C, Rthjc 1C/W -> Rthca 1.16C/W, Tc 81C.\nSUP70060E: SOA 200W, Tj 150C, Rthjc 0.75 -> Rthca 1.98C/W, Tc 117C (smaller sink, hotter).\nAnti-brake is bursty: size heatsink by pulse energy / thermal capacitance\n(dT ~= Energy/Cth) not steady 47W - a ~50g Al sink (Cth ~45 J/C) rises ~2C per 2s burst." (at 15 132 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "OP-AMP SUPPLY - CRITICAL:\nGD1 is powered from the WHITE rail (~16V), NOT +5V. Rsense is in the WHITE leg,\nso the op-amp inputs/output sit at ~16V common mode; a 5V op-amp cannot work here.\nUse a RAIL-TO-RAIL INPUT op-amp whose input CMR includes V+ (e.g. TI LM7321, SOT-23, 2.5-32V RRIO).\nOrdinary LM358/LM321/LM324 stop ~1.5V below V+ and will NOT work here.\nConfirmed by the SIMetrix design (op-amp V+ = supply rail). Only GD2 (brake) is on +5V." (at 15 150 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "SAFETY:\nShoot-through protection - if brake (Q2) and anti-brake fault on together, the\ncurrent source caps its contribution at ~3A instead of feeding a near-short.\nAdd open/short detection on the loop + fast OCP to guard source component failure." (at 15 165 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "RETIRED - do NOT fit: floating-supply P-ch (ZD1/R_Z1/C_Z1/LM321, IRF9Z34N) and the\nvoltage-follower TIP122 NPN; 2N2222 PWM level-shift + C_KA RC filter (now DAC2 + GD3). See design doc 7A.7." (at 15 188 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
 )

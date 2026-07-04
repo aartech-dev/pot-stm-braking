@@ -1,399 +1,55 @@
 (kicad_sch
-	(version 20260306)
-	(generator "eeschema")
-	(generator_version "10.0")
-	(uuid "91c9a698-72e3-497c-b19d-a7bbe96d932b")
-	(paper "A4")
-	(title_block
-		(title "AART Brake Module — 4: Brake FET Circuit")
-		(date "2026-06-19")
-		(rev "11")
-		(company "AART - Adrian & Richard's Technologies")
-		(comment 1 "GD2 op-amp linear buffer, R2 safe-default pull-up, R3 gate 10R, Q2 IRFP250N wide-SOA N-ch, D2 SS310")
-		(comment 2 "DAC1 PA4 -> op-amp buffer (linear mode). No PWM. Resistance-controlled brake via stored tables.")
-	)
-	(lib_symbols)
-	(text "R3\n10R\ngate"
-		(exclude_from_sim no)
-		(at 167 70 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "3f4d4dd6-edb6-4efd-abcc-0b7aad8928c1")
-	)
-	(text "SAFE DEFAULT — CRITICAL:\nR2 (10k) is on the GD2 INPUT pin, NOT on Q2 gate.\nWhen the MCU is unpowered/reset, the GD2 input is pulled to a\nsafe-default level so Q2 defaults to braking. If R2 were on the\ngate, the buffer would fight it."
-		(exclude_from_sim no)
-		(at 15 125 0)
-		(effects
-			(font
-				(size 1.1 1.1)
-			)
-			(justify left)
-		)
-		(uuid "8bc6b72e-fdd7-415a-a82c-1991dad29aad")
-	)
-	(text "RESISTANCE-CONTROLLED BRAKE (linear, no PWM):\nDAC1 (0-3.3V) -> GD2 op-amp buffer -> Q2 gate.\nQ2 is operated in its LINEAR region: gate voltage sets Rds,\nwhich is placed across the motor (low-side, TRACK_POS to RED).\nMode B indexes one of seven stored brake tables\n(25/15/5/4/3/2/1 ohm full scale); Mode A linear-maps the pot.\nNo switching, no PWM, no switching noise."
-		(exclude_from_sim no)
-		(at 15 100 0)
-		(effects
-			(font
-				(size 1.1 1.1)
-			)
-			(justify left)
-		)
-		(uuid "962b66a2-39eb-409c-8d5c-04f64120a613")
-	)
-	(text "Q2 IRFP250N — WIDE-SOA, HEATSINK REQUIRED:\nLinear operation requires a wide-SOA planar part. The former\nIRLB3034 (trench switching FET) has poor linear-mode SOA and\nrisks secondary breakdown. Worst-case ~12W mid-range; brake is\nintermittent (~10-20% duty) but the heatsink must take the peak.\nSee design doc 7A.8.1."
-		(exclude_from_sim no)
-		(at 15 145 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "a568f181-abcd-4455-9caa-3283cd40fd7c")
-	)
-	(text "D2 SS310 CATCH DIODE — ESSENTIAL:\nMotor inductance produces a large voltage spike on current\ninterruption. SS310 (100V) chosen for headroom on the 16V rail.\nClamps the spike to Vf + Vdc."
-		(exclude_from_sim no)
-		(at 15 168 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "be593265-9e83-4f00-b27b-97ce904a6994")
-	)
-	(text "Q2\nIRFP250N\nwide-SOA N-ch\nTO-247 + heatsink\n30A 200V"
-		(exclude_from_sim no)
-		(at 191 64 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "d98a9d15-9a2f-4ddc-9780-9d23efcafdb6")
-	)
-	(text "R2 10k\nsafe-default\npull-up on\nGD2 INPUT"
-		(exclude_from_sim no)
-		(at 123 55 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "ebdc8b99-7459-4f80-80e2-0bdfb5e9a882")
-	)
-	(text "D2\nSS310\ncatch\n100V"
-		(exclude_from_sim no)
-		(at 204 68 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "f15fc05a-cc37-47be-b5ac-990c19500958")
-	)
-	(text "GD2\nop-amp buffer\n(+5V rail)\nSOT-23-5"
-		(exclude_from_sim no)
-		(at 143 63 0)
-		(effects
-			(font
-				(size 1.1 1.1)
-			)
-			(justify left)
-		)
-		(uuid "f9ca4e04-d7ad-454e-a59e-a3ee26faa3d5")
-	)
-	(junction
-		(at 132.08 72.39)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "598fd78c-385a-4f06-93d6-3b2270d68295")
-	)
-	(wire
-		(pts
-			(xy 161.04 67.31) (xy 162.56 67.31)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0d727e2c-1c15-4d03-8272-046c19ac5b9f")
-	)
-	(wire
-		(pts
-			(xy 132.08 72.39) (xy 143.51 72.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1c525d19-7ff7-45b3-aa25-08b96fafc670")
-	)
-	(wire
-		(pts
-			(xy 203.2 69.85) (xy 203.2 67.31)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "28abefea-43a0-4572-b55e-395dc0312484")
-	)
-	(wire
-		(pts
-			(xy 180.34 72.39) (xy 185.42 72.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "354a5c61-ee29-452a-b468-502bb2d81dc0")
-	)
-	(wire
-		(pts
-			(xy 132.08 61.6) (xy 132.08 57.15)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3a1e272b-8f1e-440b-ad39-67bde228a9b9")
-	)
-	(wire
-		(pts
-			(xy 132.08 57.15) (xy 143.51 57.15)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "41613477-87f7-455c-88c4-b5dd8cdaca45")
-	)
-	(wire
-		(pts
-			(xy 190.5 83.82) (xy 203.2 83.82)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "44e47f38-2eff-4dba-b55c-ee00a18b5f54")
-	)
-	(wire
-		(pts
-			(xy 162.56 67.31) (xy 162.56 57.15)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "56dfbf89-4b87-4495-8025-a60fdab11d1b")
-	)
-	(wire
-		(pts
-			(xy 143.51 57.15) (xy 143.51 72.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "75b19475-6986-426f-89af-eef4931247d8")
-	)
-	(wire
-		(pts
-			(xy 120 72.39) (xy 132.08 72.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7819f006-e277-4948-81a6-5c15a3bf5e39")
-	)
-	(wire
-		(pts
-			(xy 190.5 60.96) (xy 190.5 67.31)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7b2b39ff-ca24-46de-a8dc-6eeb06a532e6")
-	)
-	(wire
-		(pts
-			(xy 162.56 57.15) (xy 143.51 57.15)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "83a604e7-bf6c-4ba7-9ae8-72e46859141e")
-	)
-	(wire
-		(pts
-			(xy 161.04 72.39) (xy 165.1 72.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "911917a3-c5de-4024-98b6-81d17dbd149d")
-	)
-	(wire
-		(pts
-			(xy 203.2 67.31) (xy 190.5 67.31)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "963bfe21-d0eb-4ff9-955b-75baa038679f")
-	)
-	(wire
-		(pts
-			(xy 190.5 87.63) (xy 190.5 93)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a13440f3-bd05-41bd-8603-49512e4b7079")
-	)
-	(wire
-		(pts
-			(xy 203.2 83.82) (xy 203.2 74.93)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "af52a20a-cfdc-4e57-a356-10a0153ffea2")
-	)
-	(wire
-		(pts
-			(xy 132.08 68.58) (xy 132.08 72.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b10b8f1c-5ddb-43e1-b49a-cfaa0982c6b9")
-	)
-	(wire
-		(pts
-			(xy 190.5 70.1) (xy 190.5 72.39)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f8d959ae-07fc-456f-952e-48f6294ae7cf")
-	)
-	(wire
-		(pts
-			(xy 190.5 80.01) (xy 190.5 83.82)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "fd8a8e23-bf64-4088-beb1-8cd192f47a7a")
-	)
-	(global_label "+5V"
-		(shape passive)
-		(at 132.08 59.69 90)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "3bd0145c-e347-4b95-afbf-aeb8842a31dd")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 132.08 59.69 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "DAC1_Q2_BRAKE"
-		(shape input)
-		(at 120 72.39 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "c0a8216b-f27a-4ada-ad54-39795f2daa5f")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 120 72.39 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape passive)
-		(at 190.5 93 270)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "e06a30c1-8dd0-4eaa-bc34-ce102b621b4c")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 190.5 93 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "TRACK_POS"
-		(shape bidirectional)
-		(at 190.5 60.96 90)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "f3189e99-b8fd-4ed6-859f-07b5f9a0230e")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 190.5 60.96 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
+  (version 20231120)
+  (generator "eeschema")
+  (paper "A4")
+  (title_block
+    (title "AART Brake Module — 4: Brake FET Circuit")
+    (date "2026-06-19") (rev "11")
+    (company "AART - Adrian & Richard's Technologies")
+    (comment 1 "GD2 op-amp buffer, R2 safe-default pull-up, R3 gate 10R, Q2 low-Rds logic-level N-ch (brushless full-on), D2 SS310")
+    (comment 2 "DAC1 PA4 -> op-amp buffer (linear mode). No PWM. Resistance-controlled brake via stored tables.")
+  )
+  (lib_symbols)
+  (junction (at 132.08 72.39))
+  (wire (pts (xy 120 72.39) (xy 132.08 72.39)))
+  (wire (pts (xy 132.08 61.6) (xy 132.08 57.15)))
+  (wire (pts (xy 132.08 57.15) (xy 143.51 57.15)))
+  (wire (pts (xy 143.51 57.15) (xy 143.51 72.39)))
+  (wire (pts (xy 132.08 68.58) (xy 132.08 72.39)))
+  (wire (pts (xy 132.08 72.39) (xy 143.51 72.39)))
+  (wire (pts (xy 161.04 72.39) (xy 165.1 72.39)))
+  (wire (pts (xy 180.34 72.39) (xy 185.42 72.39)))
+  (wire (pts (xy 161.04 67.31) (xy 162.56 67.31)))
+  (wire (pts (xy 162.56 67.31) (xy 162.56 57.15)))
+  (wire (pts (xy 162.56 57.15) (xy 143.51 57.15)))
+  (wire (pts (xy 190.5 60.96) (xy 190.5 63.5)))
+  (wire (pts (xy 190.5 70.1) (xy 190.5 72.39)))
+  (wire (pts (xy 190.5 80.01) (xy 190.5 83.82)))
+  (wire (pts (xy 190.5 83.82) (xy 203.2 83.82)))
+  (wire (pts (xy 203.2 83.82) (xy 203.2 74.93)))
+  (wire (pts (xy 203.2 69.85) (xy 203.2 67.31)))
+  (wire (pts (xy 203.2 67.31) (xy 190.5 67.31)))
+  (wire (pts (xy 190.5 67.31) (xy 190.5 63.5)))
+  (wire (pts (xy 190.5 87.63) (xy 190.5 93)))
+  (global_label "DAC1_Q2_BRAKE" (shape input) (at 120 72.39 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "+5V" (shape passive) (at 132.08 59.69 270)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "TRACK_POS" (shape bidirectional) (at 190.5 60.96 270)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "GND" (shape passive) (at 190.5 93 90)
+    (effects (font (size 1.27 1.27)) (justify right)))
+  (text "GD2\nRRO op-amp, +5V\ngain ~1.5 (3.3V DAC -> ~5V gate)\ne.g. TI LM7321 (RRO)" (at 143 63 0) (effects (font (size 1.1 1.1)) (justify left)))
+  (text "R2 10k\nsafe-default\npull-up on\nGD2 INPUT" (at 123 55 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "R3\n10R\ngate" (at 167 70 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "Q2\nlow-Rds logic-level N-ch\n~3mohm e.g. TW100N03CC\nFULL-ON for brushless\nIRFP250N = brushed-only" (at 191 64 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "D2\nSS310\ncatch\n100V" (at 204 68 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "RESISTANCE-CONTROLLED BRAKE (linear, no PWM):\nDAC1 (0-3.3V) -> GD2 (non-inverting, gain ~1.5) -> ~5V max -> Q2 gate.\nQ2 is operated in its LINEAR region: gate voltage sets Rds,\nwhich is placed across the motor (low-side, TRACK_POS to RED).\nMode B indexes one of seven stored brake tables\n(25/15/5/4/3/2/1 ohm full scale); Mode A linear-maps the pot.\nNo switching, no PWM, no switching noise." (at 15 100 0)
+    (effects (font (size 1.1 1.1)) (justify left)))
+  (text "SAFE DEFAULT — CRITICAL:\nR2 (10k) is on the GD2 INPUT pin, NOT on Q2 gate.\nWhen the MCU is unpowered/reset, the GD2 input is pulled to a\nsafe-default level so Q2 defaults to braking. If R2 were on the\ngate, the buffer would fight it." (at 15 125 0)
+    (effects (font (size 1.1 1.1)) (justify left)))
+  (text "Q2 BRAKE FET — LOW-Rds, brushless-dominant (80%):\nBrushless braking shorts the Remora ESC bus; motor 31-273mohm is\nBELOW the FET Rds, so the brake is FET-limited. Q2 must be single-\ndigit-mohm logic-level (e.g. TW100N03CC), driven FULL-ON. IRFP250N\n(75mohm) gives only 9-78% brake + ~120W at 40A => brushed-only.\nBrushed linear tables: low-Rds FET VALIDATED in linear - brushed op\npoint is low Vds (~8V on a 30V part), clear of the high-Vds linear-\ninstability region. One FET serves both. See design doc 7A.12." (at 15 145 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "D2 SS310 CATCH DIODE — ESSENTIAL:\nMotor inductance produces a large voltage spike on current\ninterruption. SS310 (100V) chosen for headroom on the 16V rail.\nClamps the spike to Vf + Vdc." (at 15 168 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
 )

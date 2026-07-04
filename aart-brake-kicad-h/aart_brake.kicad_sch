@@ -1,764 +1,162 @@
 (kicad_sch
-	(version 20260306)
-	(generator "eeschema")
-	(generator_version "10.0")
-	(uuid "1fe809f7-eb04-4a49-9f66-d15ed27639bb")
-	(paper "A2" portrait)
-	(title_block
-		(title "AART Slot Car Braking Module")
-		(date "2026-06-19")
-		(rev "11")
-		(company "AART - Adrian & Richard's Technologies")
-		(comment 1 "TOP LEVEL — double-click a sheet symbol to open it")
-		(comment 2 "STM32G051K6U6 QFN-32 | libopencm3 | Revision 11 | DAC1 brake + PWM anti-brake current source, TPS1212-Q1 reverse switch")
-	)
-	(lib_symbols)
-	(text "- Reverse-block pass element = two N-ch (Q5/Q6, common-source) + U5 TPS1212-Q1\n  driven from WHITE (VS, not anode). RSNS current sense; I_DIR reverse (~6-10us) +\n  I2t OCP + 5us SCP + IMON/FLT. Sits in BLACK CONTROLLER path. ~67-77mV at 40A (with RSNS).\n- BLACK sense (PA1) is on the TRACK side of the pass switch.\n- D1 TVS is on the WHITE rail only (transient clamp).\n- Anti-brake = constant-CURRENT source (Q1 TIP147 + GD1 HV op-amp + Rsense 0.1ohm). GD1 is\n  powered from the WHITE rail (~16V), NOT +5V (it senses at ~16V common mode). 50kHz PWM\n  demand (level-shift + RC filter) sets current: 0 = off, full = 3A. Bounded at stall.\n- Brake (Q2 IRFP250N) is resistance-controlled, linear, no PWM. Both Q1 and Q2\n  dissipate 10-15W linear and REQUIRE heatsinks.\n- PA4 DAC1 = brake (linear). PA5 PWM = anti-brake current demand (50kHz, filtered).\n- Retired & must NOT be fitted: TIM3 PWM, UCC27524 drivers, IRF9Z34N P-ch +\n  floating supply (ZD1/R_Z1/C_Z1/LM321), IRLB3034, LTC4412 pass gate, capture button,\n  LTC7001/INA241/comparator (now TPS1212-Q1), TIP122 voltage follower (now TIP147 current source)."
-		(exclude_from_sim no)
-		(at 169.672 253.936 0)
-		(effects
-			(font
-				(size 1.1 1.1)
-			)
-			(justify left)
-		)
-		(uuid "1ff9b0a3-9ea5-45b7-9970-47e092360e97")
-	)
-	(text "FETs / power devices\nQ2  IRFP250N   TO-247  Wide-SOA N-ch brake FET (30A 200V) + HEATSINK\nQ1  TIP147     TO-220  PNP Darlington anti-brake current-source pass (100V 10A 125W) + HEATSINK\n   (alt: N-MOSFET SUP70060E / RFP50N06 / FDP61N20)\nRsense 0.1ohm 1-2W  anti-brake current sense (0.3V at 3A)\nQ_LS 2N2222  PWM level-shift   C_KA 470n + R 10k/1k  PWM->DC demand filter\nQ5  STL059N4S8AG PowerFLAT  Reverse-block N-ch (40V 0.59mohm)\nQ6  STL059N4S8AG PowerFLAT  Reverse-block N-ch (common-source with Q5)\n   (alt Q5/Q6: Vishay SiJK140E 0.34mohm)\nDiodes\nD1  P6KE18CA  SMB  TVS bidirectional (WHITE rail clamp; CA essential)\nD2  SS310     SMB  Q2 catch diode (100V)\nD4  MBRS360   SMB  Anti-brake follower reverse block (emitter -> track)\nRSNS ~0.5-0.75mohm  TPS1212 main-path current sense (CS1+/CS1-)\nCI2t/CTMR/RIOC  TPS1212 I2t breaker time, retry timer, OCP threshold\nD5  LED Red   0805  Status LED (PB6)"
-		(exclude_from_sim no)
-		(at 38.1 282.448 0)
-		(effects
-			(font
-				(size 1.1 1.1)
-			)
-			(justify left)
-		)
-		(uuid "2d492aa6-df6f-4ac8-bcaa-f3257fb583af")
-	)
-	(text "ICs\nU1  STM32G051K6U6  QFN-32    MCU (dual DAC, libopencm3, FW Rev 11)\nU2  AMS1117-3.3 / MCP1700  SOT-223/23  LDO 12-16V -> 3.3V (see 7A.6)\nU4  MCP1700-5002   SOT-23   LDO 12-16V -> 5V rail (GD2 brake buffer only; GD1 on WHITE)\nGD2 op-amp buffer  SOT-23-5  Brake gate buffer (DAC1 -> Q2, linear)\nGD1 HV op-amp     SOT-23-5  Anti-brake CURRENT-SOURCE loop on WHITE rail (PWM demand -> Q1; Rsense 0.1ohm)\nU5  TPS1212-Q1     VQFN-23  Smart high-side switch controller for Q5/Q6 (VS from WHITE):\n    reverse block (I_DIR) + I2t OCP + 5us SCP + IMON/FLT. RSNS ~0.5-0.75mohm sense.\n    (replaces LTC7001+INA241+comparator; TI vs ADI; adds protection)\nU3  CH340N         SOP-8    USB-UART bridge"
-		(exclude_from_sim no)
-		(at 38.114 255.67 0)
-		(effects
-			(font
-				(size 1.1 1.1)
-			)
-			(justify left)
-		)
-		(uuid "55f6e959-ddf0-40ac-9ba2-2ea6bdd9453e")
-	)
-	(text "Passives\nF1  500mA-1A polyfuse 1812  WHITE rail MCU/analog supply ONLY (never BLACK)\nR2  10k 0402  GD2 input safe-default pull-up\nR3  10R 0402  Q2 gate    R_BASE 1k 0402  Q1 Darlington base\nRsense 0.1ohm  anti-brake current sense   RSNS ~0.5-0.75mohm  TPS1212 main-path sense\nQ_LS 2N2222  PWM level-shift   C_KA 470n + R 10k/1k  PWM->DC filter\nR8  15k / R9 4k7  WHITE sense divider (PA0)\nR10 22k / R11 4k7 BLACK sense divider (PA1, track side of switch)\nR5  10k  Pot ref to 3.3V    R12 330R  Status LED\nC1-C7 decoupling (LDO rails + MCU VDD/VDDA)"
-		(exclude_from_sim no)
-		(at 38.608 310.642 0)
-		(effects
-			(font
-				(size 1.1 1.1)
-			)
-			(justify left)
-		)
-		(uuid "9ddb6005-3240-480d-a2a7-e0fe9cd26816")
-	)
-	(text "COMPONENT LIST (Revision 11):"
-		(exclude_from_sim no)
-		(at 55.88 241.808 0)
-		(effects
-			(font
-				(size 1.5 1.5)
-				(bold yes)
-			)
-		)
-		(uuid "c176ce22-55ae-43de-bd0e-a2ba7e1b55c4")
-	)
-	(text "KEY DESIGN NOTES (Rev 11):"
-		(exclude_from_sim no)
-		(at 187.198 238.506 0)
-		(effects
-			(font
-				(size 1.5 1.5)
-				(bold yes)
-			)
-		)
-		(uuid "dec55f5d-59dc-44b0-820d-4fc87987d7bb")
-	)
-	(text "Connectors\nJ1-J6  4mm banana  Track + controller WHITE/BLACK/RED (x2 sides)\nJ7  3-pin 2.54mm  Mode toggle A/B/C (PB0/PB1/GND)\nJ10 4-pin SWD  J11 3-pin UART  J12 BOOT0  J13 NRST\nJ14 3-pin voltmeter\nNOTE: J9 capture button REMOVED (toggle replaces it; PB3 reserved/optional)"
-		(exclude_from_sim no)
-		(at 38.862 331.978 0)
-		(effects
-			(font
-				(size 1.1 1.1)
-			)
-			(justify left)
-		)
-		(uuid "ebbe291a-f15e-4206-869a-6137124a57c0")
-	)
-	(sheet
-		(at 95.01 22.54)
-		(size 75 50)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(stroke
-			(width 0.2)
-			(type solid)
-		)
-		(fill
-			(color 230 242 255 1)
-		)
-		(uuid "09d6b833-2ba6-433c-ab28-66421fe3ce92")
-		(property "Sheetname" "1 Power Supply"
-			(at 105.01 21.04 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.5 1.5)
-					(bold yes)
-				)
-			)
-		)
-		(property "Sheetfile" "power_supply.kicad_sch"
-			(at 105.01 73.54 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1 1)
-				)
-				(justify left)
-			)
-		)
-		(pin "+12V_RAIL" output
-			(at 170.01 32.54 0)
-			(uuid "2ffde320-121c-4875-9db5-406dd2068b95")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(pin "+3V3" output
-			(at 170.01 40.54 0)
-			(uuid "4d57d3f6-e8b7-42f5-8f8a-deb6e3e867fc")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(pin "+5V" output
-			(at 170.01 48.54 0)
-			(uuid "47feaa3b-6f55-4803-8195-d29ef9dc469d")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(pin "GND" output
-			(at 170.01 56.54 0)
-			(uuid "7e724a36-8b31-46ae-a784-b50c9b3922cb")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(instances
-			(project "aart_brake"
-				(path "/1fe809f7-eb04-4a49-9f66-d15ed27639bb"
-					(page "2")
-				)
-			)
-		)
-	)
-	(sheet
-		(at 321.365 22.54)
-		(size 75 50)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(stroke
-			(width 0.2)
-			(type solid)
-		)
-		(fill
-			(color 255 245 230 1)
-		)
-		(uuid "45bf9d87-c35f-440a-af7c-899dd2419649")
-		(property "Sheetname" "3 Debug + Flash Headers"
-			(at 331.365 21.04 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.5 1.5)
-					(bold yes)
-				)
-			)
-		)
-		(property "Sheetfile" "debug_headers.kicad_sch"
-			(at 331.365 73.54 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1 1)
-				)
-				(justify left)
-			)
-		)
-		(pin "+3V3" input
-			(at 321.365 32.54 180)
-			(uuid "28f08df6-3f51-4d79-95b8-c5b400a6dba4")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "GND" input
-			(at 321.365 40.54 180)
-			(uuid "4f2ec8c2-996b-4ebe-bfa3-8e1d1d36156a")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "SWDIO" bidirectional
-			(at 321.365 48.54 180)
-			(uuid "0a0e5e43-a11c-48ea-9634-c7050d666a45")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "UART_TX" input
-			(at 321.365 56.54 180)
-			(uuid "1caa089c-efa7-48e8-a118-188a6727d467")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(instances
-			(project "aart_brake"
-				(path "/1fe809f7-eb04-4a49-9f66-d15ed27639bb"
-					(page "7")
-				)
-			)
-		)
-	)
-	(sheet
-		(at 213.585 22.54)
-		(size 75 50)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(stroke
-			(width 0.2)
-			(type solid)
-		)
-		(fill
-			(color 238 255 238 1)
-		)
-		(uuid "67bcd8a6-e646-4c36-b287-253b64ef8d21")
-		(property "Sheetname" "2 MCU + Inputs"
-			(at 223.585 21.04 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.5 1.5)
-					(bold yes)
-				)
-			)
-		)
-		(property "Sheetfile" "mcu_inputs.kicad_sch"
-			(at 223.585 73.54 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1 1)
-				)
-				(justify left)
-			)
-		)
-		(pin "+3V3" input
-			(at 213.585 32.54 180)
-			(uuid "0a6bf756-0cbf-4da2-9001-da18988a9383")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "GND" input
-			(at 213.585 40.54 180)
-			(uuid "8918d933-96ff-4b0a-9888-b57a499f6a37")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "DAC1_Q2_BRAKE" output
-			(at 288.585 30.54 0)
-			(uuid "fbe51cd2-8159-4e16-bc74-979dbaa8eccd")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(pin "KA_PWM_DEMAND" output
-			(at 288.585 36.54 0)
-			(uuid "34f47270-8321-4809-87a9-0c6b2b1971a0")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(pin "RAIL_SENSE" input
-			(at 288.585 42.54 0)
-			(uuid "715c3ea4-7af0-4699-ae0e-369b6db05fdc")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(pin "BLACK_SENSE" input
-			(at 288.585 48.54 0)
-			(uuid "04f984f3-1d6f-4c64-a42d-38a403334c7c")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(pin "PB3_SW_EN" output
-			(at 288.585 54.54 0)
-			(uuid "ce4ac0b9-b0e6-4fe6-b8bb-fd2796489ca0")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(pin "SWDIO" bidirectional
-			(at 288.585 60.54 0)
-			(uuid "dd32cb25-581a-48bc-9206-299dea84880f")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(pin "UART_TX" output
-			(at 288.585 66.54 0)
-			(uuid "1f423113-047b-4de8-95b3-e1eb29bf4b89")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(instances
-			(project "aart_brake"
-				(path "/1fe809f7-eb04-4a49-9f66-d15ed27639bb"
-					(page "4")
-				)
-			)
-		)
-	)
-	(sheet
-		(at 214.855 90)
-		(size 75 50)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(stroke
-			(width 0.2)
-			(type solid)
-		)
-		(fill
-			(color 255 235 245 1)
-		)
-		(uuid "82fdd107-e4c6-4540-b6d7-754b41eca428")
-		(property "Sheetname" "5 Anti-brake current src (Q1 TIP147)"
-			(at 224.855 88.5 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.5 1.5)
-					(bold yes)
-				)
-			)
-		)
-		(property "Sheetfile" "keepalive_fet.kicad_sch"
-			(at 224.855 141 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1 1)
-				)
-				(justify left)
-			)
-		)
-		(pin "+12V_RAIL" input
-			(at 214.855 100 180)
-			(uuid "81df8f7e-9071-454d-99cc-c3829c1d0a56")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "GND" input
-			(at 214.855 116 180)
-			(uuid "f6bc3d74-e617-4cff-8c18-22fee2d30f57")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "KA_PWM_DEMAND" input
-			(at 214.855 124 180)
-			(uuid "040c6c9e-406f-4cb8-a1f8-ca5d49356faa")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "TRACK_POS" bidirectional
-			(at 289.855 110 0)
-			(uuid "508a8077-ac14-46f1-bf7c-f806251953ee")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(instances
-			(project "aart_brake"
-				(path "/1fe809f7-eb04-4a49-9f66-d15ed27639bb"
-					(page "5")
-				)
-			)
-		)
-	)
-	(sheet
-		(at 96.915 90)
-		(size 75 50)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(stroke
-			(width 0.2)
-			(type solid)
-		)
-		(fill
-			(color 255 235 235 1)
-		)
-		(uuid "a8684bc5-b825-478a-b686-314180306cc0")
-		(property "Sheetname" "4 Brake FET (Q2 IRFP250N)"
-			(at 106.915 88.5 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.5 1.5)
-					(bold yes)
-				)
-			)
-		)
-		(property "Sheetfile" "brake_fet.kicad_sch"
-			(at 106.915 141 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1 1)
-				)
-				(justify left)
-			)
-		)
-		(pin "+5V" input
-			(at 96.915 100 180)
-			(uuid "3a1019fd-18b8-4b79-a7b7-a64bba29c165")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "GND" input
-			(at 96.915 108 180)
-			(uuid "e14542c6-2db7-4b78-88f6-66a8fa1ffa2e")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "DAC1_Q2_BRAKE" input
-			(at 96.915 118 180)
-			(uuid "a8f1e5b8-b97a-4130-9246-0e717536fb1b")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "TRACK_POS" bidirectional
-			(at 171.915 110 0)
-			(uuid "bf72d3fc-819e-474e-8ea0-18ad8e154bda")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(instances
-			(project "aart_brake"
-				(path "/1fe809f7-eb04-4a49-9f66-d15ed27639bb"
-					(page "3")
-				)
-			)
-		)
-	)
-	(sheet
-		(at 98.015 160.635)
-		(size 75 50)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(stroke
-			(width 0.2)
-			(type solid)
-		)
-		(fill
-			(color 235 240 255 1)
-		)
-		(uuid "b6043271-3749-405f-a2aa-bcb98d4ad41d")
-		(property "Sheetname" "7 Reverse-Block Switch (Q5/Q6 + TPS1212-Q1)"
-			(at 108.015 159.135 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.5 1.5)
-					(bold yes)
-				)
-			)
-		)
-		(property "Sheetfile" "reverse_switch.kicad_sch"
-			(at 108.015 211.635 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1 1)
-				)
-				(justify left)
-			)
-		)
-		(pin "+12V_RAIL" input
-			(at 98.015 170.635 180)
-			(uuid "d0fae8fa-898a-44c5-af65-185c163bacad")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "+5V" input
-			(at 98.015 178.635 180)
-			(uuid "b102c56e-82e7-4100-88a9-92f76d46d085")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "GND" input
-			(at 98.015 186.635 180)
-			(uuid "7bd430cc-1b32-48fc-bc19-ea81281a579c")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "PB3_SW_EN" input
-			(at 98.015 194.635 180)
-			(uuid "9c9c9532-c5a2-455b-a8e8-d8835c59dd8d")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "CTRL_BLACK_IN" input
-			(at 173.015 172.635 0)
-			(uuid "ced943eb-7dd1-4237-afde-68fdb631872d")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(pin "TRACK_POS" output
-			(at 173.015 180.635 0)
-			(uuid "3759262f-5c13-40b5-87ea-26698e0cc117")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify left)
-			)
-		)
-		(instances
-			(project "aart_brake"
-				(path "/1fe809f7-eb04-4a49-9f66-d15ed27639bb"
-					(page "6")
-				)
-			)
-		)
-	)
-	(sheet
-		(at 322 90)
-		(size 75 50)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(stroke
-			(width 0.2)
-			(type solid)
-		)
-		(fill
-			(color 235 250 235 1)
-		)
-		(uuid "dd236402-40bf-4ffd-8fa3-bda3732d0686")
-		(property "Sheetname" "6 Track Connectors"
-			(at 332 88.5 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.5 1.5)
-					(bold yes)
-				)
-			)
-		)
-		(property "Sheetfile" "track_connectors.kicad_sch"
-			(at 332 141 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1 1)
-				)
-				(justify left)
-			)
-		)
-		(pin "+12V_RAIL" input
-			(at 322 100 180)
-			(uuid "93b6d6b2-58c6-4c6e-9a7c-3cbae014bf4a")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "GND" input
-			(at 322 108 180)
-			(uuid "cc4f501e-522e-41c2-96be-69baa932908f")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "TRACK_POS" bidirectional
-			(at 322 116 180)
-			(uuid "9b6a691c-b131-43a9-9b93-9b4989d508f1")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(pin "CTRL_BLACK_IN" bidirectional
-			(at 322 124 180)
-			(uuid "5a4ec176-5ce1-427b-9d2b-12d2f32b5757")
-			(effects
-				(font
-					(size 1.1 1.1)
-				)
-				(justify right)
-			)
-		)
-		(instances
-			(project "aart_brake"
-				(path "/1fe809f7-eb04-4a49-9f66-d15ed27639bb"
-					(page "8")
-				)
-			)
-		)
-	)
-	(sheet_instances
-		(path "/"
-			(page "1")
-		)
-	)
-	(embedded_fonts no)
+  (version 20231120)
+  (generator "eeschema")
+  (paper "A2" portrait)
+  (title_block
+    (title "AART Slot Car Braking Module")
+    (date "2026-06-19")
+    (rev "11")
+    (company "AART - Adrian & Richard's Technologies")
+    (comment 1 "TOP LEVEL — double-click a sheet symbol to open it")
+    (comment 2 "STM32G051K6U6 QFN-32 | libopencm3 | Revision 11 | DAC1 brake + DAC2 anti-brake current source, INA210/LM311 ideal-diode reverse switch")
+  )
+  (lib_symbols)
+
+  (sheet (at 15 20) (size 75 50)
+    (stroke (width 0.2) (type solid))
+    (fill (color 230 242 255 1))
+    (property "Sheetname" "1 Power Supply" (at 25.0 18.5 0)
+      (effects (font (size 1.5 1.5) bold)))
+    (property "Sheetfile" "power_supply.kicad_sch" (at 25.0 71.0 0)
+      (effects (font (size 1.0 1.0)) (justify left)))
+    (pin "+12V_RAIL" output (at 90.0 30.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+    (pin "+3V3" output (at 90.0 38.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+    (pin "+5V" output (at 90.0 46.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+    (pin "GND" output (at 90.0 54.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+  )
+
+  (sheet (at 105 20) (size 75 50)
+    (stroke (width 0.2) (type solid))
+    (fill (color 238 255 238 1))
+    (property "Sheetname" "2 MCU + Inputs" (at 115.0 18.5 0)
+      (effects (font (size 1.5 1.5) bold)))
+    (property "Sheetfile" "mcu_inputs.kicad_sch" (at 115.0 71.0 0)
+      (effects (font (size 1.0 1.0)) (justify left)))
+    (pin "+3V3" input (at 105.0 30.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "GND" input (at 105.0 38.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "DAC1_Q2_BRAKE" output (at 180.0 28.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+    (pin "KA_DAC_DEMAND" output (at 180.0 34.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+    (pin "RAIL_SENSE" input (at 180.0 40.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+    (pin "BLACK_SENSE" input (at 180.0 46.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+    (pin "PB3_SW_EN" output (at 180.0 52.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+    (pin "SWDIO" bidirectional (at 180.0 58.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+    (pin "UART_TX" output (at 180.0 64.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+  )
+
+  (sheet (at 195 20) (size 75 50)
+    (stroke (width 0.2) (type solid))
+    (fill (color 255 245 230 1))
+    (property "Sheetname" "3 Debug + Flash Headers" (at 205.0 18.5 0)
+      (effects (font (size 1.5 1.5) bold)))
+    (property "Sheetfile" "debug_headers.kicad_sch" (at 205.0 71.0 0)
+      (effects (font (size 1.0 1.0)) (justify left)))
+    (pin "+3V3" input (at 195.0 30.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "GND" input (at 195.0 38.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "SWDIO" bidirectional (at 195.0 46.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "UART_TX" input (at 195.0 54.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+  )
+
+  (sheet (at 15 90) (size 75 50)
+    (stroke (width 0.2) (type solid))
+    (fill (color 255 235 235 1))
+    (property "Sheetname" "4 Brake FET (Q2 TW100N03CC)" (at 25.0 88.5 0)
+      (effects (font (size 1.5 1.5) bold)))
+    (property "Sheetfile" "brake_fet.kicad_sch" (at 25.0 141.0 0)
+      (effects (font (size 1.0 1.0)) (justify left)))
+    (pin "+5V" input (at 15.0 100.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "GND" input (at 15.0 108.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "DAC1_Q2_BRAKE" input (at 15.0 118.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "TRACK_POS" bidirectional (at 90.0 110.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+  )
+
+  (sheet (at 105 90) (size 75 50)
+    (stroke (width 0.2) (type solid))
+    (fill (color 255 235 245 1))
+    (property "Sheetname" "5 Anti-brake current src (Q1 TIP147)" (at 115.0 88.5 0)
+      (effects (font (size 1.5 1.5) bold)))
+    (property "Sheetfile" "keepalive_fet.kicad_sch" (at 115.0 141.0 0)
+      (effects (font (size 1.0 1.0)) (justify left)))
+    (pin "+12V_RAIL" input (at 105.0 100.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "GND" input (at 105.0 116.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "KA_DAC_DEMAND" input (at 105.0 124.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "TRACK_POS" bidirectional (at 180.0 110.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+  )
+
+  (sheet (at 195 90) (size 75 50)
+    (stroke (width 0.2) (type solid))
+    (fill (color 235 250 235 1))
+    (property "Sheetname" "6 Track Connectors" (at 205.0 88.5 0)
+      (effects (font (size 1.5 1.5) bold)))
+    (property "Sheetfile" "track_connectors.kicad_sch" (at 205.0 141.0 0)
+      (effects (font (size 1.0 1.0)) (justify left)))
+    (pin "+12V_RAIL" input (at 195.0 100.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "GND" input (at 195.0 108.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "TRACK_POS" bidirectional (at 195.0 116.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "CTRL_BLACK_IN" bidirectional (at 195.0 124.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+  )
+
+  (sheet (at 105 160) (size 75 50)
+    (stroke (width 0.2) (type solid))
+    (fill (color 235 240 255 1))
+    (property "Sheetname" "7 Reverse-Block Switch (Q5/Q6 + INA210/LM311 ideal diode)" (at 115.0 158.5 0)
+      (effects (font (size 1.5 1.5) bold)))
+    (property "Sheetfile" "reverse_switch.kicad_sch" (at 115.0 211.0 0)
+      (effects (font (size 1.0 1.0)) (justify left)))
+    (pin "+12V_RAIL" input (at 105.0 170.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "+5V" input (at 105.0 178.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "GND" input (at 105.0 186.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "PB3_SW_EN" input (at 105.0 194.0 180)
+      (effects (font (size 1.1 1.1)) (justify right)))
+    (pin "CTRL_BLACK_IN" input (at 180.0 172.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+    (pin "TRACK_POS" output (at 180.0 180.0 0)
+      (effects (font (size 1.1 1.1)) (justify left)))
+  )
+
+  (text "COMPONENT LIST (Revision 11):" (at 15.0 225.0 0)
+    (effects (font (size 1.5 1.5) bold)))
+  (text "ICs\nU1  STM32G051K6U6  QFN-32    MCU (dual DAC, libopencm3, FW Rev 11)\nU2  AMS1117-3.3 / MCP1700  SOT-223/23  LDO 12-16V -> 3.3V (see 7A.6)\nU4  MCP1700-5002   SOT-23   LDO 12-16V -> 5V rail (GD2 brake buffer only; GD1 on WHITE)\nGD2 op-amp buffer  SOT-23-5  Brake gate buffer (DAC1 -> Q2, linear)\nGD1 HV op-amp     SOT-23-5  Anti-brake CURRENT-SOURCE loop on WHITE rail (PWM demand -> Q1; Rsense 0.1ohm)\nU5  INA210         SC70-6   Ideal-diode current-sense amp (gain 200, +5V) across Rsns_sw.\nU6  LM311          SOT23-5  Ideal-diode comparator (~50mV hyst, ~0.16A trip) -> Q5/Q6 gate driver + PA6 brake-detect.\n    (replaces LTC7001+INA241+comparator; TI vs ADI; adds protection)\nU3  CH340N         SOP-8    USB-UART bridge" (at 15.0 229.0 0)
+    (effects (font (size 1.1 1.1)) (justify left)))
+  (text "FETs / power devices\nQ2  TW100N03CC D2PAK  Low-Rds logic-level N-ch brake FET (~3mohm 30V); IRFP250N=brushed-only alt\nQ1  TIP147     TO-220  PNP Darlington anti-brake current-source pass (100V 10A 125W) + HEATSINK\n   (alt: N-MOSFET SUP70060E / RFP50N06 / FDP61N20)\nRsense 0.1ohm 1-2W  anti-brake current sense (0.3V at 3A)\nR_KA1 6.8k/R_KA2 1.2k  DAC2 anti-brake divider   GD3 LM7321  DAC2->WHITE level translator\nQ5  STL059N4S8AG PowerFLAT  Reverse-block N-ch (40V 0.59mohm)\nQ6  STL059N4S8AG PowerFLAT  Reverse-block N-ch (common-source with Q5)\n   (alt Q5/Q6: Vishay SiJK140E 0.34mohm)\nDiodes\nD1  P6KE18CA  SMB  TVS bidirectional (WHITE rail clamp; CA essential)\nD2  SS310     SMB  Q2 catch diode (100V)\nD4  MBRS360   SMB  Anti-brake follower reverse block (emitter -> track)\nRsns_sw ~1mohm  ideal-diode shunt (INA210 senses across)\nR_THR1/R_THR2/R_HYS/R_CMP  LM311 threshold divider, ~50mV hysteresis, OC pull-up\nD5  LED Red   0805  Status LED (PB6)" (at 95.0 229.0 0)
+    (effects (font (size 1.1 1.1)) (justify left)))
+  (text "Passives\nF1  500mA-1A polyfuse 1812  WHITE rail MCU/analog supply ONLY (never BLACK)\nR2  10k 0402  GD2 input safe-default pull-up\nR3  10R 0402  Q2 gate    R_BASE 1k 0402  Q1 Darlington base\nRsense 0.1ohm  anti-brake current sense   Rsns_sw ~1mohm  ideal-diode shunt\nR_KA1 6.8k/R_KA2 1.2k  DAC2 anti-brake divider (feeds GD3 LM7321 translator)\nR8  15k / R9 4k7  WHITE sense divider (PA0)\nR10 22k / R11 4k7 BLACK sense divider (PA1, track side of switch)\nR5  10k  Pot ref to 3.3V    R12 330R  Status LED\nC1-C7 decoupling (LDO rails + MCU VDD/VDDA)" (at 175.0 229.0 0)
+    (effects (font (size 1.1 1.1)) (justify left)))
+  (text "Connectors\nJ1-J6  4mm banana  Track + controller WHITE/BLACK/RED (x2 sides)\nJ7  3-pin 2.54mm  Mode toggle A/B/C (PB0/PB1/GND)\nJ10 4-pin SWD  J11 3-pin UART  J12 BOOT0  J13 NRST\nJ14 4-pin TM1637 display (CLK/DIO/GND/VCC)\nNOTE: J9 capture button REMOVED (toggle replaces it; PB3 reserved/optional)" (at 15.0 262.0 0)
+    (effects (font (size 1.1 1.1)) (justify left)))
+  (text "KEY DESIGN NOTES (Rev 11):" (at 115.0 262.0 0)
+    (effects (font (size 1.5 1.5) bold)))
+  (text "- Reverse-block pass element = two N-ch (Q5/Q6, common-source) + INA210/LM311 ideal diode\n  INA210 (gain 200, +5V) across Rsns_sw; LM311 (~50mV hyst) trips on reverse (~0.16A, ~2us)\n  -> gate driver off + PA6 brake-detect. No I2t/SCP/IMON (open items); gate-drive charge pump\n  from WHITE to lift gates above BLACK (open item). Sits in BLACK CONTROLLER path. ~87mV at 40A.\n- BLACK sense (PA1) is on the TRACK side of the pass switch.\n- D1 TVS is on the WHITE rail only (transient clamp).\n- Anti-brake = constant-CURRENT source (Q1 TIP147 + GD1 HV op-amp + Rsense 0.1ohm). GD1 is\n  powered from the WHITE rail (~16V), NOT +5V (it senses at ~16V common mode). DAC2\n  demand (R_KA1/R_KA2 divider + GD3 LM7321) sets current: 0 = off, full = 3A. Bounded at stall.\n- Brake (Q2 TW100N03CC) is resistance-controlled, linear, no PWM. Both Q1 and Q2\n  dissipate 10-15W linear and REQUIRE heatsinks.\n- PA4 DAC1 = brake (linear). PA5 DAC2 = anti-brake current demand (direct DC, no PWM).\n- Retired & must NOT be fitted: TIM3 PWM, UCC27524 drivers, IRF9Z34N P-ch +\n  floating supply (ZD1/R_Z1/C_Z1/LM321), IRLB3034, LTC4412 pass gate, capture button,\n  LTC7001/INA241/comparator (now INA210/LM311 ideal diode), TIP122 voltage follower (now TIP147 current source); 2N2222 KA level-shift + C_KA RC filter (now DAC2+GD3); PB4 voltmeter PWM/RC (now TM1637 display)." (at 115.0 266.0 0)
+    (effects (font (size 1.1 1.1)) (justify left)))
 )

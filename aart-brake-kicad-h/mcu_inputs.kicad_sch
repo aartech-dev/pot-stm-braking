@@ -1,742 +1,91 @@
 (kicad_sch
-	(version 20260306)
-	(generator "eeschema")
-	(generator_version "10.0")
-	(uuid "227b1c1c-2b09-4092-b77e-8c6a31167bbc")
-	(paper "A3")
-	(title_block
-		(title "AART Brake Module — 2: MCU + Inputs")
-		(date "2026-06-19")
-		(rev "11")
-		(company "AART - Adrian & Richard's Technologies")
-		(comment 1 "U1 STM32G051K6U6: DAC1 (PA4) brake, PWM (PA5) anti-brake, pot (PA3), toggle (PB0/PB1), rail/BLACK sense, USART1, voltmeter PWM")
-	)
-	(lib_symbols)
-	(text "PA0 ADC_IN0  WHITE rail sense   R8=15k/R9=4k7 divider\nPA1 ADC_IN1  BLACK track sense   R10=22k/R11=4k7 divider (track side of pass switch)\nPA3 ADC_IN3  Pot wiper (10k, CCW = min brake)\nPB0 GPIO in  Toggle bit0 (mode select), pull-up, active-LOW\nPB1 GPIO in  Toggle bit1 (mode select), pull-up, active-LOW\nPB3 GPIO     Reserved (optional reverse-switch enable; unused in Rev 11)"
-		(exclude_from_sim no)
-		(at 15 32 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "256f6bb2-6e27-4d0e-a174-71de2d59a79f")
-	)
-	(text "RAIL SENSE DIVIDERS:\nWHITE: R8=15k / R9=4k7 -> within 3.3V ADC at 16V rail\nBLACK: R10=22k / R11=4k7, tapped on the TRACK side of the pass switch"
-		(exclude_from_sim no)
-		(at 120 140 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "2ddc2f78-d7a2-4103-bfa2-d6fc09741d5c")
-	)
-	(text "PA4  DAC_CH1  Brake -> GD2 op-amp buffer -> Q2 (linear, no PWM)\nPA5  TIM PWM  Anti-brake demand 50kHz -> level-shift+filter -> GD1 current source\nPB4  TIM3_CH1 Voltmeter PWM -> 10k/100uF RC -> D_V -> J14\nPA9  USART1_TX  UART debug/bootloader  115200 8N1\nPA10 USART1_RX  UART RX\nPA13 SWDIO      SWD\nPA14 SWDCLK     SWD\nPB6  GPIO out   Status LED (blinks 3x on flash save)\nNRST            Reset input"
-		(exclude_from_sim no)
-		(at 120 48 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "2f789640-28b8-4375-9b79-e5d7fbe1a65a")
-	)
-	(text "RIGHT SIDE OUTPUTS:"
-		(exclude_from_sim no)
-		(at 120 45 0)
-		(effects
-			(font
-				(size 1.2 1.2)
-				(bold yes)
-			)
-		)
-		(uuid "7b670c31-cc3a-4504-a8f9-8cae5f24409a")
-	)
-	(text "DUAL DAC (replaces TIM3 PWM gate drive):\nPA4 DAC_CH1 and PA5 DAC_CH2 drive op-amp buffers in LINEAR mode\n(no switching, no EMI). DAC2 polarity is now non-inverted:\n0% duty = off, full = 3A current source. PWM filtered to DC demand. See doc 7A.7/11.1."
-		(exclude_from_sim no)
-		(at 120 120 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "7fa49071-3624-42de-81eb-96890143e549")
-	)
-	(text "U1 STM32G051K6U6 QFN-32"
-		(exclude_from_sim no)
-		(at 86 60 0)
-		(effects
-			(font
-				(size 1.5 1.5)
-				(bold yes)
-			)
-		)
-		(uuid "9584a1ba-f061-4774-b641-0a62132412e1")
-	)
-	(text "LEFT SIDE INPUTS:"
-		(exclude_from_sim no)
-		(at 35 48 0)
-		(effects
-			(font
-				(size 1.2 1.2)
-				(bold yes)
-			)
-		)
-		(uuid "b71dc44d-82a0-4ba4-89c8-b1407a35198f")
-	)
-	(text "TOGGLE DECODING (PB0=bit0, PB1=bit1, active-LOW pull-up):\nPB0=H PB1=H -> Mode A (brake only, all motors; pot linear)\nPB0=L PB1=H -> Mode B (brake + anti-brake, brushed; coupled tables)\nPB0=H PB1=L -> Mode C (keep-alive tuning, brushless setup)\nboth LOW    -> defaults to Mode A"
-		(exclude_from_sim no)
-		(at 15 120 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "c8ec25c3-542b-4a5a-9f7b-5d8776d9259d")
-	)
-	(text "Place U1 here with:\n  C5 100nF + C6 100nF + C7 4u7 (VDD/VDDA decoupling)\n  R1 10k (NRST pull-up to 3.3V)"
-		(exclude_from_sim no)
-		(at 86 61 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "e7bfe276-2251-4eb1-81d0-3686bda18b1f")
-	)
-	(wire
-		(pts
-			(xy 86.36 78.74) (xy 72.39 78.74)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "192415ad-2b8b-403e-8f4a-268b7ffb2e00")
-	)
-	(wire
-		(pts
-			(xy 86.36 81.28) (xy 72.39 81.28)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2501d6a1-8784-4a22-b094-664cd440672b")
-	)
-	(wire
-		(pts
-			(xy 113.97 78.74) (xy 120 78.74)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2d27ee6c-0e27-4dbc-9e56-74ab89195782")
-	)
-	(wire
-		(pts
-			(xy 86.36 71.12) (xy 72.39 71.12)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "36b5a335-5905-499f-88dc-0110b4b82508")
-	)
-	(wire
-		(pts
-			(xy 60.96 111.76) (xy 60.96 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4cc5c27e-4692-46e8-801e-2461b0e97e21")
-	)
-	(wire
-		(pts
-			(xy 86.36 73.66) (xy 72.39 73.66)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4d427429-b037-41a3-ba3f-3071f4a7e561")
-	)
-	(wire
-		(pts
-			(xy 113.97 81.28) (xy 120 81.28)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "72026354-688d-44c8-8697-14c94931dba8")
-	)
-	(wire
-		(pts
-			(xy 72.39 57.15) (xy 72.39 63.5)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8133514c-7da5-42d4-a00f-9bc67a26a642")
-	)
-	(wire
-		(pts
-			(xy 113.97 68.58) (xy 120 68.58)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "99913e64-6622-4788-965e-18565170a6bb")
-	)
-	(wire
-		(pts
-			(xy 113.97 88.9) (xy 120 88.9)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9e7d2b85-7e4c-4c8e-822b-edc526336255")
-	)
-	(wire
-		(pts
-			(xy 72.39 63.5) (xy 72.39 91.44)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a230ba14-3ead-491f-ae75-03b0a40c0db9")
-	)
-	(wire
-		(pts
-			(xy 86.36 83.82) (xy 72.39 83.82)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a2424161-d291-402a-935a-dd5a5ba376dc")
-	)
-	(wire
-		(pts
-			(xy 86.36 66.04) (xy 72.39 66.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b12808fa-225b-4bf6-b59c-4a29320713ec")
-	)
-	(wire
-		(pts
-			(xy 86.36 76.2) (xy 72.39 76.2)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b7073a77-85a8-4706-8313-ad31a68100e2")
-	)
-	(wire
-		(pts
-			(xy 113.97 66.04) (xy 120 66.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b86d61dd-594f-4a7d-a6b8-5fae673903a8")
-	)
-	(wire
-		(pts
-			(xy 113.97 86.36) (xy 120 86.36)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c1c0a416-3c29-464f-9692-383a46e8400a")
-	)
-	(wire
-		(pts
-			(xy 86.36 68.58) (xy 72.39 68.58)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ce2d36a2-3daf-4c36-8fde-ec411d23e8f9")
-	)
-	(wire
-		(pts
-			(xy 86.36 63.5) (xy 72.39 63.5)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "dc6c8136-c99a-4838-bb63-39601a528e36")
-	)
-	(wire
-		(pts
-			(xy 113.97 83.82) (xy 120 83.82)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e7296d93-525a-4dae-b406-5a9e7c22ab2b")
-	)
-	(wire
-		(pts
-			(xy 60.96 102.87) (xy 60.96 108)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ee5ecbe9-80f1-438f-b7e1-519ee4b6f00a")
-	)
-	(wire
-		(pts
-			(xy 60.96 108) (xy 86.36 108)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f19e0bb0-936f-4a40-acc6-3f3229ba2364")
-	)
-	(global_label "DAC1_Q2_BRAKE"
-		(shape output)
-		(at 120 66.04 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "00cb4d9a-b1e9-4515-a725-577a0a36717f")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 120 66.04 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "KA_PWM_DEMAND"
-		(shape output)
-		(at 120 68.58 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "02bec649-6b8d-4cb7-8c66-0878215e600a")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 120 68.58 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "PB3_SW_EN"
-		(shape output)
-		(at 120 78.74 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "1477d5e3-d465-49e0-b704-eb2ebe5c7d44")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 120 78.74 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "RAIL_SENSE"
-		(shape input)
-		(at 22.86 91.44 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "170db0cb-1201-4c3b-9fd5-8875591cdeca")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 22.86 91.44 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "TOGGLE_0"
-		(shape input)
-		(at 22.86 78.74 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "2d724a54-9a0a-4869-b2c6-ebeb56cc745f")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 22.86 78.74 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "POT_WIPER"
-		(shape input)
-		(at 22.86 64.77 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "31529951-513b-4e3f-be20-8019232a6f47")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 22.86 64.77 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "+3V3"
-		(shape passive)
-		(at 72.39 55 90)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "4d772922-33da-4c2b-b1de-40106288a0fe")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 72.39 55 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "POT_WIPER"
-		(shape output)
-		(at 86.36 71.12 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "5a4c3081-1564-454f-ac4b-a19e3052489e")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 86.36 71.12 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "TOGGLE_1"
-		(shape input)
-		(at 22.86 81.28 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "5d9c8377-ff31-43ea-9f25-89234a6e4525")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 22.86 81.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "TOGGLE_0"
-		(shape output)
-		(at 86.36 73.66 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "65966592-18ca-49aa-b3bf-1d5617bef9f6")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 86.36 73.66 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "RAIL_SENSE"
-		(shape output)
-		(at 86.36 76.2 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "6f96e1b6-571c-430e-9baf-bf6230999b7b")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 86.36 76.2 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "SWDCLK"
-		(shape bidirectional)
-		(at 120 88.9 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "71c92922-3db7-4b2b-a9af-05ca90883c70")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 120 88.9 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "UART_RX"
-		(shape input)
-		(at 120 83.82 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "8042ce34-9d0b-401b-b5f5-965874d3b31d")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 120 83.82 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape passive)
-		(at 72.39 91.44 270)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "85adcd57-e0e0-4b1e-9e09-9dec6689614c")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 72.39 91.44 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape passive)
-		(at 60.96 120.65 270)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "989e7264-3826-4519-b44e-a3e78201b3b3")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 60.96 120.65 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "BLACK_SENSE"
-		(shape output)
-		(at 86.36 108 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "9a732abd-f4e2-46f2-989d-de31038cf7f2")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 86.36 108 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "UART_TX"
-		(shape output)
-		(at 120 81.28 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "ab7ade34-b29a-48fe-9fa0-ab6934b687fd")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 120 81.28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "TOGGLE_1"
-		(shape output)
-		(at 86.36 68.58 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "b5e6e769-87e4-410b-a339-9b3a61844fb0")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 86.36 68.58 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "SWDIO"
-		(shape bidirectional)
-		(at 120 86.36 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "d2de7202-13ed-4f0e-a3e7-9e46d215b5c4")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 120 86.36 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
+  (version 20231120)
+  (generator "eeschema")
+  (paper "A3")
+  (title_block
+    (title "AART Brake Module — 2: MCU + Inputs")
+    (date "2026-06-19") (rev "11")
+    (company "AART - Adrian & Richard's Technologies")
+    (comment 1 "U1 STM32G051K6U6: DAC1 (PA4) brake, DAC2 (PA5) anti-brake, pot (PA3), toggle (PB0/PB1), rail/BLACK sense, USART1, TM1637 display (PB4/PB8)")
+  )
+  (lib_symbols)
+  (junction (at 60.96 108.0))
+  (wire (pts (xy 72.39 57.15) (xy 72.39 63.5)))
+  (wire (pts (xy 72.39 63.5) (xy 72.39 85.09)))
+  (wire (pts (xy 86.36 63.5) (xy 72.39 63.5)))
+  (wire (pts (xy 86.36 66.04) (xy 72.39 66.04)))
+  (wire (pts (xy 86.36 68.58) (xy 72.39 68.58)))
+  (wire (pts (xy 86.36 71.12) (xy 72.39 71.12)))
+  (wire (pts (xy 86.36 73.66) (xy 72.39 73.66)))
+  (wire (pts (xy 86.36 76.2) (xy 72.39 76.2)))
+  (wire (pts (xy 86.36 78.74) (xy 72.39 78.74)))
+  (wire (pts (xy 86.36 81.28) (xy 72.39 81.28)))
+  (wire (pts (xy 86.36 83.82) (xy 72.39 83.82)))
+  (wire (pts (xy 72.39 85.09) (xy 72.39 91.44)))
+  (wire (pts (xy 60.96 102.87) (xy 60.96 108.0)))
+  (wire (pts (xy 60.96 108.0) (xy 86.36 108.0)))
+  (wire (pts (xy 60.96 111.76) (xy 60.96 120.65)))
+  (wire (pts (xy 113.97 66.04) (xy 120 66.04)))
+  (wire (pts (xy 113.97 68.58) (xy 120 68.58)))
+  (wire (pts (xy 113.97 78.74) (xy 120 78.74)))
+  (wire (pts (xy 113.97 81.28) (xy 120 81.28)))
+  (wire (pts (xy 113.97 83.82) (xy 120 83.82)))
+  (wire (pts (xy 113.97 86.36) (xy 120 86.36)))
+  (wire (pts (xy 113.97 88.9) (xy 120 88.9)))
+  (global_label "+3V3" (shape passive) (at 72.39 55 270)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "GND" (shape passive) (at 72.39 91.44 90)
+    (effects (font (size 1.27 1.27)) (justify right)))
+  (global_label "GND" (shape passive) (at 60.96 120.65 90)
+    (effects (font (size 1.27 1.27)) (justify right)))
+  (global_label "POT_WIPER" (shape input) (at 22.86 64.77 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "POT_WIPER" (shape output) (at 86.36 71.12 180)
+    (effects (font (size 1.27 1.27)) (justify right)))
+  (global_label "TOGGLE_0" (shape input) (at 22.86 78.74 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "TOGGLE_0" (shape output) (at 86.36 73.66 180)
+    (effects (font (size 1.27 1.27)) (justify right)))
+  (global_label "TOGGLE_1" (shape input) (at 22.86 81.28 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "TOGGLE_1" (shape output) (at 86.36 68.58 180)
+    (effects (font (size 1.27 1.27)) (justify right)))
+  (global_label "RAIL_SENSE" (shape input) (at 22.86 91.44 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "RAIL_SENSE" (shape output) (at 86.36 76.2 180)
+    (effects (font (size 1.27 1.27)) (justify right)))
+  (global_label "BLACK_SENSE" (shape output) (at 86.36 108.0 180)
+    (effects (font (size 1.27 1.27)) (justify right)))
+  (global_label "DAC1_Q2_BRAKE" (shape output) (at 120 66.04 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "KA_DAC_DEMAND" (shape output) (at 120 68.58 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "PB3_SW_EN" (shape output) (at 120 78.74 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "UART_TX" (shape output) (at 120 81.28 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "UART_RX" (shape input) (at 120 83.82 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "SWDIO" (shape bidirectional) (at 120 86.36 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "SWDCLK" (shape bidirectional) (at 120 88.9 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (text "U1 STM32G051K6U6 QFN-32" (at 86 60 0)
+    (effects (font (size 1.5 1.5) bold)))
+  (text "Place U1 here with:\n  C5 100nF + C6 100nF + C7 4u7 (VDD/VDDA decoupling)\n  R1 10k (NRST pull-up to 3.3V)" (at 86 61 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "LEFT SIDE INPUTS:" (at 35 48 0)
+    (effects (font (size 1.2 1.2) bold)))
+  (text "PA0 ADC_IN0  WHITE rail sense   R8=15k/R9=4k7 divider\nPA1 ADC_IN1  BLACK track sense   R10=22k/R11=4k7 divider (track side of pass switch)\nPA3 ADC_IN3  Pot wiper (10k, CCW = min brake)\nPB0 GPIO in  Toggle bit0 (mode select), pull-up, active-LOW\nPB1 GPIO in  Toggle bit1 (mode select), pull-up, active-LOW\nPB3 GPIO     Reserved (optional reverse-switch enable; unused in Rev 11)" (at 15 32 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "RIGHT SIDE OUTPUTS:" (at 120 45 0)
+    (effects (font (size 1.2 1.2) bold)))
+  (text "PA4  DAC_CH1  Brake -> GD2 op-amp buffer -> Q2 (linear, no PWM)\nPA5  DAC_CH2  Anti-brake demand DC -> R_KA1/R_KA2 div -> GD3 LM7321 -> GD1 current source\nPB4  GPIO     TM1637 display CLK -> J14\nPA9  USART1_TX  UART debug/bootloader  115200 8N1\nPA10 USART1_RX  UART RX\nPA13 SWDIO      SWD\nPA14 SWDCLK     SWD + BOOT0 (J12 via series R, nBOOT_SEL=0)\nPB6  GPIO out   Status LED (blinks 3x on flash save)\nPB8  GPIO     TM1637 display DIO -> J14\nNRST            Reset input" (at 120 48 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "TOGGLE DECODING (PB0=bit0, PB1=bit1, active-LOW pull-up):\nPB0=H PB1=H -> Mode A (brake only, all motors; pot linear)\nPB0=L PB1=H -> Mode B (brake + anti-brake, brushed; coupled tables)\nPB0=H PB1=L -> Mode C (keep-alive tuning, brushless setup)\nboth LOW    -> defaults to Mode A" (at 15 120 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "DUAL DAC (replaces TIM3 PWM gate drive):\nPA4 DAC_CH1 and PA5 DAC_CH2 drive op-amp buffers in LINEAR mode\n(no switching, no EMI). DAC2 polarity is now non-inverted:\ncode 0 = off, full = 3A current source. DAC output is DC; no PWM or RC filter. See doc 7A.7/11.1." (at 120 120 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "RAIL SENSE DIVIDERS:\nWHITE: R8=15k / R9=4k7 -> within 3.3V ADC at 16V rail\nBLACK: R10=22k / R11=4k7, tapped on the TRACK side of the pass switch" (at 120 140 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
 )

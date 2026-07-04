@@ -1,453 +1,61 @@
 (kicad_sch
-	(version 20260306)
-	(generator "eeschema")
-	(generator_version "10.0")
-	(uuid "91aff98a-7dbb-467d-82c1-fc00fb84e4f8")
-	(paper "A4")
-	(title_block
-		(title "AART Brake Module — 1: Power Supply")
-		(date "2026-06-19")
-		(rev "11")
-		(company "AART - Adrian & Richard's Technologies")
-		(comment 1 "WHITE -> F1 polyfuse -> U2 LDO +3V3 (MCU). U4 LDO +5V (GD2 brake buffer only; GD1 anti-brake op-amp is on WHITE). D1 TVS on WHITE.")
-		(comment 2 "TPS1212-Q1 VS ties to WHITE directly (3.5-73V, no clamp needed). F1 in WHITE rail ONLY.")
-	)
-	(lib_symbols)
-	(text "F1\n500mA-1A\npolyfuse"
-		(exclude_from_sim no)
-		(at 33 24 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "0da6d050-e2e8-4680-951e-83a49b982abe")
-	)
-	(text "U4\nMCP1700-5002\nSOT-23 -> +5V\nanalog rail"
-		(exclude_from_sim no)
-		(at 101 33 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "2a614cff-99f5-40a4-a774-15bd6ad8c42c")
-	)
-	(text "+3V3 RAIL (U2):\n  16.0V rail: P = (16.0-3.3) x 0.035 = 0.44W, dT ~27C in SOT-223.\nAMS1117 handles the thermal at 16V in but has ~5mA quiescent;\nMCP1700 is 2uA Iq but higher Rth in SOT-23 — pick per standby\nbudget vs package thermal (see design doc 7A.6)."
-		(exclude_from_sim no)
-		(at 15 85 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "2b828750-0bea-4ad7-b7e1-bd202a414477")
-	)
-	(text "TPS1212-Q1 SUPPLY (no clamp):\nThe reverse-switch controller U5 (TPS1212-Q1) VS pin\nconnects to WHITE directly - its 3.5-73V range covers the\n16V rail, so the DZ1/RZ1 zener clamp the LTC7001 needed is\nremoved. U5 also self-protects via I2t/SCP. See reverse_switch sheet."
-		(exclude_from_sim no)
-		(at 15 108 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "2c1ca28f-386c-44f9-b5eb-afa1f0b9215f")
-	)
-	(text "U2\nAMS1117-3.3\n(or MCP1700)\nSOT-223 -> +3V3"
-		(exclude_from_sim no)
-		(at 76 21 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "4760c5ca-ff02-45fd-b5ca-000da3a3a67b")
-	)
-	(text "+5V RAIL (U4):\nFeeds the GD2 brake-buffer op-amp only. NOTE: the GD1 anti-brake\ncurrent-source op-amp is NOT on this rail - it is powered from WHITE (~16V)\nbecause it senses in the WHITE leg at ~16V common mode (a 5V op-amp cannot).\n~11V drop from WHITE at mA-level load = negligible heat in SOT-23."
-		(exclude_from_sim no)
-		(at 15 60 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "7615d99b-26c2-4b7c-b52e-c9b4dc77b33f")
-	)
-	(text "D1\nP6KE18CA\nTVS bidir"
-		(exclude_from_sim no)
-		(at 53 35 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "76a4a46d-c229-4939-89f5-e3fbdef820c4")
-	)
-	(text "TVS selection:\nP6KE18CA bidirectional (CA suffix) ESSENTIAL — clamps both\npolarities of inductive transient on the WHITE rail."
-		(exclude_from_sim no)
-		(at 80 85 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "81a9ca5f-f03b-49b3-967c-c7657a285fdc")
-	)
-	(text "J2 WHITE"
-		(exclude_from_sim no)
-		(at 14 30 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "8bd4bf65-4764-4db2-879f-dd2649e6d590")
-	)
-	(text "C1 C2\nLDO in"
-		(exclude_from_sim no)
-		(at 69 33 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "aa8989bc-a632-4a23-8482-580924a626ba")
-	)
-	(text "USB POWER PATH:\nVBUS -> F_USB (500mA polyfuse) -> D_USB (BAT54) -> LDO input node.\nD_USB anode=VBUS, cathode=LDO_in. Reversed = HOST DAMAGE.\nR_CC1/R_CC2 5.1k CC pull-downs; C_USB1 10uF VBUS bulk."
-		(exclude_from_sim no)
-		(at 15 130 0)
-		(effects
-			(font
-				(size 1 1)
-			)
-			(justify left)
-		)
-		(uuid "ac2a330c-73de-464d-9a59-c898be6625ce")
-	)
-	(junction
-		(at 110 30)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "08736b38-056c-4b91-aa16-3302a8d63b34")
-	)
-	(junction
-		(at 52.07 30)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "63efe942-3e51-494a-a3c6-e8dd64daaf78")
-	)
-	(junction
-		(at 68.58 30)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a17afa0e-6cac-4b50-81f0-3cc7d9837d81")
-	)
-	(junction
-		(at 81.28 30)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "ce763317-12ff-4d77-806c-e65def6904aa")
-	)
-	(wire
-		(pts
-			(xy 40 30) (xy 52.07 30)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0d89fafc-69ed-49ef-8ca9-a46b7f9c880f")
-	)
-	(wire
-		(pts
-			(xy 52.07 30) (xy 68.58 30)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4b6905e8-8069-4582-990d-fbb99079a71d")
-	)
-	(wire
-		(pts
-			(xy 52.07 42) (xy 52.07 50)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4bd50237-9393-4f88-9e7d-b89a44ef8e6c")
-	)
-	(wire
-		(pts
-			(xy 110 30) (xy 130 30)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4f36ece6-7482-4232-b11c-2e04562b6f3e")
-	)
-	(wire
-		(pts
-			(xy 100 30) (xy 110 30)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "55383b6f-7246-4ce9-8a4c-32cd3f6d6f0f")
-	)
-	(wire
-		(pts
-			(xy 68.58 30) (xy 68.58 38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "68f444de-16ab-47de-a17c-0fdd8ae38ead")
-	)
-	(wire
-		(pts
-			(xy 68.58 30) (xy 81.28 30)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7437a7f6-7e8a-48ac-a821-fdae52a43e4d")
-	)
-	(wire
-		(pts
-			(xy 100 30) (xy 100 38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7c792fd5-fa3b-4b2a-86f3-a908af79c720")
-	)
-	(wire
-		(pts
-			(xy 81.28 30) (xy 100 30)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7e97c6a6-730f-4b57-b599-da14d6043c90")
-	)
-	(wire
-		(pts
-			(xy 52.07 30) (xy 52.07 35)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "89f54786-6b6b-472c-9545-b60180a8cb42")
-	)
-	(wire
-		(pts
-			(xy 81.28 30) (xy 81.28 25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8f912bc5-2b8b-4c83-bac6-bf8af952f863")
-	)
-	(wire
-		(pts
-			(xy 68.58 44) (xy 68.58 50)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d90fdecd-6aae-448a-b135-df84beabf191")
-	)
-	(wire
-		(pts
-			(xy 110 44) (xy 110 50)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e2e9ac0b-5b8e-4d46-afb6-3d8dba4bb33d")
-	)
-	(wire
-		(pts
-			(xy 110 30) (xy 110 38)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ec8f0316-3060-4563-b702-5ff6dc894802")
-	)
-	(wire
-		(pts
-			(xy 130 30) (xy 130 23)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f6f70336-2ab3-4671-8ae3-b87c3164a5a9")
-	)
-	(wire
-		(pts
-			(xy 20 30) (xy 30 30)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "fb6ef432-d673-423a-95eb-a17a8de5efa6")
-	)
-	(global_label "+12V_RAIL"
-		(shape output)
-		(at 20 28 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "06732bbe-020b-4145-8550-d317d3613023")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 20 28 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "+3V3"
-		(shape output)
-		(at 81.28 23 90)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "17483fa7-08d8-4f09-a877-d2b5b471ac7a")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 81.28 23 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "+5V"
-		(shape output)
-		(at 130 23 90)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "28927650-4be7-46e2-8105-3474501e72c7")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 130 23 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape passive)
-		(at 110 50 270)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "80e9cf68-72cd-4aed-9a50-28c065ed89eb")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 110 50 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape passive)
-		(at 68.58 50 270)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "88d60ea2-a6cf-4bc0-83f4-62fede1010dc")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 68.58 50 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape passive)
-		(at 52.07 50 270)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "8a2f48a8-54e7-4149-908b-b428f2fdc6f2")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 52.07 50 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
+  (version 20231120)
+  (generator "eeschema")
+  (paper "A4")
+  (title_block
+    (title "AART Brake Module — 1: Power Supply")
+    (date "2026-06-19") (rev "11")
+    (company "AART - Adrian & Richard's Technologies")
+    (comment 1 "WHITE -> F1 polyfuse -> U2 LDO +3V3 (MCU). U4 LDO +5V (GD2 brake buffer only; GD1 anti-brake op-amp is on WHITE). D1 TVS on WHITE.")
+    (comment 2 "INA210/LM311 ideal diode runs off +5V; gate-drive charge pump draws from WHITE. F1 in WHITE rail ONLY.")
+  )
+  (lib_symbols)
+  (junction (at 52.07 30))
+  (junction (at 68.58 30))
+  (junction (at 81.28 30))
+  (junction (at 110 30))
+  (wire (pts (xy 20 30) (xy 30 30)))
+  (wire (pts (xy 40 30) (xy 52.07 30)))
+  (wire (pts (xy 52.07 30) (xy 68.58 30)))
+  (wire (pts (xy 68.58 30) (xy 81.28 30)))
+  (wire (pts (xy 81.28 30) (xy 100 30)))
+  (wire (pts (xy 100 30) (xy 110 30)))
+  (wire (pts (xy 110 30) (xy 130 30)))
+  (wire (pts (xy 52.07 30) (xy 52.07 35)))
+  (wire (pts (xy 52.07 42) (xy 52.07 50)))
+  (wire (pts (xy 68.58 30) (xy 68.58 38)))
+  (wire (pts (xy 68.58 44) (xy 68.58 50)))
+  (wire (pts (xy 81.28 30) (xy 81.28 25)))
+  (wire (pts (xy 100 30) (xy 100 38)))
+  (wire (pts (xy 110 30) (xy 110 38)))
+  (wire (pts (xy 110 44) (xy 110 50)))
+  (wire (pts (xy 130 30) (xy 130 23)))
+  (global_label "+12V_RAIL" (shape output) (at 20 28 0)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "+3V3" (shape output) (at 81.28 23 270)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "+5V" (shape output) (at 130 23 270)
+    (effects (font (size 1.27 1.27)) (justify left)))
+  (global_label "GND" (shape passive) (at 52.07 50 90)
+    (effects (font (size 1.27 1.27)) (justify right)))
+  (global_label "GND" (shape passive) (at 68.58 50 90)
+    (effects (font (size 1.27 1.27)) (justify right)))
+  (global_label "GND" (shape passive) (at 110 50 90)
+    (effects (font (size 1.27 1.27)) (justify right)))
+  (text "J2 WHITE" (at 14 30 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "F1\n500mA-1A\npolyfuse" (at 33 24 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "D1\nP6KE18CA\nTVS bidir" (at 53 35 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "C1 C2\nLDO in" (at 69 33 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "U2\nAMS1117-3.3\n(or MCP1700)\nSOT-223 -> +3V3" (at 76 21 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "U4\nMCP1700-5002\nSOT-23 -> +5V\nanalog rail" (at 101 33 0) (effects (font (size 1.0 1.0)) (justify left)))
+  (text "+5V RAIL (U4):\nFeeds the GD2 brake-buffer op-amp only. NOTE: the GD1 anti-brake\ncurrent-source op-amp is NOT on this rail - it is powered from WHITE (~16V)\nbecause it senses in the WHITE leg at ~16V common mode (a 5V op-amp cannot).\n~11V drop from WHITE at mA-level load = negligible heat in SOT-23." (at 15 60 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "+3V3 RAIL (U2):\n  16.0V rail: P = (16.0-3.3) x 0.035 = 0.44W, dT ~27C in SOT-223.\nAMS1117 handles the thermal at 16V in but has ~5mA quiescent;\nMCP1700 is 2uA Iq but higher Rth in SOT-23 — pick per standby\nbudget vs package thermal (see design doc 7A.6)." (at 15 85 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "IDEAL-DIODE SUPPLY:\nThe reverse-switch sense amp U5 (INA210) and comparator\nU6 (LM311) run off the +5V LDO rail. The Q5/Q6 common-source\ngates need a high-side gate driver / charge pump fed from\nWHITE (open item). No self-protection (I2t/SCP). See reverse_switch sheet." (at 15 108 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "TVS selection:\nP6KE18CA bidirectional (CA suffix) ESSENTIAL — clamps both\npolarities of inductive transient on the WHITE rail." (at 80 85 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
+  (text "USB POWER PATH:\nVBUS -> F_USB (500mA polyfuse) -> D_USB (BAT54) -> LDO input node.\nD_USB anode=VBUS, cathode=LDO_in. Reversed = HOST DAMAGE.\nR_CC1/R_CC2 5.1k CC pull-downs; C_USB1 10uF VBUS bulk." (at 15 130 0)
+    (effects (font (size 1.0 1.0)) (justify left)))
 )

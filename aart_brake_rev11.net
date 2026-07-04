@@ -2,7 +2,7 @@
   (version "D")
   (design
     (source "aart_brake_rev11_skidl.py")
-    (date "06/20/2026 02:57 PM")
+    (date "06/29/2026 11:23 AM")
     (tool "SKiDL (2.2.3)")
     (sheet
       (number 1)
@@ -235,102 +235,6 @@
       (component_classes)
       (tstamps "16338a68-8eed-55bf-a491-963475c6f7f3"))
     (comp
-      (ref "CI2t")
-      (value "cap")
-      (description "")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "Description"))
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "CI2t")
-        (field
-          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
-      (libsource
-        (lib "NO_LIB")
-        (part "cap"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "7a9a7e04-1eb9-54b2-84c9-d7b60c051773"))
-    (comp
-      (ref "CTMR")
-      (value "cap")
-      (description "")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "Description"))
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "CTMR")
-        (field
-          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
-      (libsource
-        (lib "NO_LIB")
-        (part "cap"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "b32a7027-805b-5630-b1a4-c0a0fbf7619e"))
-    (comp
-      (ref "C_BST")
-      (value "cap")
-      (description "")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "Description"))
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "C_BST")
-        (field
-          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
-      (libsource
-        (lib "NO_LIB")
-        (part "cap"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "7fe97cfa-9544-5ffa-92be-1bb9fdb5426f"))
-    (comp
-      (ref "C_KA")
-      (value "470n")
-      (description "")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "Description"))
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "C_KA")
-        (field
-          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
-      (libsource
-        (lib "NO_LIB")
-        (part "470n"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "039c946a-2bc3-57ca-a70d-287880b20891"))
-    (comp
       (ref "C_USB")
       (value "cap")
       (description "")
@@ -378,30 +282,6 @@
         (tstamps "/"))
       (component_classes)
       (tstamps "6fe7e102-6366-5d62-8247-0428c4cf0402"))
-    (comp
-      (ref "C_v")
-      (value "cap")
-      (description "")
-      (footprint "Capacitor_SMD:C_0402_1005Metric")
-      (fields
-        (field
-          (name "Description"))
-        (field
-          (name "Footprint") "Capacitor_SMD:C_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "C_v")
-        (field
-          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
-      (libsource
-        (lib "NO_LIB")
-        (part "cap"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "343fbf6c-8e85-5788-86f4-7d3f94f530f3"))
     (comp
       (ref "D1")
       (value "diode")
@@ -499,6 +379,30 @@
       (component_classes)
       (tstamps "68f6c72b-a475-524d-bd7b-c1b998873b90"))
     (comp
+      (ref "D_SAFE")
+      (value "MMSZ5242B_12V")
+      (description "")
+      (footprint "Diode_SMD:D_SOD-123")
+      (fields
+        (field
+          (name "Description"))
+        (field
+          (name "Footprint") "Diode_SMD:D_SOD-123")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "D_SAFE")
+        (field
+          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
+      (libsource
+        (lib "NO_LIB")
+        (part "MMSZ5242B_12V"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "ae28bdd1-cf9b-5177-92dc-2d0c9c1579ba"))
+    (comp
       (ref "D_USB")
       (value "diode")
       (description "")
@@ -522,30 +426,6 @@
         (tstamps "/"))
       (component_classes)
       (tstamps "6aa200df-35db-5b18-a1bc-a2d40307f0d5"))
-    (comp
-      (ref "D_v")
-      (value "diode")
-      (description "")
-      (footprint "Diode_SMD:D_SMB")
-      (fields
-        (field
-          (name "Description"))
-        (field
-          (name "Footprint") "Diode_SMD:D_SMB")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "D_v")
-        (field
-          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
-      (libsource
-        (lib "NO_LIB")
-        (part "diode"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "180d5d69-d41a-5bde-b5e7-30c97d1ac6fb"))
     (comp
       (ref "F1")
       (value "PolyFuse_1A")
@@ -642,6 +522,30 @@
         (tstamps "/"))
       (component_classes)
       (tstamps "a9a2ea14-ca1b-5454-894c-67d0b12ccbb4"))
+    (comp
+      (ref "GD3")
+      (value "OpAmp")
+      (description "")
+      (footprint "Package_TO_SOT_SMD:SOT-23-5")
+      (fields
+        (field
+          (name "Description"))
+        (field
+          (name "Footprint") "Package_TO_SOT_SMD:SOT-23-5")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "GD3")
+        (field
+          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
+      (libsource
+        (lib "NO_LIB")
+        (part "OpAmp"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "6fc6d672-3030-5d3d-b8ed-a811a7711dc7"))
     (comp
       (ref "J1")
       (value "Conn")
@@ -766,12 +670,12 @@
       (ref "J14")
       (value "Conn")
       (description "")
-      (footprint "Connector_PinHeader_2.54mm:PinHeader_1x3_P2.54mm_Vertical")
+      (footprint "Connector_PinHeader_2.54mm:PinHeader_1x4_P2.54mm_Vertical")
       (fields
         (field
           (name "Description"))
         (field
-          (name "Footprint") "Connector_PinHeader_2.54mm:PinHeader_1x3_P2.54mm_Vertical")
+          (name "Footprint") "Connector_PinHeader_2.54mm:PinHeader_1x4_P2.54mm_Vertical")
         (field
           (name "Datasheet"))
         (field
@@ -1004,14 +908,14 @@
       (tstamps "9699dfdd-a6d3-59e3-8793-7f24db869fba"))
     (comp
       (ref "Q2")
-      (value "IRFP250N")
+      (value "TW100N03CC")
       (description "")
-      (footprint "Package_TO_SOT_THT:TO-247-3_Vertical")
+      (footprint "Package_SO:Vishay_PowerPAK_SO-8_Single")
       (fields
         (field
           (name "Description"))
         (field
-          (name "Footprint") "Package_TO_SOT_THT:TO-247-3_Vertical")
+          (name "Footprint") "Package_SO:Vishay_PowerPAK_SO-8_Single")
         (field
           (name "Datasheet"))
         (field
@@ -1020,7 +924,7 @@
           (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
       (libsource
         (lib "NO_LIB")
-        (part "IRFP250N"))
+        (part "TW100N03CC"))
       (sheetpath
         (names "/")
         (tstamps "/"))
@@ -1074,54 +978,6 @@
         (tstamps "/"))
       (component_classes)
       (tstamps "e1b2b674-b3d5-5a98-ba80-08b09ecb1a48"))
-    (comp
-      (ref "Q_GL")
-      (value "2N2222")
-      (description "")
-      (footprint "Package_TO_SOT_SMD:SOT-23")
-      (fields
-        (field
-          (name "Description"))
-        (field
-          (name "Footprint") "Package_TO_SOT_SMD:SOT-23")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "Q_GL")
-        (field
-          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
-      (libsource
-        (lib "NO_LIB")
-        (part "2N2222"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "3888773c-8f74-5b9c-a019-2b071b6967a6"))
-    (comp
-      (ref "Q_LS")
-      (value "2N2222")
-      (description "")
-      (footprint "Package_TO_SOT_SMD:SOT-23")
-      (fields
-        (field
-          (name "Description"))
-        (field
-          (name "Footprint") "Package_TO_SOT_SMD:SOT-23")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "Q_LS")
-        (field
-          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
-      (libsource
-        (lib "NO_LIB")
-        (part "2N2222"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "30fe3028-0115-5faf-9e05-e04ddd704019"))
     (comp
       (ref "R1")
       (value "res")
@@ -1339,30 +1195,6 @@
       (component_classes)
       (tstamps "abe8364b-5ed9-593a-a990-c9655e96dd67"))
     (comp
-      (ref "RIOC")
-      (value "res")
-      (description "")
-      (footprint "Resistor_SMD:R_0402_1005Metric")
-      (fields
-        (field
-          (name "Description"))
-        (field
-          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
-        (field
-          (name "Datasheet"))
-        (field
-          (name "SKiDL Tag") "RIOC")
-        (field
-          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
-      (libsource
-        (lib "NO_LIB")
-        (part "res"))
-      (sheetpath
-        (names "/")
-        (tstamps "/"))
-      (component_classes)
-      (tstamps "17675562-21cb-5de4-8248-8d6b15ac134f"))
-    (comp
       (ref "R_B0")
       (value "res")
       (description "")
@@ -1435,6 +1267,54 @@
       (component_classes)
       (tstamps "a0c97d40-56d3-5d85-964b-6f2cd9be7c6a"))
     (comp
+      (ref "R_CMP")
+      (value "res")
+      (description "")
+      (footprint "Resistor_SMD:R_0402_1005Metric")
+      (fields
+        (field
+          (name "Description"))
+        (field
+          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "R_CMP")
+        (field
+          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
+      (libsource
+        (lib "NO_LIB")
+        (part "res"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "ac3d6693-554a-5631-a74f-4c87d009b1d7"))
+    (comp
+      (ref "R_HYS")
+      (value "res")
+      (description "")
+      (footprint "Resistor_SMD:R_0402_1005Metric")
+      (fields
+        (field
+          (name "Description"))
+        (field
+          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "R_HYS")
+        (field
+          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
+      (libsource
+        (lib "NO_LIB")
+        (part "res"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "6a614622-9a00-5681-a0d8-55a22636eced"))
+    (comp
       (ref "R_KA1")
       (value "res")
       (description "")
@@ -1459,7 +1339,7 @@
       (component_classes)
       (tstamps "9e8a08ee-15a7-51be-8cd1-ef7b824aa2c6"))
     (comp
-      (ref "R_KAbase")
+      (ref "R_KA2")
       (value "res")
       (description "")
       (footprint "Resistor_SMD:R_0402_1005Metric")
@@ -1471,7 +1351,7 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "R_KAbase")
+          (name "SKiDL Tag") "R_KA2")
         (field
           (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
       (libsource
@@ -1481,10 +1361,10 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "3e8c90e7-6cf4-5bf3-914a-bf6860bf5be6"))
+      (tstamps "4d0ab533-33a8-568d-a922-8fb58b6365b5"))
     (comp
-      (ref "R_KAe")
-      (value "res")
+      (ref "R_SAFE")
+      (value "100k")
       (description "")
       (footprint "Resistor_SMD:R_0402_1005Metric")
       (fields
@@ -1495,19 +1375,19 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "R_KAe")
+          (name "SKiDL Tag") "R_SAFE")
         (field
           (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
       (libsource
         (lib "NO_LIB")
-        (part "res"))
+        (part "100k"))
       (sheetpath
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "250228f2-4d14-5291-909e-02023e721713"))
+      (tstamps "9ac3f0d1-a87b-5750-bb9f-48a5e3f6cb6c"))
     (comp
-      (ref "R_v")
+      (ref "R_THR1")
       (value "res")
       (description "")
       (footprint "Resistor_SMD:R_0402_1005Metric")
@@ -1519,7 +1399,7 @@
         (field
           (name "Datasheet"))
         (field
-          (name "SKiDL Tag") "R_v")
+          (name "SKiDL Tag") "R_THR1")
         (field
           (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
       (libsource
@@ -1529,7 +1409,127 @@
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "743d8441-d434-51a0-bf3c-30fa93fb60e7"))
+      (tstamps "21ecae2d-5e65-5379-a6a7-584478c3690a"))
+    (comp
+      (ref "R_THR2")
+      (value "res")
+      (description "")
+      (footprint "Resistor_SMD:R_0402_1005Metric")
+      (fields
+        (field
+          (name "Description"))
+        (field
+          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "R_THR2")
+        (field
+          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
+      (libsource
+        (lib "NO_LIB")
+        (part "res"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "f5ba1ad4-184a-5628-ae8c-d437e3f17513"))
+    (comp
+      (ref "R_t1")
+      (value "10k")
+      (description "")
+      (footprint "Resistor_SMD:R_0402_1005Metric")
+      (fields
+        (field
+          (name "Description"))
+        (field
+          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "R_t1")
+        (field
+          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
+      (libsource
+        (lib "NO_LIB")
+        (part "10k"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "a72d9b05-8ef2-58de-87c5-2b4fce032ead"))
+    (comp
+      (ref "R_t2")
+      (value "10k")
+      (description "")
+      (footprint "Resistor_SMD:R_0402_1005Metric")
+      (fields
+        (field
+          (name "Description"))
+        (field
+          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "R_t2")
+        (field
+          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
+      (libsource
+        (lib "NO_LIB")
+        (part "10k"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "0a7951f5-469d-571b-af98-ee6a7d024ab7"))
+    (comp
+      (ref "R_t3")
+      (value "10k")
+      (description "")
+      (footprint "Resistor_SMD:R_0402_1005Metric")
+      (fields
+        (field
+          (name "Description"))
+        (field
+          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "R_t3")
+        (field
+          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
+      (libsource
+        (lib "NO_LIB")
+        (part "10k"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "4cd93d9a-90ef-5166-bc8e-17d5cce9449f"))
+    (comp
+      (ref "R_t4")
+      (value "10k")
+      (description "")
+      (footprint "Resistor_SMD:R_0402_1005Metric")
+      (fields
+        (field
+          (name "Description"))
+        (field
+          (name "Footprint") "Resistor_SMD:R_0402_1005Metric")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "R_t4")
+        (field
+          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
+      (libsource
+        (lib "NO_LIB")
+        (part "10k"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "aa6d0aeb-6119-5ba0-b54a-13b78d4a6165"))
     (comp
       (ref "Rsns_ab")
       (value "shunt")
@@ -1556,7 +1556,7 @@
       (tstamps "69008f26-c052-5181-8656-2604a4e67b49"))
     (comp
       (ref "Rsns_sw")
-      (value "shunt")
+      (value "1m")
       (description "")
       (footprint "Resistor_SMD:R_2512_6332Metric")
       (fields
@@ -1572,7 +1572,7 @@
           (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
       (libsource
         (lib "NO_LIB")
-        (part "shunt"))
+        (part "1m"))
       (sheetpath
         (names "/")
         (tstamps "/"))
@@ -1676,14 +1676,14 @@
       (tstamps "b2699459-f172-5b2a-8b70-5ef993fb2f77"))
     (comp
       (ref "U5")
-      (value "TPS1212-Q1")
+      (value "INA210")
       (description "")
-      (footprint "Package_DFN_QFN:QFN-24-1EP_4x4mm_P0.5mm_EP2.6x2.6mm")
+      (footprint "Package_TO_SOT_SMD:SOT-23-6")
       (fields
         (field
           (name "Description"))
         (field
-          (name "Footprint") "Package_DFN_QFN:QFN-24-1EP_4x4mm_P0.5mm_EP2.6x2.6mm")
+          (name "Footprint") "Package_TO_SOT_SMD:SOT-23-6")
         (field
           (name "Datasheet"))
         (field
@@ -1692,21 +1692,41 @@
           (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
       (libsource
         (lib "NO_LIB")
-        (part "TPS1212-Q1"))
+        (part "INA210"))
       (sheetpath
         (names "/")
         (tstamps "/"))
       (component_classes)
-      (tstamps "6254ed11-c784-58f8-9988-ecfc74740e7c")))
+      (tstamps "6254ed11-c784-58f8-9988-ecfc74740e7c"))
+    (comp
+      (ref "U6")
+      (value "LM311")
+      (description "")
+      (footprint "Package_TO_SOT_SMD:SOT-23-5")
+      (fields
+        (field
+          (name "Description"))
+        (field
+          (name "Footprint") "Package_TO_SOT_SMD:SOT-23-5")
+        (field
+          (name "Datasheet"))
+        (field
+          (name "SKiDL Tag") "U6")
+        (field
+          (name "SKiDL Line") "aart_brake_rev11_skidl.py:28"))
+      (libsource
+        (lib "NO_LIB")
+        (part "LM311"))
+      (sheetpath
+        (names "/")
+        (tstamps "/"))
+      (component_classes)
+      (tstamps "aee7dbbb-30a2-5780-a35b-54386b8e659f")))
   (nets
     (net
       (code 1)
       (name "+12V_RAIL")
       (class "Default")
-      (node
-        (ref "C_KA")
-        (pin "1")
-        (pintype "UNSPECIFIED"))
       (node
         (ref "D1")
         (pin "1")
@@ -1717,6 +1737,10 @@
         (pintype "UNSPECIFIED"))
       (node
         (ref "GD1")
+        (pin "5")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "GD3")
         (pin "5")
         (pintype "UNSPECIFIED"))
       (node
@@ -1732,15 +1756,11 @@
         (pin "1")
         (pintype "UNSPECIFIED"))
       (node
-        (ref "R_KA1")
+        (ref "R_t3")
         (pin "1")
         (pintype "UNSPECIFIED"))
       (node
         (ref "Rsns_ab")
-        (pin "1")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U5")
         (pin "1")
         (pintype "UNSPECIFIED")))
     (net
@@ -1772,12 +1792,24 @@
         (pin "1")
         (pintype "UNSPECIFIED"))
       (node
+        (ref "J12")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "J14")
+        (pin "4")
+        (pintype "UNSPECIFIED"))
+      (node
         (ref "R1")
         (pin "1")
         (pintype "UNSPECIFIED"))
       (node
         (ref "R5")
         (pin "1")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_CMP")
+        (pin "2")
         (pintype "UNSPECIFIED"))
       (node
         (ref "U1")
@@ -1812,7 +1844,19 @@
         (pin "1")
         (pintype "UNSPECIFIED"))
       (node
+        (ref "R_THR1")
+        (pin "1")
+        (pintype "UNSPECIFIED"))
+      (node
         (ref "U4")
+        (pin "3")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "U5")
+        (pin "4")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "U6")
         (pin "3")
         (pintype "UNSPECIFIED")))
     (net
@@ -1832,19 +1876,15 @@
       (name "AB_DEMAND")
       (class "Default")
       (node
-        (ref "C_KA")
-        (pin "2")
-        (pintype "UNSPECIFIED"))
-      (node
         (ref "GD1")
         (pin "3")
         (pintype "UNSPECIFIED"))
       (node
-        (ref "Q_LS")
-        (pin "3")
+        (ref "GD3")
+        (pin "1")
         (pintype "UNSPECIFIED"))
       (node
-        (ref "R_KA1")
+        (ref "R_t2")
         (pin "2")
         (pintype "UNSPECIFIED")))
     (net
@@ -1902,10 +1942,6 @@
       (node
         (ref "R_B0")
         (pin "1")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U1")
-        (pin "16")
         (pintype "UNSPECIFIED")))
     (net
       (code 10)
@@ -1941,6 +1977,18 @@
         (pintype "UNSPECIFIED")))
     (net
       (code 12)
+      (name "CSA_OUT")
+      (class "Default")
+      (node
+        (ref "U5")
+        (pin "5")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "U6")
+        (pin "1")
+        (pintype "UNSPECIFIED")))
+    (net
+      (code 13)
       (name "CTRL_BLACK_IN")
       (class "Default")
       (node
@@ -1953,10 +2001,42 @@
         (pintype "UNSPECIFIED"))
       (node
         (ref "U5")
-        (pin "3")
+        (pin "1")
         (pintype "UNSPECIFIED")))
     (net
-      (code 13)
+      (code 14)
+      (name "GD3_INN")
+      (class "Default")
+      (node
+        (ref "GD3")
+        (pin "4")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_t1")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_t2")
+        (pin "1")
+        (pintype "UNSPECIFIED")))
+    (net
+      (code 15)
+      (name "GD3_INP")
+      (class "Default")
+      (node
+        (ref "GD3")
+        (pin "3")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_t3")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_t4")
+        (pin "1")
+        (pintype "UNSPECIFIED")))
+    (net
+      (code 16)
       (name "GND")
       (class "Default")
       (node
@@ -1992,23 +2072,11 @@
         (pin "2")
         (pintype "UNSPECIFIED"))
       (node
-        (ref "CI2t")
-        (pin "2")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "CTMR")
-        (pin "2")
-        (pintype "UNSPECIFIED"))
-      (node
         (ref "C_USB")
         (pin "2")
         (pintype "UNSPECIFIED"))
       (node
         (ref "C_V3")
-        (pin "2")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "C_v")
         (pin "2")
         (pintype "UNSPECIFIED"))
       (node
@@ -2024,11 +2092,19 @@
         (pin "1")
         (pintype "UNSPECIFIED"))
       (node
+        (ref "D_SAFE")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
         (ref "GD1")
         (pin "2")
         (pintype "UNSPECIFIED"))
       (node
         (ref "GD2")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "GD3")
         (pin "2")
         (pintype "UNSPECIFIED"))
       (node
@@ -2040,16 +2116,12 @@
         (pin "3")
         (pintype "UNSPECIFIED"))
       (node
-        (ref "J12")
-        (pin "2")
-        (pintype "UNSPECIFIED"))
-      (node
         (ref "J13")
         (pin "2")
         (pintype "UNSPECIFIED"))
       (node
         (ref "J14")
-        (pin "2")
+        (pin "3")
         (pintype "UNSPECIFIED"))
       (node
         (ref "J5")
@@ -2076,23 +2148,11 @@
         (pin "3")
         (pintype "UNSPECIFIED"))
       (node
-        (ref "Q_GL")
-        (pin "2")
-        (pintype "UNSPECIFIED"))
-      (node
         (ref "R11")
         (pin "2")
         (pintype "UNSPECIFIED"))
       (node
         (ref "R9")
-        (pin "2")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "RIOC")
-        (pin "2")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "R_B0")
         (pin "2")
         (pintype "UNSPECIFIED"))
       (node
@@ -2104,7 +2164,15 @@
         (pin "2")
         (pintype "UNSPECIFIED"))
       (node
-        (ref "R_KAe")
+        (ref "R_KA2")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_THR2")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_t4")
         (pin "2")
         (pintype "UNSPECIFIED"))
       (node
@@ -2129,38 +2197,22 @@
         (pintype "UNSPECIFIED"))
       (node
         (ref "U5")
-        (pin "2")
-        (pintype "UNSPECIFIED")))
-    (net
-      (code 14)
-      (name "KA_LS_BASE")
-      (class "Default")
-      (node
-        (ref "Q_LS")
-        (pin "1")
+        (pin "3")
         (pintype "UNSPECIFIED"))
       (node
-        (ref "R_KAbase")
-        (pin "2")
-        (pintype "UNSPECIFIED")))
-    (net
-      (code 15)
-      (name "KA_LS_EMIT")
-      (class "Default")
-      (node
-        (ref "Q_LS")
-        (pin "2")
+        (ref "U5")
+        (pin "6")
         (pintype "UNSPECIFIED"))
       (node
-        (ref "R_KAe")
-        (pin "1")
+        (ref "U6")
+        (pin "4")
         (pintype "UNSPECIFIED")))
     (net
-      (code 16)
-      (name "KA_PWM")
+      (code 17)
+      (name "KA_DAC")
       (class "Default")
       (node
-        (ref "R_KAbase")
+        (ref "R_KA1")
         (pin "1")
         (pintype "UNSPECIFIED"))
       (node
@@ -2168,7 +2220,23 @@
         (pin "10")
         (pintype "UNSPECIFIED")))
     (net
-      (code 17)
+      (code 18)
+      (name "KA_DEMAND_LV")
+      (class "Default")
+      (node
+        (ref "R_KA1")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_KA2")
+        (pin "1")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_t1")
+        (pin "1")
+        (pintype "UNSPECIFIED")))
+    (net
+      (code 19)
       (name "LED_A")
       (class "Default")
       (node
@@ -2180,7 +2248,7 @@
         (pin "2")
         (pintype "UNSPECIFIED")))
     (net
-      (code 18)
+      (code 20)
       (name "LED_DRV")
       (class "Default")
       (node
@@ -2192,7 +2260,7 @@
         (pin "20")
         (pintype "UNSPECIFIED")))
     (net
-      (code 19)
+      (code 21)
       (name "NRST")
       (class "Default")
       (node
@@ -2208,19 +2276,7 @@
         (pin "15")
         (pintype "UNSPECIFIED")))
     (net
-      (code 20)
-      (name "PB3_SW_EN")
-      (class "Default")
-      (node
-        (ref "U1")
-        (pin "9")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U5")
-        (pin "13")
-        (pintype "UNSPECIFIED")))
-    (net
-      (code 21)
+      (code 22)
       (name "POT_TOP")
       (class "Default")
       (node
@@ -2232,7 +2288,7 @@
         (pin "2")
         (pintype "UNSPECIFIED")))
     (net
-      (code 22)
+      (code 23)
       (name "POT_WIPER")
       (class "Default")
       (node
@@ -2244,9 +2300,13 @@
         (pin "7")
         (pintype "UNSPECIFIED")))
     (net
-      (code 23)
+      (code 24)
       (name "Q2_GATE")
       (class "Default")
+      (node
+        (ref "D_SAFE")
+        (pin "1")
+        (pintype "UNSPECIFIED"))
       (node
         (ref "Q2")
         (pin "1")
@@ -2254,9 +2314,13 @@
       (node
         (ref "R3")
         (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_SAFE")
+        (pin "2")
         (pintype "UNSPECIFIED")))
     (net
-      (code 24)
+      (code 25)
       (name "RAIL_SENSE")
       (class "Default")
       (node
@@ -2272,7 +2336,27 @@
         (pin "5")
         (pintype "UNSPECIFIED")))
     (net
-      (code 25)
+      (code 26)
+      (name "REV_DETECT")
+      (class "Default")
+      (node
+        (ref "R_CMP")
+        (pin "1")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_HYS")
+        (pin "1")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "U1")
+        (pin "21")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "U6")
+        (pin "5")
+        (pintype "UNSPECIFIED")))
+    (net
+      (code 27)
       (name "SWDCLK")
       (class "Default")
       (node
@@ -2280,11 +2364,15 @@
         (pin "4")
         (pintype "UNSPECIFIED"))
       (node
+        (ref "R_B0")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
         (ref "U1")
         (pin "14")
         (pintype "UNSPECIFIED")))
     (net
-      (code 26)
+      (code 28)
       (name "SWDIO")
       (class "Default")
       (node
@@ -2296,13 +2384,9 @@
         (pin "13")
         (pintype "UNSPECIFIED")))
     (net
-      (code 27)
+      (code 29)
       (name "SW_COMMON_SRC")
       (class "Default")
-      (node
-        (ref "C_BST")
-        (pin "2")
-        (pintype "UNSPECIFIED"))
       (node
         (ref "Q5")
         (pin "3")
@@ -2310,13 +2394,9 @@
       (node
         (ref "Q6")
         (pin "3")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U5")
-        (pin "5")
         (pintype "UNSPECIFIED")))
     (net
-      (code 28)
+      (code 30)
       (name "SW_FET_IN")
       (class "Default")
       (node
@@ -2329,10 +2409,10 @@
         (pintype "UNSPECIFIED"))
       (node
         (ref "U5")
-        (pin "4")
+        (pin "2")
         (pintype "UNSPECIFIED")))
     (net
-      (code 29)
+      (code 31)
       (name "SW_GATE")
       (class "Default")
       (node
@@ -2342,13 +2422,33 @@
       (node
         (ref "Q6")
         (pin "1")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U5")
-        (pin "6")
         (pintype "UNSPECIFIED")))
     (net
-      (code 30)
+      (code 32)
+      (name "TM1637_CLK")
+      (class "Default")
+      (node
+        (ref "J14")
+        (pin "1")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "U1")
+        (pin "19")
+        (pintype "UNSPECIFIED")))
+    (net
+      (code 33)
+      (name "TM1637_DIO")
+      (class "Default")
+      (node
+        (ref "J14")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "U1")
+        (pin "16")
+        (pintype "UNSPECIFIED")))
+    (net
+      (code 34)
       (name "TOGGLE_0")
       (class "Default")
       (node
@@ -2360,7 +2460,7 @@
         (pin "17")
         (pintype "UNSPECIFIED")))
     (net
-      (code 31)
+      (code 35)
       (name "TOGGLE_1")
       (class "Default")
       (node
@@ -2372,7 +2472,7 @@
         (pin "18")
         (pintype "UNSPECIFIED")))
     (net
-      (code 32)
+      (code 36)
       (name "TRACK_POS")
       (class "Default")
       (node
@@ -2398,9 +2498,13 @@
       (node
         (ref "R10")
         (pin "1")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_SAFE")
+        (pin "1")
         (pintype "UNSPECIFIED")))
     (net
-      (code 33)
+      (code 37)
       (name "U3_V3")
       (class "Default")
       (node
@@ -2412,79 +2516,7 @@
         (pin "7")
         (pintype "UNSPECIFIED")))
     (net
-      (code 34)
-      (name "U5_BST")
-      (class "Default")
-      (node
-        (ref "C_BST")
-        (pin "1")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U5")
-        (pin "7")
-        (pintype "UNSPECIFIED")))
-    (net
-      (code 35)
-      (name "U5_CI2t")
-      (class "Default")
-      (node
-        (ref "CI2t")
-        (pin "1")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U5")
-        (pin "10")
-        (pintype "UNSPECIFIED")))
-    (net
-      (code 36)
-      (name "U5_CTMR")
-      (class "Default")
-      (node
-        (ref "CTMR")
-        (pin "1")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U5")
-        (pin "11")
-        (pintype "UNSPECIFIED")))
-    (net
-      (code 37)
-      (name "U5_IDIR")
-      (class "Default")
-      (node
-        (ref "Q_GL")
-        (pin "2")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U5")
-        (pin "8")
-        (pintype "UNSPECIFIED")))
-    (net
       (code 38)
-      (name "U5_INP")
-      (class "Default")
-      (node
-        (ref "Q_GL")
-        (pin "3")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U5")
-        (pin "9")
-        (pintype "UNSPECIFIED")))
-    (net
-      (code 39)
-      (name "U5_IOC")
-      (class "Default")
-      (node
-        (ref "RIOC")
-        (pin "1")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U5")
-        (pin "12")
-        (pintype "UNSPECIFIED")))
-    (net
-      (code 40)
       (name "UART_RX")
       (class "Default")
       (node
@@ -2500,7 +2532,7 @@
         (pin "4")
         (pintype "UNSPECIFIED")))
     (net
-      (code 41)
+      (code 39)
       (name "UART_TX")
       (class "Default")
       (node
@@ -2516,7 +2548,7 @@
         (pin "3")
         (pintype "UNSPECIFIED")))
     (net
-      (code 42)
+      (code 40)
       (name "USB_CC1")
       (class "Default")
       (node
@@ -2528,7 +2560,7 @@
         (pin "1")
         (pintype "UNSPECIFIED")))
     (net
-      (code 43)
+      (code 41)
       (name "USB_CC2")
       (class "Default")
       (node
@@ -2540,7 +2572,7 @@
         (pin "1")
         (pintype "UNSPECIFIED")))
     (net
-      (code 44)
+      (code 42)
       (name "USB_DM")
       (class "Default")
       (node
@@ -2552,7 +2584,7 @@
         (pin "6")
         (pintype "UNSPECIFIED")))
     (net
-      (code 45)
+      (code 43)
       (name "USB_DP")
       (class "Default")
       (node
@@ -2564,7 +2596,7 @@
         (pin "5")
         (pintype "UNSPECIFIED")))
     (net
-      (code 46)
+      (code 44)
       (name "USB_VF")
       (class "Default")
       (node
@@ -2576,7 +2608,7 @@
         (pin "2")
         (pintype "UNSPECIFIED")))
     (net
-      (code 47)
+      (code 45)
       (name "VBUS")
       (class "Default")
       (node
@@ -2592,47 +2624,7 @@
         (pin "4")
         (pintype "UNSPECIFIED")))
     (net
-      (code 48)
-      (name "VM_JACK")
-      (class "Default")
-      (node
-        (ref "D_v")
-        (pin "1")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "J14")
-        (pin "1")
-        (pintype "UNSPECIFIED")))
-    (net
-      (code 49)
-      (name "VM_OUT")
-      (class "Default")
-      (node
-        (ref "C_v")
-        (pin "1")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "D_v")
-        (pin "2")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "R_v")
-        (pin "2")
-        (pintype "UNSPECIFIED")))
-    (net
-      (code 50)
-      (name "VOLTMETER_PWM")
-      (class "Default")
-      (node
-        (ref "R_v")
-        (pin "1")
-        (pintype "UNSPECIFIED"))
-      (node
-        (ref "U1")
-        (pin "19")
-        (pintype "UNSPECIFIED")))
-    (net
-      (code 51)
+      (code 46)
       (name "VWHITE_FUSED")
       (class "Default")
       (node
@@ -2658,4 +2650,24 @@
       (node
         (ref "U4")
         (pin "1")
+        (pintype "UNSPECIFIED")))
+    (net
+      (code 47)
+      (name "V_THRESH")
+      (class "Default")
+      (node
+        (ref "R_HYS")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_THR1")
+        (pin "2")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "R_THR2")
+        (pin "1")
+        (pintype "UNSPECIFIED"))
+      (node
+        (ref "U6")
+        (pin "2")
         (pintype "UNSPECIFIED")))))

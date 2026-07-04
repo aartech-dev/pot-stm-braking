@@ -39,9 +39,9 @@
 <text class="tn" x="82" y="152" text-anchor="middle">CCW=min  CW=max</text>
 
 <rect class="box-amber" x="18" y="172" width="128" height="48" rx="7"/>
-<text class="th" x="82" y="190" text-anchor="middle">LED voltmeter</text>
-<text class="ts" x="82" y="206" text-anchor="middle">0.28″ / 0.36″ module</text>
-<text class="tn" x="82" y="218" text-anchor="middle">J14 3-wire</text>
+<text class="th" x="82" y="190" text-anchor="middle">TM1637 display</text>
+<text class="ts" x="82" y="206" text-anchor="middle">4-digit 7-seg module</text>
+<text class="tn" x="82" y="218" text-anchor="middle">J14 4-wire (CLK/DIO)</text>
 
 <!-- ══ MODE COLUMN HEADERS ════════════════════════════════ -->
 <!-- Mode A — blue -->
@@ -71,7 +71,7 @@
 <rect class="box-blue" x="168" y="104" width="152" height="56" rx="5"/>
 <text class="ts" x="244" y="120" text-anchor="middle">Linear: CCW→CW</text>
 <text class="ts" x="244" y="134" text-anchor="middle">soft min → dead short</text>
-<text class="tn" x="244" y="148" text-anchor="middle">2/3/4/6/8Ω (SET BRAKE_OHMS)</text>
+<text class="tn" x="244" y="148" text-anchor="middle">25/15/5/4/3/2/1Ω (SET BRAKE_OHMS)</text>
 <text class="tn" x="244" y="156" text-anchor="middle">(no lookup table)</text>
 
 <rect class="box-green" x="334" y="104" width="152" height="56" rx="5"/>
@@ -84,7 +84,7 @@
 <text class="ts" x="582" y="120" text-anchor="middle">Dials KA floor live</text>
 <text class="ts" x="582" y="134" text-anchor="middle">CCW = 0V (no floor)</text>
 <text class="ts" x="582" y="148" text-anchor="middle">CW = ~2V floor</text>
-<text class="tn" x="582" y="158" text-anchor="middle">Voltmeter shows value</text>
+<text class="tn" x="582" y="158" text-anchor="middle">Display shows value</text>
 
 <line class="divider" x1="168" y1="166" x2="664" y2="166"/>
 
@@ -112,8 +112,8 @@
 
 <line class="divider" x1="168" y1="234" x2="664" y2="234"/>
 
-<!-- ══ ROW 3: VOLTMETER ═══════════════════════════════════ -->
-<text class="tn" x="158" y="252" text-anchor="end">Voltmeter</text>
+<!-- ══ ROW 3: DISPLAY ═══════════════════════════════════ -->
+<text class="tn" x="158" y="252" text-anchor="end">Display</text>
 
 <rect class="box-amber" x="168" y="240" width="152" height="32" rx="5"/>
 <text class="ts" x="244" y="260" text-anchor="middle">Track voltage 0–16V</text>
@@ -177,7 +177,7 @@
 
 <!-- Segment 2: in Mode C, pot live -->
 <rect x="130" y="428" width="170" height="18" rx="3" class="box-coral"/>
-<text class="tn" x="215" y="441" text-anchor="middle">Mode C — rotate pot, watch voltmeter</text>
+<text class="tn" x="215" y="441" text-anchor="middle">Mode C — rotate pot, watch display</text>
 
 <!-- Toggle back marker -->
 <line x1="300" y1="420" x2="300" y2="452" stroke="#0F6E56" stroke-width="1.5" stroke-dasharray="3 2"/>
@@ -200,7 +200,7 @@
 <line x1="130" y1="472" x2="300" y2="472" stroke="#993C1D" stroke-width="1"/>
 <line x1="130" y1="467" x2="130" y2="477" stroke="#993C1D" stroke-width="1"/>
 <line x1="300" y1="467" x2="300" y2="477" stroke="#993C1D" stroke-width="1"/>
-<text class="tn" x="215" y="487" text-anchor="middle" fill="#993C1D">dial in floor on voltmeter</text>
+<text class="tn" x="215" y="487" text-anchor="middle" fill="#993C1D">dial in floor on display</text>
 
 <!-- Bracket: debounce -->
 <line x1="300" y1="505" x2="380" y2="505" stroke="#854F0B" stroke-width="1"/>

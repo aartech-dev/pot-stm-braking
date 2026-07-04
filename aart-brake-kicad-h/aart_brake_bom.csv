@@ -2,14 +2,13 @@ Reference,Value,Description,Package,Quantity,Notes
 U1,STM32G051K6U6,ARM Cortex-M0+ MCU 32K flash 8K RAM,QFN-32 5x5mm,1,Main controller. DAC1 brake (PA4); PWM anti-brake demand (PA5). Firmware Rev 11.
 U2,AMS1117-3.3,LDO 12-16V to 3.3V (MCU rail),SOT-223,1,Or MCP1700-3302 (SOT-23) if low standby Iq needed; see design doc 7A.6.
 U4,MCP1700-5002,LDO 12-16V to 5V (analog rail),SOT-23,1,Powers GD2 brake buffer only. GD1 anti-brake op-amp is on the WHITE rail.
-GD2,Op-amp buffer,Brake gate buffer (DAC1 -> Q2 gate, linear),SOT-23-5,1,Rail-to-rail op-amp on +5V.
-GD1,Op-amp (HV),Anti-brake current-source loop op-amp on WHITE rail,SOT-23-5,1,Regulates I=Vdemand/Rsense. Drives Q1. Powered from WHITE (~16V) NOT +5V - senses at ~16V common mode. Use LM321/LM358-class >=16V (ideally 36V).
+GD2,Op-amp (RRO),Brake gate driver (DAC1 -> Q2 gate, linear),SOT-23 (LM7321 single),1,Non-inverting gain ~1.5 to lift 3.3V DAC to ~5V gate. Needs rail-to-rail OUTPUT. TI LM7321. NOTE: drives Q2 (TW100N03CC) logic-level gate; ~5V fully enhances for full-on brushless braking.
+GD1,Op-amp (RRIO HV),Anti-brake current-source loop op-amp on WHITE rail,SOT-23 (LM7321 single) or half of LM7322 dual w/ GD3,1,Regulates I=(WHITE-AB_DEMAND)/Rsense. LM7321 RRIO; alt OPA192.
 U5,TPS1212-Q1,TI smart high-side switch controller (reverse block + protection),VQFN-23 4x4,1,VS from WHITE (3.5-73V, no clamp). GATE drives Q5/Q6. I_DIR reverse (~6-10us) + I2t OCP + 5us SCP + IMON/FLT. Replaces LTC7001+INA241+comparator (TI vs ADI; adds protection).
-Q2,IRFP250N,N-ch wide-SOA brake FET (30A 200V ~75mohm),TO-247,1,Linear operation. HEATSINK REQUIRED (~12W peak).
+Q2,TW100N03CC (Remora class),Low-Rds logic-level N-ch brake FET (~3mohm 30V),SMD power per Remora,1,PRIMARY for brushless (80%): braked full-on via Remora ESC bus - motor 31-273mohm needs single-digit-mohm Rds. IRFP250N (75mohm) gives only 9-78% brake + ~120W at 40A => brushed-only (TO-247 wide-SOA). Brushed linear tables: low-Rds FET VALIDATED in linear (brushed op pt ~8V Vds, clear of instability region). See 7A.12.
 Q1,TIP147,PNP Darlington anti-brake current-source pass (100V 10A 125W),TO-220,1,Linear pass element ~47W transient at stall. HEATSINK REQUIRED. Alt: N-MOSFET SUP70060E / RFP50N06 / FDP61N20 / SUP50020EL.
 Q5,STL059N4S8AG,N-ch reverse-block FET (40V 0.59mohm),PowerFLAT 5x6,1,Common-source with Q6. Driven by U5 GATE. Alt: Vishay SiJK140E (0.34mohm).
 Q6,STL059N4S8AG,N-ch reverse-block FET (40V 0.59mohm),PowerFLAT 5x6,1,Common-source with Q5. Body diodes oppose -> block both directions when off.
-Q_LS,2N2222,PWM level-shift transistor (anti-brake demand),SOT-23,1,Or 2N3904. Level-shifts 50kHz PWM into the RC filter.
 RSNS,0.5-0.75mohm,TPS1212 main-path current sense (CS1+/CS1-),2512 or shunt,1,~20-30mV at 40A. Sets IMON/OCP. Drop-vs-accuracy knob.
 Rsense,0.1ohm 1-2W,Anti-brake current-source sense (WHITE leg),2512,1,0.3V at 3A. I = Vdemand / 0.1ohm.
 D1,P6KE18CA,TVS diode 18V BIDIRECTIONAL (WHITE rail clamp),SMB (DO-214AA),1,CA suffix essential. On WHITE rail only.
@@ -25,18 +24,17 @@ C4b,1uF 16V,LDO (U4) +5V rail decoupling,0402,1,
 C5,100nF,MCU VDD decoupling,0402,1,
 C6,100nF,MCU VDDA decoupling,0402,1,
 C7,4.7uF,MCU VDDA bulk,0402,1,
-C_KA,470nF,Anti-brake PWM-to-DC demand filter,0603,1,With R_KA1/R_KA2 forms the level-shift + RC filter.
 C_BST,100nF,TPS1212 BST-SRC bootstrap cap,0402,1,Per datasheet (min 0.1uF).
 CI2t,10nF,TPS1212 I2t breaker timer,0402,1,Sets overcurrent fault time.
 CTMR,1nF,TPS1212 retry/latch timer,0402,1,Leave for fastest, or set latch via resistor.
 R2,10k,GD2 input pull-up (safe-default brake),0402,1,On GD2 INPUT, not Q2 gate.
 R3,10R,Q2 gate resistor,0402,1,
 R_BASE,1k,Q1 (TIP147) base resistor,0402,1,GD1 output to Darlington base.
-R_KA1,10k,PWM filter / level-shift,0402,1,
-R_KA2,1k,PWM filter / level-shift,0402,1,
+R_KA1,6.8k,Anti-brake demand divider (top); with R_KA2 sets ratio 0.15,0402,1,DAC2 output x0.15 = 0.30V demand at full code -> 3A.
+R_KA2,1.2k,Anti-brake demand divider (bottom to GND); R_KA2/(R_KA1+R_KA2)=1.2/8.0=0.15,0402,1,Sets 0.30V demand -> 3A via Rsense 0.1ohm.
 RIOC,per design,TPS1212 OCP threshold set (IOC),0402,1,Sets overcurrent comparator threshold (~50-60A trip).
 R5,10k,Pot top-end to 3.3V,0402,1,
-R8,15k,WHITE sense top divider (PA0),0402,1,
+R8,18k,WHITE sense top divider (PA0),0402,1,
 R9,4k7,WHITE sense bottom divider (PA0),0402,1,
 R10,22k,BLACK sense top divider (PA1),0402,1,Tap on TRACK side of reverse switch.
 R11,4k7,BLACK sense bottom divider (PA1),0402,1,
@@ -47,5 +45,9 @@ J10,4-pin 2.54mm,SWD (SWDIO/SWDCLK/GND/3V3),header,1,
 J11,3-pin 2.54mm,UART (TX/RX/GND) 115200 8N1,header,1,
 J12,2-pin 2.54mm,BOOT0 button,header,1,
 J13,2-pin 2.54mm,NRST button,header,1,
-J14,3-pin 2.54mm,Voltmeter (Vin/GND/Vcc),header,1,
+J14,4-pin 2.54mm,TM1637 display (CLK/DIO/GND/VCC),header,1,
 J_USB,USB-C 16-pin,USB-C receptacle (UART reflash + 5V),HRO TYPE-C-31-M-12,1,CC1/CC2 5.1k pulldowns.
+GD3,Op-amp (RRIO HV),Anti-brake demand translator: unity difference referenced to WHITE (AB_DEMAND=WHITE-0.30V),SOT-23 (LM7321) or pairs with GD1 in one LM7322 dual,1,Exact + WHITE-independent. Replaces the 2N2222 level-shift.
+R_t1-R_t4,10k 0.1%,Anti-brake translator difference resistors (matched set of 4),0402,4,Matching sets WHITE-rail rejection; all four equal -> AB_DEMAND=WHITE-Vdivider.
+R_SAFE,100k,C3 safe-default pull-up: Q2 drain (BLACK_to_track) to gate,0402,1,Passive back-EMF gate drive on power loss. ~0.16mA at 16V; GD2 sinks it when powered.
+D_SAFE,MMSZ5242B (12V Zener),C3 gate clamp: Q2 gate to source (RED),SOD-123,1,Clamps Vgs vs back-EMF + spikes. NOTE value: 12V was per old IRFP250N; for logic-level Q2 ~8.2V fully enhances with more gate-oxide margin - confirm vs FET Vgs(max).
